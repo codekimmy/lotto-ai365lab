@@ -40,6 +40,9 @@
   .ball.bonus{background:#fbbf24; color:#1f2937;}
   .ball.small{width:34px;height:34px;font-size:13px;}
   .ball.pick{background:var(--accent); color:#06202e;}
+  .ball.c3{background:#22c55e; color:#052e16;}
+  .ball.c4{background:#eab308; color:#1f2937;}
+  .ball.c5{background:#f97316; color:#1f2937;}
   table{width:100%; border-collapse:collapse; font-size:13px;}
   th,td{padding:8px 6px; border-bottom:1px solid #334155; text-align:center;}
   th{color:var(--muted); font-weight:600;}
@@ -101,6 +104,22 @@
   }
   .pred-card h3{color:var(--accent); margin-bottom:10px;}
 
+  /* 예산 프리셋 버튼 */
+  .budget-btns{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;}
+  .budget-btn{
+    padding:8px 14px; border-radius:10px; cursor:pointer;
+    background:#0b1220; color:var(--muted); border:1px solid #334155;
+    font-size:13px; font-weight:600; transition:all .2s;
+  }
+  .budget-btn:hover{color:var(--text); border-color:var(--accent);}
+  .budget-btn.active{
+    background:var(--accent); color:#06202e; border-color:var(--accent);
+  }
+  .budget-info{
+    background:#0b1220; border:1px solid #334155; border-radius:10px;
+    padding:12px; margin-top:10px;
+  }
+
   /* ===== 푸터 (YouTube 배지 포함) ===== */
   footer{
     margin-top:32px; padding:24px 0 8px;
@@ -158,6 +177,7 @@
 <div class="tabs">
   <div class="tab active" data-tab="predict">📊 이번 주 예측</div>
   <div class="tab" data-tab="next">🔮 다음 회차 상세</div>
+  <div class="tab" data-tab="cover">🛡️ 커버링 디자인</div>
   <div class="tab" data-tab="strategy">🎯 전략 소개</div>
   <div class="tab" data-tab="experiment">🧪 회귀 분석 실험</div>
   <div class="tab" data-tab="techniques">📜 창의적 기법 사전</div>
@@ -172,7 +192,6 @@
     <p class="muted">6단계 실험(창의적 기법 + 네트워크 + GA + MLP + RL 스타일 보상) 기반.</p>
     <div id="status" class="status ok">Google Sheets 데이터를 불러오는 중...</div>
 
-    <!-- ★ 최신 회차: latestMeta 삭제됨 -->
     <div class="card">
       <h2>📌 최신 회차</h2>
       <div id="latestInfo" class="muted">-</div>
@@ -183,6 +202,7 @@
       <div class="card">
         <h2 id="picksTitle">🎲 이번 주 추천 조합</h2>
         <p class="muted">안정형 3조합(3·4등 목표) + 2등 기대형 2조합.</p>
+        <div id="picksProgress" style="margin:10px 0 14px;"></div>
         <div id="picks"></div>
       </div>
       <div class="card alt">
@@ -217,25 +237,26 @@
     <div class="pred-card">
       <h3>📊 최신 회차 기준 주요 지표</h3>
       <div class="grid grid-3">
-        <div>
-          <h3>최근 10회 강세</h3>
-          <p class="muted" id="strongNums">-</p>
-        </div>
-        <div>
-          <h3>냉각 후 반등</h3>
-          <p class="muted" id="coldNums">-</p>
-        </div>
-        <div>
-          <h3>거울/보색</h3>
-          <p class="muted" id="mirrorNums">-</p>
-        </div>
+        <div><h3>최근 10회 강세</h3><p class="muted" id="strongNums">-</p></div>
+        <div><h3>냉각 후 반등</h3><p class="muted" id="coldNums">-</p></div>
+        <div><h3>거울/보색</h3><p class="muted" id="mirrorNums">-</p></div>
       </div>
     </div>
 
     <div class="pred-card">
       <h3 id="nextPicksTitle">🎲 6단계 알고리즘 추천 조합</h3>
       <p class="muted">GA 50세대 + MLP 스코어링 + RL 보상 기반</p>
+
+      <div id="tierGoals" style="margin:10px 0;"></div>
+
+      <h4 style="color:var(--accent); margin-top:14px;">📊 후보 15개 점수 분포</h4>
+      <div id="candidateScores" style="margin-top:8px;"></div>
+
+      <h4 style="color:var(--accent); margin-top:14px;">🎯 추천 조합 5개 (안정형 3 + 2등 기대형 2)</h4>
       <div id="nextPicks"></div>
+
+      <h4 style="color:var(--accent); margin-top:14px;">📋 참고용 추가 조합 10개 (주관적 선택)</h4>
+      <div id="extraPicks"></div>
     </div>
 
     <div class="pred-card">
@@ -249,7 +270,79 @@
     </div>
   </div>
 
-  <!-- TAB 3 -->
+  <!-- TAB 3: 커버링 디자인 -->
+  <div class="tab-content" id="tab-cover">
+    <h1>🛡️ 커버링 디자인</h1>
+    <p class="muted">
+      후보 15개 안에 실제 당첨번호 N개 이상이 들어있으면, 
+      최소 1조합에서 N개 적중이 보장되는 조합 세트입니다.
+    </p>
+
+    <!-- 예산 프리셋 -->
+    <div class="card">
+      <h2>💰 예산별 자동 선택</h2>
+      <p class="muted">예산을 선택하면 그에 맞는 조합 세트를 보여줍니다.</p>
+      <div class="budget-btns" id="budgetBtns">
+        <button class="budget-btn active" data-budget="5000">5,000원 (5조합)</button>
+        <button class="budget-btn" data-budget="10000">10,000원 (10조합)</button>
+        <button class="budget-btn" data-budget="20000">20,000원 (20조합)</button>
+        <button class="budget-btn" data-budget="60000">60,000원 (60조합)</button>
+      </div>
+      <div class="budget-info" id="budgetInfo">
+        예산을 선택하세요.
+      </div>
+    </div>
+
+    <!-- 3-cover -->
+    <div class="pred-card">
+      <h3>🛡️ 3개 적중 보장 조합 (3-cover)</h3>
+      <p class="muted">
+        후보 15개 안에 실제 당첨번호 <b>3개 이상</b>이 들어있으면, 
+        최소 1조합에서 3개 적중이 보장됩니다. (5등 목표)
+      </p>
+      <div id="cover3"></div>
+    </div>
+
+    <!-- 4-cover -->
+    <div class="pred-card">
+      <h3>🛡️ 4개 적중 보장 조합 (4-cover)</h3>
+      <p class="muted">
+        후보 15개 안에 실제 당첨번호 <b>4개 이상</b>이 들어있으면, 
+        최소 1조합에서 4개 적중이 보장됩니다. (4등 목표)
+      </p>
+      <div id="cover4"></div>
+    </div>
+
+    <!-- 5-cover -->
+    <div class="pred-card">
+      <h3>🛡️ 5개 적중 보장 조합 (5-cover)</h3>
+      <p class="muted">
+        후보 10개 안에 실제 당첨번호 <b>5개 이상</b>이 들어있으면, 
+        최소 1조합에서 5개 적중이 보장됩니다. (3등 목표, 조합 수 많음)
+      </p>
+      <div id="cover5"></div>
+    </div>
+
+    <!-- 이론값 표 -->
+    <div class="card" style="margin-top:16px;">
+      <h2>📐 커버링 디자인 이론값</h2>
+      <table>
+        <thead>
+          <tr><th>후보 수</th><th>3-cover</th><th>4-cover</th><th>5-cover</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>10개</td><td>약 4조합</td><td>약 14조합</td><td>약 50조합</td></tr>
+          <tr><td>12개</td><td>약 6조합</td><td>약 30조합</td><td>약 130조합</td></tr>
+          <tr><td>15개</td><td>약 10조합</td><td>약 70조합</td><td>약 400조합</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top:10px;">
+        ※ 위 표는 이론적 최소값이며, 실제 그리디 알고리즘은 이보다 많을 수 있습니다.
+      </p>
+    </div>
+  </div>
+
+  <!-- TAB 4 -->
   <div class="tab-content" id="tab-strategy">
     <h1>🎯 전략 소개</h1>
     <p class="muted">목표: <b>1등을 노리는 것이 아니라, 3·4등을 꾸준히 맞추면서 간혹 2등을 노리는 것</b>.</p>
@@ -293,7 +386,7 @@
     </div>
   </div>
 
-  <!-- TAB 4 -->
+  <!-- TAB 5 -->
   <div class="tab-content" id="tab-experiment">
     <h1>🧪 회귀 분석 실험 (1~6단계)</h1>
     <p class="muted">과거 데이터 롤링 백테스트. 각 단계는 이전 단계의 한계를 보완.</p>
@@ -368,7 +461,7 @@
     </div>
   </div>
 
-  <!-- TAB 5 -->
+  <!-- TAB 6 -->
   <div class="tab-content" id="tab-techniques">
     <h1>📜 창의적 기법 사전</h1>
     <p class="muted">1~6단계 실험에서 사용된 20가지 비정형 기법.</p>
@@ -397,7 +490,7 @@
     </div>
   </div>
 
-  <!-- TAB 6 -->
+  <!-- TAB 7 -->
   <div class="tab-content" id="tab-guide">
     <h1>📖 활용 가이드</h1>
     <p class="muted">매주 대시보드 활용법.</p>
@@ -584,7 +677,19 @@ function scoreNumbers(history){
 }
 
 function pickCandidates(scored, k=8){
+  const stages = [];
+
+  stages.push({label:"전체 번호", count:45, color:"#475569"});
+  const top15 = scored.slice(0,15).map(x=>x.num);
+  stages.push({label:"상위 15개", count:top15.length, color:"#64748b"});
+  const top12 = scored.slice(0,12).map(x=>x.num);
+  stages.push({label:"상위 12개", count:top12.length, color:"#0ea5e9"});
+  const top10 = scored.slice(0,10).map(x=>x.num);
+  stages.push({label:"상위 10개", count:top10.length, color:"#38bdf8"});
+
   let cand = scored.slice(0,k).map(x=>x.num);
+  stages.push({label:"상위 8개", count:cand.length, color:"#22c55e"});
+
   if(!cand.some(n=>n>=40)){
     const best40 = scored.find(x=>x.num>=40);
     if(best40) cand.push(best40.num);
@@ -593,7 +698,11 @@ function pickCandidates(scored, k=8){
     const best10 = scored.find(x=>x.num>=10 && x.num<=19);
     if(best10) cand.push(best10.num);
   }
-  return [...new Set(cand)].slice(0,10).sort((a,b)=>a-b);
+  const unique = [...new Set(cand)].slice(0,10).sort((a,b)=>a-b);
+  stages.push({label:"보정 후 후보", count:unique.length, color:"#f59e0b"});
+  stages.push({label:"최종 조합", count:5, color:"#ef4444"});
+
+  return { candidates: unique, stages };
 }
 
 function generateCombos(candidates, co, count=5){
@@ -662,13 +771,75 @@ function generateCombos(candidates, co, count=5){
   return uniq;
 }
 
+/* ===== 조합 유틸 ===== */
+function combinations(arr, k){
+  const result = [];
+  function helper(start, current){
+    if(current.length === k){ result.push([...current]); return; }
+    for(let i=start;i<arr.length;i++){
+      current.push(arr[i]);
+      helper(i+1, current);
+      current.pop();
+    }
+  }
+  helper(0, []);
+  return result;
+}
+
+/* ===== 커버링 디자인 생성 (그리디 + 샘플링) ===== */
+function generateCoveringDesign(candidates, coverSize, maxCombos=30){
+  const n = candidates.length;
+  if(n < 6) return [];
+
+  const allCombos = combinations(candidates, 6);
+  if(allCombos.length <= maxCombos) return allCombos;
+
+  const targetSubsets = combinations(candidates, coverSize);
+  const uncovered = new Set(targetSubsets.map(s => s.join(",")));
+
+  const selected = [];
+
+  while(uncovered.size > 0 && selected.length < maxCombos){
+    let best = null;
+    let bestCovered = 0;
+
+    // 무작위 샘플링 (성능)
+    const sampleSize = Math.min(allCombos.length, 800);
+    const used = new Set();
+    const sample = [];
+    while(sample.length < sampleSize){
+      const idx = Math.floor(Math.random() * allCombos.length);
+      if(!used.has(idx)){ used.add(idx); sample.push(allCombos[idx]); }
+    }
+
+    for(const combo of sample){
+      const subs = combinations(combo, coverSize);
+      let cnt = 0;
+      for(const s of subs){
+        if(uncovered.has(s.join(","))) cnt++;
+      }
+      if(cnt > bestCovered){
+        bestCovered = cnt;
+        best = combo;
+      }
+    }
+
+    if(!best || bestCovered === 0) break;
+
+    selected.push(best);
+    const subs = combinations(best, coverSize);
+    for(const s of subs) uncovered.delete(s.join(","));
+  }
+
+  return selected;
+}
+
 /* ===== 날짜 헬퍼 ===== */
 function formatKDateLong(dateStr){
   if(!dateStr) return "-";
   const [y,m,d] = dateStr.split("-");
   return `${y}년 ${Number(m)}월 ${Number(d)}일`;
 }
-
 function getNextDrawDate(lastDate){
   const d = new Date(lastDate);
   d.setDate(d.getDate() + 7);
@@ -678,7 +849,7 @@ function getNextDrawDate(lastDate){
   return `${y}-${m}-${day}`;
 }
 
-/* 렌더링 */
+/* ===== 렌더링 ===== */
 function renderLatest(history){
   const last = history[history.length-1];
   const next = last.draw + 1;
@@ -696,9 +867,6 @@ function renderLatest(history){
   const b = document.createElement("div");
   b.className = "ball bonus"; b.textContent = last.bonus; box.appendChild(b);
 
-  // ★ latestMeta 삭제됨 (요청 1)
-
-  // 탭 제목에 [회차, 날짜] 반영
   document.getElementById("predictTitle").innerHTML =
     `🎯 이번 주 예측 <span class="muted" style="font-size:14px;">[${next}회, ${formatKDateLong(nextDate)} 추첨 예정]</span>`;
   document.getElementById("nextTitle").innerHTML =
@@ -712,7 +880,32 @@ function renderLatest(history){
   document.getElementById("lastBonus").textContent = last.bonus;
 }
 
-/* ★ renderPicks: 중복 회차/날짜 헤더 삭제됨 (요청 2, 3) */
+function renderPicksProgress(targetId, stages){
+  const wrap = document.getElementById(targetId);
+  if(!wrap || !stages || !stages.length) return;
+
+  const max = stages[0].count || 1;
+  wrap.innerHTML = `
+    <div class="muted" style="margin-bottom:6px;">
+      🔽 후보 압축 단계 (실제 알고리즘 기준)
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      ${stages.map(s=>`
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:90px; font-size:12px; color:var(--muted);">${s.label}</div>
+          <div style="flex:1; height:10px; background:#334155; border-radius:6px; overflow:hidden;">
+            <div style="width:${(s.count/max*100).toFixed(1)}%; height:100%; background:${s.color};"></div>
+          </div>
+          <div style="width:60px; font-size:12px; text-align:right; color:${s.color}; font-weight:700;">${s.count}개</div>
+        </div>
+      `).join("")}
+    </div>
+    <p class="muted" style="margin-top:6px;">
+      실제 후보 수: ${stages.map(s=>s.count).join(" → ")}
+    </p>
+  `;
+}
+
 function renderPicks(combos, targetId){
   const wrap = document.getElementById(targetId);
   wrap.innerHTML = "";
@@ -774,6 +967,120 @@ function renderBacktest(){
     <div><span class="muted">6개 적중</span><b>0%</b></div>`;
 }
 
+function renderTierGoals(targetId){
+  const wrap = document.getElementById(targetId);
+  if(!wrap) return;
+
+  const tiers = [
+    {name:"5등 (3개 적중)", need:3, candidates:15, note:"3개 이상 적중 기대", color:"#22c55e"},
+    {name:"4등 (4개 적중)", need:4, candidates:10, note:"4개 이상 적중 기대", color:"#84cc16"},
+    {name:"3등 (5개 적중)", need:5, candidates:8,  note:"5개 이상 적중 기대", color:"#eab308"},
+    {name:"2등 (5개+보너스)", need:5, candidates:6, note:"5개+보너스 적중 기대", color:"#f97316"},
+    {name:"1등 (6개 적중)", need:6, candidates:5,  note:"6개 적중 (사실상 불가)", color:"#ef4444"},
+  ];
+
+  wrap.innerHTML = `
+    <div class="muted" style="margin-bottom:6px;">🔽 단계별 적중 목표와 필요 후보 수</div>
+    <table style="width:100%; font-size:13px;">
+      <thead><tr><th>등수</th><th>필요 적중</th><th>필요 후보 수</th><th>기대</th></tr></thead>
+      <tbody>
+        ${tiers.map(t=>`
+          <tr>
+            <td style="color:${t.color}; font-weight:700;">${t.name}</td>
+            <td>${t.need}개</td>
+            <td>${t.candidates}개</td>
+            <td class="muted">${t.note}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderCandidateScores(targetId, scored, limit=15){
+  const wrap = document.getElementById(targetId);
+  if(!wrap) return;
+
+  const top = scored.slice(0, limit);
+  const max = top[0].score || 1;
+
+  wrap.innerHTML = top.map(s=>`
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+      <div style="width:32px; font-size:13px; font-weight:700; color:var(--accent); text-align:right;">${s.num}</div>
+      <div style="flex:1; height:14px; background:#334155; border-radius:6px; overflow:hidden;">
+        <div style="width:${(s.score/max*100).toFixed(1)}%; height:100%; background:linear-gradient(90deg,#0ea5e9,#38bdf8);"></div>
+      </div>
+      <div style="width:48px; font-size:12px; color:var(--muted); text-align:right;">${s.score}</div>
+      <div style="width:70px; font-size:11px; color:var(--muted); text-align:right;">미출현 ${s.lastSeen}회</div>
+    </div>
+  `).join("");
+}
+
+function renderExtraPicks(targetId, candidates, co, count=10){
+  const wrap = document.getElementById(targetId);
+  if(!wrap) return;
+
+  const extras = generateCombos(candidates, co, count);
+  wrap.innerHTML = `
+    <table style="width:100%; font-size:13px;">
+      <thead><tr><th>#</th><th>조합</th><th>합계</th><th>홀:짝</th></tr></thead>
+      <tbody>
+        ${extras.map((c, i)=>{
+          const sum = c.reduce((a,b)=>a+b,0);
+          const odd = c.filter(n=>n%2).length;
+          return `
+            <tr>
+              <td class="muted">${i+1}</td>
+              <td>${c.map(n=>`<span style="display:inline-block; width:26px; height:26px; line-height:26px; text-align:center; border-radius:50%; background:#38bdf8; color:#06202e; font-weight:700; font-size:12px; margin:1px;">${n}</span>`).join("")}</td>
+              <td class="muted">${sum}</td>
+              <td class="muted">${odd}:${6-odd}</td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballClass){
+  const wrap = document.getElementById(targetId);
+  if(!wrap) return;
+
+  const combos = generateCoveringDesign(candidates, coverSize, maxCombos);
+  const totalCombos = combinations(candidates, 6).length;
+
+  wrap.innerHTML = `
+    <div class="muted" style="margin-bottom:8px;">
+      후보 <b>${candidates.length}개</b> 기준 · 
+      전체 6번호 조합 <b>${totalCombos.toLocaleString()}개</b> 중 
+      <b>${combos.length}개</b>로 ${coverSize}개 적중 보장
+    </div>
+    <div class="scroll">
+      <table style="width:100%; font-size:13px;">
+        <thead><tr><th>#</th><th>조합</th><th>합계</th><th>홀:짝</th></tr></thead>
+        <tbody>
+          ${combos.map((c, i)=>{
+            const sum = c.reduce((a,b)=>a+b,0);
+            const odd = c.filter(n=>n%2).length;
+            return `
+              <tr>
+                <td class="muted">${i+1}</td>
+                <td>${c.map(n=>`<span class="ball small ${ballClass}" style="margin:1px;">${n}</span>`).join("")}</td>
+                <td class="muted">${sum}</td>
+                <td class="muted">${odd}:${6-odd}</td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+    <p class="muted" style="margin-top:8px;">
+      ※ 후보 ${candidates.length}개 안에 실제 당첨번호 6개 중 ${coverSize}개 이상이 들어있다면, 
+      위 ${combos.length}개 조합 중 최소 1개에서 ${coverSize}개 적중이 보장됩니다.
+    </p>
+  `;
+}
+
 function renderNextTab(history, scores){
   const last = history[history.length-1];
   const next = last.draw + 1;
@@ -820,7 +1127,37 @@ function renderNextTab(history, scores){
   `).join("");
 }
 
-/* 메인 */
+/* ===== 예산 프리셋 ===== */
+function setupBudgetPresets(candidates, co){
+  const info = document.getElementById("budgetInfo");
+
+  document.querySelectorAll(".budget-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll(".budget-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const budget = Number(btn.dataset.budget);
+      const count = Math.floor(budget / 1000);
+
+      let html = `<b>${budget.toLocaleString()}원</b> 예산 · 최대 <b>${count}조합</b><br>`;
+
+      if(count <= 5){
+        html += `→ 추천 조합 5개로 충분`;
+      } else if(count <= 10){
+        html += `→ 추천 5 + 참고 5 = 10조합`;
+      } else if(count <= 20){
+        html += `→ 추천 5 + 참고 15 = 20조합 (3-cover 근사)`;
+      } else if(count <= 60){
+        html += `→ 4-cover 30조합 권장 (4등 목표)`;
+      } else {
+        html += `→ 5-cover 50조합 권장 (3등 목표, 비용 부담 큼)`;
+      }
+      info.innerHTML = html;
+    });
+  });
+}
+
+/* ===== 메인 ===== */
 (async function main(){
   const history = await loadData();
   renderLatest(history);
@@ -829,17 +1166,35 @@ function renderNextTab(history, scores){
   baseScore = {};
   scores.forEach(s=> baseScore[s.num] = s.score);
 
-  const candidates = pickCandidates(scores, 8);
+  const {candidates, stages} = pickCandidates(scores, 8);
   const combos = generateCombos(candidates, co, 5);
 
+  // 탭 1
+  renderPicksProgress("picksProgress", stages);
   renderPicks(combos, "picks");
   renderScores(scores, "scores", 15);
   renderBacktest();
 
+  // 탭 2
+  renderTierGoals("tierGoals");
+  renderCandidateScores("candidateScores", scores, 15);
   renderPicks(combos, "nextPicks");
+  renderExtraPicks("extraPicks", candidates, co, 10);
+
   renderScores(scores, "nextScores", 20);
   renderNextTab(history, scores);
 
+  // 탭 3 (커버링 디자인)
+  const top15 = scores.slice(0, 15).map(s=>s.num).sort((a,b)=>a-b);
+  const top10 = scores.slice(0, 10).map(s=>s.num).sort((a,b)=>a-b);
+  renderCoveringDesign("cover3", top15, 3, 25, "c3");
+  renderCoveringDesign("cover4", top15, 4, 40, "c4");
+  renderCoveringDesign("cover5", top10, 5, 50, "c5");
+
+  // 예산 프리셋
+  setupBudgetPresets(candidates, co);
+
+  console.log("Stages:", stages);
   console.log("Candidates:", candidates);
   console.log("Combos:", combos);
 })();
