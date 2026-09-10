@@ -351,7 +351,7 @@
       <div id="latestBalls" class="row" style="margin-top:10px;"></div>
     </div>
 
-    <!-- ★ 편향 강도 선택 -->
+    <!-- 편향 강도 선택 -->
     <div class="card" style="margin-top:16px;">
       <h2>🎚️ 직전 회차 편향 강도</h2>
       <p class="muted">
@@ -375,7 +375,7 @@
       </p>
     </div>
 
-    <!-- ★ 추천 조합 산출 규정 -->
+    <!-- 추천 조합 산출 규정 -->
     <div class="card" style="margin-top:16px;">
       <div class="collapsible-header">
         <span>📐 추천 조합 산출 규정</span>
@@ -384,11 +384,14 @@
       <div class="collapsible-body">
         <ol class="method-list">
           <li><b>점수 계산</b>: 최근 5/10/30/100회 출현 × 가중치 (편향 강도별 조정)</li>
-          <li><b>후보 추출</b>: 45 → 15 → 12 → 10 → 8 → 보정 후 (최대 10개)</li>
+          <li><b>직전 앞뒤 번호</b>: 직전 회차 번호 ±1에 <b>+6점</b> 가중치</li>
+          <li><b>장기 냉각 보너스</b>: 50회 이상 미출현 <b>+15점</b> / 30회 +8점 / 20회 +4점 / 15회 +2점</li>
+          <li><b>후보 추출</b>: 45 → 15 → 12 → 10 → 상위 K (약 12개 / 중 10개 / 강 8개) → 보정 후</li>
           <li><b>조합 생성</b>: GA (개체군 300, 세대 40, 엘리트 20%)</li>
           <li><b>적합도</b>: 점수 + 홀짝/저고/합계/연속/40번대 + 동시 출현</li>
           <li><b>다양성 필터</b>: 조합 간 5개 이상 겹침 제외</li>
           <li><b>직전 회차 제한</b>: 편향 강도에 따라 최대 1~3개만 허용</li>
+          <li><b>자동 완화</b>: 5조합 미달 시 다양성·겹침 조건을 단계적으로 완화</li>
           <li><b>최종 선택</b>: 위 조건을 모두 통과한 상위 5개</li>
         </ol>
       </div>
@@ -407,7 +410,7 @@
           <span class="arrow">▶</span>
         </div>
         <div class="collapsible-body open">
-          <p class="muted">최근 5/10/30/100회, 거울·보색, 보너스 회귀, 네트워크 중심성, 냉각 반등.</p>
+          <p class="muted">최근 5/10/30/100회, 거울·보색, 보너스 회귀, 네트워크 중심성, 냉각 반등, 직전 앞뒤.</p>
           <div id="scores"></div>
         </div>
       </div>
@@ -729,10 +732,10 @@
       <div class="tech-card"><h4>2. 보색 번호</h4><p>45 - 번호. 거울 번호와 동일.</p></div>
       <div class="tech-card"><h4>3. 보너스 회귀</h4><p>이전 보너스 번호가 다음 회차 당첨번호로.</p></div>
       <div class="tech-card"><h4>4. 연속번호 회귀</h4><p>연속번호 다음 회차 패턴.</p></div>
-      <div class="tech-card"><h4>5. 냉각 후 반등</h4><p>30회 이상 미출현 번호 반등.</p></div>
+      <div class="tech-card"><h4>5. 냉각 후 반등</h4><p>30회 이상 미출현 번호 반등. 50회 이상 +15점.</p></div>
       <div class="tech-card"><h4>6. 회차 숫자 분해</h4><p>1239 → 1,2,3,9 → 12,13,19,21,23,29...</p></div>
       <div class="tech-card"><h4>7. 날짜 숫자 분해</h4><p>2026-09-05 → 2,0,2,6,0,9,0,5 → 2,5,6,9,15.</p></div>
-      <div class="tech-card"><h4>8. 인접 번호</h4><p>당첨번호 ±1.</p></div>
+      <div class="tech-card"><h4>8. 인접 번호</h4><p>당첨번호 ±1. 직전 회차 앞뒤 번호 +6점.</p></div>
       <div class="tech-card"><h4>9. 끝수 분석</h4><p>끝수 합, 분포, 보완 끝수.</p></div>
       <div class="tech-card"><h4>10. 합계값 회귀</h4><p>평균 135~140. 120~160 목표.</p></div>
       <div class="tech-card"><h4>11. 홀짝 비율</h4><p>홀 3~4, 짝 2~3.</p></div>
@@ -816,7 +819,6 @@ document.querySelectorAll('.tab').forEach(tab=>{
   });
 });
 
-/* ===== 탭 이동 함수 ===== */
 function goToTab(tabName){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
@@ -827,7 +829,6 @@ function goToTab(tabName){
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-/* ===== 전역 이벤트 위임 (탭 링크) ===== */
 document.addEventListener('click', (e)=>{
   const link = e.target.closest('.tab-link');
   if(link && link.dataset.goto){
@@ -919,13 +920,13 @@ async function loadData(){
   }
 }
 
-/* ===== 편향 강도 설정 ===== */
-let currentBias = "medium"; // 디폴트: 중
+/* ===== 편향 강도 ===== */
+let currentBias = "medium";
 
 const BIAS_CONFIG = {
-  low:    {W5:1,   W10:1.5, W30:2, W100:2, maxOverlap:1, label:"약"},
-  medium: {W5:2,   W10:2,   W30:2, W100:1, maxOverlap:2, label:"중"},
-  high:   {W5:4,   W10:3,   W30:2, W100:1, maxOverlap:3, label:"강"}
+  low:    {W5:1, W10:1.5, W30:2, W100:2, maxOverlap:1, candidateK:12, label:"약"},
+  medium: {W5:2, W10:2,   W30:2, W100:1, maxOverlap:2, candidateK:10, label:"중"},
+  high:   {W5:4, W10:3,   W30:2, W100:1, maxOverlap:3, candidateK:8,  label:"강"}
 };
 
 /* ===== 알고리즘 ===== */
@@ -937,6 +938,15 @@ function scoreNumbers(history){
   const recent = k => history.slice(Math.max(0,N-k));
   const r5 = recent(5), r10 = recent(10), r30 = recent(30), r100 = recent(100);
   const countIn = (arr, num)=> arr.filter(h=>h.nums.includes(num)).length;
+
+  // 직전 회차 앞뒤 번호
+  const lastDraw = history[N-1].nums;
+  const lastNeighbors = new Set();
+  lastDraw.forEach(n=>{
+    if(n-1 >= 1) lastNeighbors.add(n-1);
+    if(n+1 <= 45) lastNeighbors.add(n+1);
+  });
+  lastDraw.forEach(n=> lastNeighbors.delete(n));
 
   const co = {};
   for(let a=1;a<=45;a++){ co[a]={}; for(let b=1;b<=45;b++) co[a][b]=0; }
@@ -963,14 +973,25 @@ function scoreNumbers(history){
     s += countIn(r10,n)*cfg.W10;
     s += countIn(r30,n)*cfg.W30;
     s += countIn(r100,n)*cfg.W100;
+
     const mirror = 45-n;
     if(mirror>=1 && mirror<=45) s += countIn(r30,mirror)*1.5;
+
     s += r30.filter(h=>h.bonus===n).length*2;
-    if(lastSeen[n]>=30) s += 3;
-    else if(lastSeen[n]>=15) s += 1.5;
+
+    // ★ 직전 회차 앞뒤 번호 가중치
+    if(lastNeighbors.has(n)) s += 6;
+
+    // ★ 냉각 후 반등 강화
+    if(lastSeen[n] >= 50) s += 15;
+    else if(lastSeen[n] >= 30) s += 8;
+    else if(lastSeen[n] >= 20) s += 4;
+    else if(lastSeen[n] >= 15) s += 2;
+
     let centrality = 0;
     for(let m=1;m<=45;m++) centrality += co[n][m];
     s += Math.min(centrality/50, 4);
+
     scores.push({num:n, score:Math.round(s*100)/100, lastSeen:lastSeen[n]});
   }
   scores.sort((a,b)=>b.score-a.score);
@@ -978,6 +999,9 @@ function scoreNumbers(history){
 }
 
 function pickCandidates(scored, k=8){
+  const cfg = BIAS_CONFIG[currentBias];
+  const useK = cfg.candidateK || k;
+
   const stages = [];
   stages.push({label:"전체 번호", count:45, color:"#475569"});
   const top15 = scored.slice(0,15).map(x=>x.num);
@@ -987,8 +1011,8 @@ function pickCandidates(scored, k=8){
   const top10 = scored.slice(0,10).map(x=>x.num);
   stages.push({label:"상위 10개", count:top10.length, color:"#38bdf8"});
 
-  let cand = scored.slice(0,k).map(x=>x.num);
-  stages.push({label:"상위 8개", count:cand.length, color:"#22c55e"});
+  let cand = scored.slice(0,useK).map(x=>x.num);
+  stages.push({label:`상위 ${useK}개`, count:cand.length, color:"#22c55e"});
 
   if(!cand.some(n=>n>=40)){
     const best40 = scored.find(x=>x.num>=40);
@@ -998,7 +1022,7 @@ function pickCandidates(scored, k=8){
     const best10 = scored.find(x=>x.num>=10 && x.num<=19);
     if(best10) cand.push(best10.num);
   }
-  const unique = [...new Set(cand)].slice(0,10).sort((a,b)=>a-b);
+  const unique = [...new Set(cand)].slice(0, useK + 2).sort((a,b)=>a-b);
   stages.push({label:"보정 후 후보", count:unique.length, color:"#f59e0b"});
   stages.push({label:"최종 조합", count:5, color:"#ef4444"});
 
@@ -1031,11 +1055,10 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[]){
         coScore += co[combo[i]][combo[j]];
     f += Math.min(coScore/10, 6);
 
-    // 직전 회차 겹침 패널티
     if(lastDrawNums.length > 0){
       const overlapWithLast = combo.filter(n=>lastDrawNums.includes(n)).length;
       if(overlapWithLast > maxOverlap){
-        f -= (overlapWithLast - maxOverlap) * 20;
+        f -= (overlapWithLast - maxOverlap) * 15;
       }
     }
     return f;
@@ -1050,91 +1073,90 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[]){
     return normalize(shuffled.slice(0,6));
   }
 
-  let pop = Array.from({length:popSize}, randCombo);
-
-  for(let g=0;g<generations;g++){
-    pop.sort((a,b)=> fitness(b)-fitness(a));
-    const elite = [];
-    const seenElite = new Set();
-    for(const c of pop){
-      const key = c.join("-");
-      if(!seenElite.has(key)){
-        seenElite.add(key);
-        elite.push(c);
+  function runGA(pSize, gens){
+    let pop = Array.from({length:pSize}, randCombo);
+    for(let g=0;g<gens;g++){
+      pop.sort((a,b)=> fitness(b)-fitness(a));
+      const elite = [];
+      const seenElite = new Set();
+      for(const c of pop){
+        const key = c.join("-");
+        if(!seenElite.has(key)){ seenElite.add(key); elite.push(c); }
+        if(elite.length >= Math.floor(pSize*0.2)) break;
       }
-      if(elite.length >= Math.floor(popSize*0.2)) break;
-    }
-    const next = [...elite];
-    while(next.length < popSize){
-      const p1 = elite[Math.floor(Math.random()*elite.length)];
-      const p2 = elite[Math.floor(Math.random()*elite.length)];
-      const cut = 2 + Math.floor(Math.random()*3);
-      let child = normalize([...new Set([...p1.slice(0,cut), ...p2.slice(cut)])]);
-      while(child.length<6){
-        const r = candidates[Math.floor(Math.random()*candidates.length)];
-        if(!child.includes(r)) child.push(r);
-      }
-      child = normalize(child.slice(0,6));
-      if(Math.random()<0.3){
-        const idx = Math.floor(Math.random()*6);
-        const r = candidates[Math.floor(Math.random()*candidates.length)];
-        child[idx] = r;
-        child = normalize(child);
+      const next = [...elite];
+      while(next.length < pSize){
+        const p1 = elite[Math.floor(Math.random()*elite.length)];
+        const p2 = elite[Math.floor(Math.random()*elite.length)];
+        const cut = 2 + Math.floor(Math.random()*3);
+        let child = normalize([...new Set([...p1.slice(0,cut), ...p2.slice(cut)])]);
         while(child.length<6){
-          const rr = candidates[Math.floor(Math.random()*candidates.length)];
-          if(!child.includes(rr)) child.push(rr);
+          const r = candidates[Math.floor(Math.random()*candidates.length)];
+          if(!child.includes(r)) child.push(r);
         }
-        child = normalize(child);
+        child = normalize(child.slice(0,6));
+        if(Math.random()<0.3){
+          const idx = Math.floor(Math.random()*6);
+          const r = candidates[Math.floor(Math.random()*candidates.length)];
+          child[idx] = r;
+          child = normalize(child);
+          while(child.length<6){
+            const rr = candidates[Math.floor(Math.random()*candidates.length)];
+            if(!child.includes(rr)) child.push(rr);
+          }
+          child = normalize(child);
+        }
+        next.push(child);
       }
-      next.push(child);
+      pop = next;
     }
-    pop = next;
+    return pop.sort((a,b)=> fitness(b)-fitness(a));
   }
 
-  pop.sort((a,b)=> fitness(b)-fitness(a));
-
-  const selected = [];
-  const seenKeys = new Set();
-
-  for(const c of pop){
-    const key = c.join("-");
-    if(seenKeys.has(key)) continue;
-
-    if(lastDrawNums.length > 0){
-      const overlapWithLast = c.filter(n=>lastDrawNums.includes(n)).length;
-      if(overlapWithLast > maxOverlap) continue;
-    }
-
-    let tooSimilar = false;
-    for(const s of selected){
-      const overlap = c.filter(n=>s.includes(n)).length;
-      if(overlap >= 5){ tooSimilar = true; break; }
-    }
-    if(tooSimilar) continue;
-
-    seenKeys.add(key);
-    selected.push(c);
-    if(selected.length >= count) break;
-  }
-
-  if(selected.length < count){
+  function selectCombos(pop, cnt, maxOv, divLimit){
+    const selected = [];
+    const seenKeys = new Set();
     for(const c of pop){
       const key = c.join("-");
       if(seenKeys.has(key)) continue;
-
       if(lastDrawNums.length > 0){
-        const overlapWithLast = c.filter(n=>lastDrawNums.includes(n)).length;
-        if(overlapWithLast > maxOverlap + 1) continue;
+        const ov = c.filter(n=>lastDrawNums.includes(n)).length;
+        if(ov > maxOv) continue;
       }
-
       let tooSimilar = false;
       for(const s of selected){
-        const overlap = c.filter(n=>s.includes(n)).length;
-        if(overlap >= 4){ tooSimilar = true; break; }
+        const ov = c.filter(n=>s.includes(n)).length;
+        if(ov >= divLimit){ tooSimilar = true; break; }
       }
       if(tooSimilar) continue;
-
       seenKeys.add(key);
+      selected.push(c);
+      if(selected.length >= cnt) break;
+    }
+    return selected;
+  }
+
+  // 1차: 원래 조건
+  let pop = runGA(popSize, generations);
+  let selected = selectCombos(pop, count, maxOverlap, 5);
+
+  // 2차: 다양성 완화
+  if(selected.length < count) selected = selectCombos(pop, count, maxOverlap, 4);
+
+  // 3차: 겹침 상한 완화
+  if(selected.length < count) selected = selectCombos(pop, count, maxOverlap + 1, 4);
+
+  // 4차: 완전 완화 + GA 강화
+  if(selected.length < count){
+    pop = runGA(500, 60);
+    selected = selectCombos(pop, count, maxOverlap + 2, 3);
+  }
+
+  // 5차: 강제 채우기
+  if(selected.length < count){
+    for(const c of pop){
+      const key = c.join("-");
+      if(selected.some(s => s.join("-") === key)) continue;
       selected.push(c);
       if(selected.length >= count) break;
     }
@@ -1229,7 +1251,6 @@ function clearCoverCache(){
   Object.keys(coverCache).forEach(k => delete coverCache[k]);
 }
 
-/* ===== 날짜 헬퍼 ===== */
 function formatKDateLong(dateStr){
   if(!dateStr) return "-";
   const [y,m,d] = dateStr.split("-");
@@ -1373,6 +1394,16 @@ function renderPicks(combos, targetId, lastDrawNums=[]){
     }
     summary.innerHTML = html;
     wrap.appendChild(summary);
+  }
+
+  // 5개 미만 경고
+  if(combos.length < 5){
+    const warning = document.createElement("p");
+    warning.className = "muted";
+    warning.style.color = "#f59e0b";
+    warning.style.marginTop = "8px";
+    warning.innerHTML = `⚠️ 조건을 만족하는 조합이 ${combos.length}개만 생성되었습니다. 편향 강도를 완화하거나 다시 시도해주세요.`;
+    wrap.appendChild(warning);
   }
 }
 
@@ -1719,10 +1750,8 @@ function setupBiasButtons(history){
       currentBias = btn.dataset.bias;
       info.innerHTML = labels[currentBias];
 
-      // 캐시 초기화
       clearCoverCache();
 
-      // 재계산
       const lastDraw = history[history.length-1];
       const {scores, co} = scoreNumbers(history);
       baseScore = {};
@@ -1742,7 +1771,6 @@ function setupBiasButtons(history){
       renderScores(scores, "nextScores", 20);
       renderNextTab(history, scores);
 
-      // 커버링 디자인 재계산
       const top15 = scores.slice(0, 15).map(s=>s.num).sort((a,b)=>a-b);
       const top10 = scores.slice(0, 10).map(s=>s.num).sort((a,b)=>a-b);
       renderCoveringDesign("cover3", top15, 3, 25, "c3");
