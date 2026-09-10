@@ -180,23 +180,66 @@
     padding:12px; margin-top:10px; font-size:13px;
   }
 
-  .bias-btns{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;}
-  .bias-btn{
-    padding:12px 18px; border-radius:10px; cursor:pointer;
-    background:#0b1220; color:var(--muted); border:1px solid #334155;
-    font-size:14px; font-weight:600; transition:all .2s;
-    min-width:160px; text-align:center;
+  /* ★ 프리셋 5분류 */
+  .preset-btns{
+    display:flex; gap:6px; flex-wrap:wrap; margin:10px 0;
   }
-  .bias-btn:hover{color:var(--text); border-color:var(--accent);}
-  .bias-btn.active{
+  .preset-btn{
+    position:relative;
+    padding:10px 14px; border-radius:10px; cursor:pointer;
+    background:#0b1220; color:var(--muted); border:1px solid #334155;
+    font-size:13px; font-weight:600; transition:all .2s;
+    min-width:110px; text-align:center;
+  }
+  .preset-btn:hover{color:var(--text); border-color:var(--accent);}
+  .preset-btn.active{
     background:var(--accent); color:#06202e; border-color:var(--accent);
   }
-  .bias-btn.recommended{
-    border-color:#22c55e;
-    box-shadow:0 0 0 1px #22c55e inset;
+  .preset-btn[data-preset="ultra_safe"]:hover{ border-color:#22c55e; }
+  .preset-btn[data-preset="safe"]:hover{ border-color:#38bdf8; }
+  .preset-btn[data-preset="balanced"]:hover{ border-color:#eab308; }
+  .preset-btn[data-preset="aggressive"]:hover{ border-color:#f97316; }
+  .preset-btn[data-preset="ultra_aggressive"]:hover{ border-color:#ef4444; }
+
+  /* ★ 프리셋 툴팁 */
+  .preset-btn .preset-tooltip{
+    display:none;
+    position:absolute;
+    bottom:calc(100% + 8px);
+    left:50%;
+    transform:translateX(-50%);
+    width:260px;
+    background:#0b1220;
+    border:1px solid var(--accent);
+    border-radius:10px;
+    padding:12px;
+    font-size:12px;
+    text-align:left;
+    color:var(--text);
+    box-shadow:0 8px 24px rgba(0,0,0,.6);
+    z-index:1000;
+    line-height:1.5;
+    font-weight:400;
   }
-  .bias-btn.recommended::after{
-    content:" ⭐";
+  .preset-btn .preset-tooltip::after{
+    content:"";
+    position:absolute;
+    top:100%;
+    left:50%;
+    transform:translateX(-50%);
+    border:8px solid transparent;
+    border-top-color:var(--accent);
+  }
+  .preset-btn:hover .preset-tooltip{
+    display:block;
+  }
+  .preset-tooltip b{color:var(--accent);}
+  .preset-tooltip ul{
+    margin:6px 0 0 0; padding-left:16px;
+  }
+  .preset-tooltip li{
+    font-size:11px; margin-bottom:3px;
+    color:var(--muted);
   }
 
   .bt-cover-result{
@@ -267,10 +310,14 @@
     h2 { font-size: 16px; }
     .footer-inner{flex-direction:column; align-items:flex-start;}
     .footer-meta{text-align:left;}
-    .budget-btn, .bias-btn{min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); padding:8px 10px; font-size:12px;}
+    .budget-btn, .preset-btn{min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); padding:8px 10px; font-size:12px;}
     .card, .pred-card, .exp-card{padding:12px;}
     table{font-size:12px;}
     th,td{padding:5px 3px;}
+    /* 모바일에서는 툴팁이 화면 밖으로 나가지 않게 */
+    .preset-btn .preset-tooltip{
+      width:220px; font-size:11px;
+    }
   }
 </style>
 </head>
@@ -357,25 +404,83 @@
       <div id="latestBalls" class="row" style="margin-top:10px;"></div>
     </div>
 
-    <!-- 편향 강도 -->
+    <!-- ★ 프리셋 5분류 -->
     <div class="card" style="margin-top:16px;">
-      <h2>🎚️ 직전 회차 편향 강도</h2>
+      <h2>🎚️ 추천 조합 프리셋 (5분류)</h2>
       <p class="muted">
-        직전 회차 번호를 얼마나 반영할지 선택하세요.<br>
-        실제 로또는 직전 회차와 <b>평균 0.8개</b>만 겹칩니다. 우리 로직은 이를 조절합니다.
+        프리셋마다 <b>직전 회차 반영도 · 장기 미출현 비중 · 타겟 등수</b>가 다릅니다.<br>
+        버튼에 마우스를 올리면 상세 설명이 표시됩니다.
       </p>
-      <div class="bias-btns" id="biasBtns">
-        <button class="bias-btn" data-bias="low">🟢 약</button>
-        <button class="bias-btn active recommended" data-bias="medium">🟡 중 (권장)</button>
-        <button class="bias-btn" data-bias="high">🔴 강</button>
+      <div class="preset-btns" id="presetBtns">
+        <button class="preset-btn" data-preset="ultra_safe">
+          🟢 초안정
+          <div class="preset-tooltip">
+            <b>🟢 초안정 (5등 반복 목표)</b>
+            <ul>
+              <li>직전 회차 반영 <b>최소 (0~1개)</b></li>
+              <li>장기 미출현 <b>1조합</b> 포함</li>
+              <li>직전 회차 겹침 0개 <b>1조합</b></li>
+              <li>후보 12개 / 타겟 <b>5등 반복</b></li>
+              <li>가장 보수적인 전략</li>
+            </ul>
+          </div>
+        </button>
+        <button class="preset-btn" data-preset="safe">
+          🔵 안정
+          <div class="preset-tooltip">
+            <b>🔵 안정 (5·4등 목표)</b>
+            <ul>
+              <li>직전 회차 반영 <b>낮음 (1~2개)</b></li>
+              <li>장기 미출현 <b>1조합</b> 포함</li>
+              <li>직전 회차 겹침 0개 <b>1조합</b></li>
+              <li>후보 10개 / 타겟 <b>5·4등</b></li>
+              <li>안정성과 다양성 균형</li>
+            </ul>
+          </div>
+        </button>
+        <button class="preset-btn active" data-preset="balanced">
+          🟡 균형 (권장)
+          <div class="preset-tooltip">
+            <b>🟡 균형 (4·3등 목표) ⭐ 권장</b>
+            <ul>
+              <li>직전 회차 반영 <b>보통 (2개)</b></li>
+              <li>장기 미출현 <b>2조합</b> 포함</li>
+              <li>직전 회차 겹침 0개 <b>1조합</b></li>
+              <li>후보 10개 / 타겟 <b>4·3등</b></li>
+              <li>가장 균형 잡힌 표준 전략</li>
+            </ul>
+          </div>
+        </button>
+        <button class="preset-btn" data-preset="aggressive">
+          🟠 공격
+          <div class="preset-tooltip">
+            <b>🟠 공격 (3·2등 목표)</b>
+            <ul>
+              <li>직전 회차 반영 <b>높음 (2~3개)</b></li>
+              <li>장기 미출현 <b>2조합</b> 포함</li>
+              <li>직전 회차 겹침 0개 <b>1조합</b></li>
+              <li>후보 10개 / 타겟 <b>3·2등</b></li>
+              <li>장기 미출현 강조, 고위험</li>
+            </ul>
+          </div>
+        </button>
+        <button class="preset-btn" data-preset="ultra_aggressive">
+          🔴 초공격
+          <div class="preset-tooltip">
+            <b>🔴 초공격 (2·1등 도전)</b>
+            <ul>
+              <li>직전 회차 반영 <b>최대 (3개)</b></li>
+              <li>장기 미출현 <b>3조합</b> 포함</li>
+              <li>직전 회차 겹침 0개 <b>0조합</b></li>
+              <li>후보 8개 / 타겟 <b>2·1등 도전</b></li>
+              <li>초장기 미출현 극대화, 최고 위험</li>
+            </ul>
+          </div>
+        </button>
       </div>
-      <div class="budget-info" id="biasInfo">
-        현재: <b>중 (균형)</b> — 직전 회차 번호 최대 2개 반영
+      <div class="budget-info" id="presetInfo">
+        현재: <b>🟡 균형 (권장)</b> — 4·3등 목표, 표준 전략
       </div>
-      <p class="muted" style="margin-top:10px; font-size:12px;">
-        🟢 약: 실제 로또와 가장 유사 / 🟡 중: 균형 (권장) / 🔴 강: 기존 로직<br>
-        <b style="color:var(--accent);">※ 편향 강도를 변경하면 모든 결과가 재계산됩니다.</b>
-      </p>
     </div>
 
     <!-- 산출 규정 -->
@@ -386,12 +491,13 @@
       </div>
       <div class="collapsible-body">
         <ol class="method-list">
-          <li><b>점수 계산</b>: 최근 5/10/30/100회 출현 × 가중치 (편향 강도별 조정)</li>
+          <li><b>점수 계산</b>: 최근 5/10/30/100회 출현 × 가중치 (프리셋별 조정)</li>
           <li><b>직전 앞뒤 번호</b>: 직전 회차 번호 ±1에 <b>+6점</b> 가중치</li>
           <li><b>장기 냉각 보너스</b>: <b>40회 이상(초장기) +12점</b> / 30회 +8점 / 20회 +4점 / 15회 +2점</li>
-          <li><b>장기 미출현 반영</b>: <b>40회 이상(초장기) / 20~39회(장기)</b> 미출현 번호는 후보에 포함되며, 5조합 중 <b>1~2개 조합에만</b> 들어갑니다.</li>
-          <li><b>직전 회차 겹침 0개 조합</b>: 5조합 중 <b>1개는 직전 회차와 겹침 0개</b>로 생성됩니다 (실제 확률 약 27%).</li>
-          <li><b>후보 추출</b>: 45 → 15 → 12 → 10 → 상위 K (약 12 / 중 10 / 강 8) → 보정</li>
+          <li><b>장기 미출현 반영</b>: <b>40회 이상(초장기) / 20~39회(장기)</b> 미출현 번호는 후보에 포함되며, 프리셋별 목표 개수만큼 반영됩니다.</li>
+          <li><b>직전 회차 겹침 0개 조합</b>: 프리셋별 0~1개 포함 (실제 확률 약 27%).</li>
+          <li><b>장기 미출현 위치 무작위</b>: 안정형/2등 기대형 어디든 들어갈 수 있음 (매번 다름).</li>
+          <li><b>후보 추출</b>: 45 → 15 → 12 → 10 → 상위 K (프리셋별 8~12개) → 보정</li>
           <li><b>조합 생성</b>: GA (개체군 300, 세대 40, 엘리트 20%)</li>
           <li><b>적합도</b>: 점수 + 홀짝/저고/합계/연속/40번대 + 동시 출현</li>
           <li><b>다양성 필터</b>: 조합 간 5개 이상 겹침 제외</li>
@@ -403,7 +509,7 @@
     <div class="grid grid-2" style="margin-top:16px;">
       <div class="card">
         <h2 id="picksTitle">🎲 이번 주 추천 조합</h2>
-        <p class="muted">안정형 3조합(3·4등 목표) + 2등 기대형 2조합.</p>
+        <p class="muted">안정형 3조합 + 2등 기대형 2조합.</p>
         <div id="picksProgress" style="margin:10px 0 14px;"></div>
         <div id="picks"></div>
       </div>
@@ -419,14 +525,13 @@
       </div>
     </div>
 
-    <!-- 장기 미출현 -->
     <div class="card" style="margin-top:16px;">
       <div class="collapsible-header open">
         <span>❄️ 장기 미출현 번호 (20회 이상)</span>
         <span class="arrow">▶</span>
       </div>
       <div class="collapsible-body open">
-        <p class="muted">초장기(40회+) / 장기(20~39회) 미출현 번호는 후보에 포함되며, 5조합 중 1~2개에 반영됩니다.</p>
+        <p class="muted">초장기(40회+) / 장기(20~39회) 미출현 번호는 후보에 포함되며, 프리셋별 목표 개수만큼 반영됩니다.</p>
         <div id="coldNumbers"></div>
       </div>
     </div>
@@ -921,25 +1026,62 @@ async function loadData(){
   }
 }
 
-/* ===== 편향 강도 ===== */
-let currentBias = "medium";
+/* ===== 프리셋 5분류 ===== */
+let currentPreset = "balanced";
 
-const BIAS_CONFIG = {
-  low:    {W5:1, W10:1.5, W30:2, W100:2, maxOverlap:1, candidateK:12, maxColdCombos:2, zeroOverlapCount:1, label:"약"},
-  medium: {W5:2, W10:2,   W30:2, W100:1, maxOverlap:2, candidateK:10, maxColdCombos:2, zeroOverlapCount:1, label:"중"},
-  high:   {W5:4, W10:3,   W30:2, W100:1, maxOverlap:3, candidateK:8,  maxColdCombos:1, zeroOverlapCount:0, label:"강"}
+const PRESETS = {
+  ultra_safe: {
+    label: "🟢 초안정",
+    desc: "5등 반복 목표, 직전 회차 최소 반영",
+    W5:1, W10:1.5, W30:2, W100:2,
+    maxOverlap:1, candidateK:12,
+    maxColdCombos:1, zeroOverlapCount:1,
+    coldTarget:1, targetRank:"5등"
+  },
+  safe: {
+    label: "🔵 안정",
+    desc: "5·4등 목표, 균형 안정",
+    W5:1.5, W10:2, W30:2, W100:1.5,
+    maxOverlap:2, candidateK:10,
+    maxColdCombos:1, zeroOverlapCount:1,
+    coldTarget:1, targetRank:"5·4등"
+  },
+  balanced: {
+    label: "🟡 균형",
+    desc: "4·3등 목표, 표준 전략",
+    W5:2, W10:2, W30:2, W100:1,
+    maxOverlap:2, candidateK:10,
+    maxColdCombos:2, zeroOverlapCount:1,
+    coldTarget:2, targetRank:"4·3등"
+  },
+  aggressive: {
+    label: "🟠 공격",
+    desc: "3·2등 목표, 장기 미출현 강조",
+    W5:3, W10:2.5, W30:2, W100:1,
+    maxOverlap:3, candidateK:10,
+    maxColdCombos:2, zeroOverlapCount:1,
+    coldTarget:2, targetRank:"3·2등"
+  },
+  ultra_aggressive: {
+    label: "🔴 초공격",
+    desc: "2·1등 도전, 초장기 극대화",
+    W5:4, W10:3, W30:2, W100:1,
+    maxOverlap:3, candidateK:8,
+    maxColdCombos:3, zeroOverlapCount:0,
+    coldTarget:3, targetRank:"2·1등 도전"
+  }
 };
 
 /* ===== 장기/초장기 기준 ===== */
-const COLD_THRESHOLD = 20;   // 장기 (20~39회)
-const LONG_COLD_THRESHOLD = 40; // 초장기 (40회+)
+const COLD_THRESHOLD = 20;
+const LONG_COLD_THRESHOLD = 40;
 
 /* ===== 알고리즘 ===== */
 let baseScore = {};
 let currentScores = [];
 
 function scoreNumbers(history){
-  const cfg = BIAS_CONFIG[currentBias];
+  const cfg = PRESETS[currentPreset];
   const N = history.length;
   const recent = k => history.slice(Math.max(0,N-k));
   const r5 = recent(5), r10 = recent(10), r30 = recent(30), r100 = recent(100);
@@ -985,10 +1127,9 @@ function scoreNumbers(history){
 
     if(lastNeighbors.has(n)) s += 6;
 
-    // ★ 장기/초장기 기준 (20~39 / 40+)
-    if(lastSeen[n] >= 40) s += 12;       // 초장기
+    if(lastSeen[n] >= 40) s += 12;
     else if(lastSeen[n] >= 30) s += 8;
-    else if(lastSeen[n] >= 20) s += 4;   // 장기
+    else if(lastSeen[n] >= 20) s += 4;
     else if(lastSeen[n] >= 15) s += 2;
 
     let centrality = 0;
@@ -1002,7 +1143,7 @@ function scoreNumbers(history){
 }
 
 function pickCandidates(scored, k=8){
-  const cfg = BIAS_CONFIG[currentBias];
+  const cfg = PRESETS[currentPreset];
   const useK = cfg.candidateK || k;
 
   const stages = [];
@@ -1017,7 +1158,6 @@ function pickCandidates(scored, k=8){
   let cand = scored.slice(0,useK).map(x=>x.num);
   stages.push({label:`상위 ${useK}개`, count:cand.length, color:"#22c55e"});
 
-  // ★ 초장기(40+) 1개 + 장기(20~39) 1개 강제 삽입
   const longCold = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
   const midCold = scored.filter(s => s.lastSeen >= COLD_THRESHOLD && s.lastSeen < LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
 
@@ -1045,12 +1185,11 @@ function pickCandidates(scored, k=8){
 }
 
 function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
-  const cfg = BIAS_CONFIG[currentBias];
+  const cfg = PRESETS[currentPreset];
   const maxOverlap = cfg.maxOverlap;
-  const maxColdCombos = cfg.maxColdCombos;
+  const coldTarget = cfg.coldTarget;
   const zeroOverlapCount = cfg.zeroOverlapCount;
 
-  // ★ 초장기(40+) / 장기(20~39)
   const longColdNums = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).map(s => s.num);
   const midColdNums = scored.filter(s => s.lastSeen >= COLD_THRESHOLD && s.lastSeen < LONG_COLD_THRESHOLD).map(s => s.num);
   const allColdNums = [...longColdNums, ...midColdNums];
@@ -1180,42 +1319,41 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
     }
   }
 
-  // ★ 장기 미출현 조합 개수 조정
+  // ★ 장기 미출현 목표 개수 맞추기 (위치 무작위)
   if(allColdNums.length > 0){
-    let coldComboCount = selected.filter(c => c.some(n => allColdNums.includes(n))).length;
+    let coldCombos = selected.filter(c => c.some(n => allColdNums.includes(n)));
+    let nonColdCombos = selected.filter(c => !c.some(n => allColdNums.includes(n)));
 
-    if(coldComboCount === 0){
-      const coldNum = longColdNums[0] || midColdNums[0];
-      const targetIdx = selected.length - 1;
-      const target = [...selected[targetIdx]];
+    // 초과분 제거 (일반 조합으로 교체)
+    while(coldCombos.length > coldTarget && coldCombos.length > 0 && nonColdCombos.length > 0){
+      coldCombos.pop();
+    }
+
+    // 부족분 추가 (점수 낮은 조합부터 교체)
+    const sortedNonCold = nonColdCombos.map((c, i) => ({
+      combo: c,
+      score: c.reduce((a,n)=> a + (baseScore[n]||0), 0)
+    })).sort((a,b)=> a.score - b.score);
+
+    while(coldCombos.length < coldTarget && sortedNonCold.length > 0){
+      const target = sortedNonCold.shift();
+      const coldNum = longColdNums[coldCombos.length % Math.max(longColdNums.length, 1)]
+                   || midColdNums[coldCombos.length % Math.max(midColdNums.length, 1)];
+      const newCombo = [...target.combo];
       let minScore = Infinity, minIdx = 0;
-      target.forEach((n, i)=>{
+      newCombo.forEach((n, i)=>{
         const sc = baseScore[n] || 0;
         if(sc < minScore){ minScore = sc; minIdx = i; }
       });
-      target[minIdx] = coldNum;
-      selected[targetIdx] = [...new Set(target)].sort((a,b)=>a-b);
-      coldComboCount = 1;
+      newCombo[minIdx] = coldNum;
+      coldCombos.push([...new Set(newCombo)].sort((a,b)=>a-b));
     }
 
-    if(coldComboCount > maxColdCombos){
-      const nonColdCombos = pop.filter(c => !c.some(n => allColdNums.includes(n)));
-      let replaceIdx = 0;
-      let keptCold = 0;
-      for(let i=0; i<selected.length && replaceIdx < nonColdCombos.length; i++){
-        const hasCold = selected[i].some(n => allColdNums.includes(n));
-        if(hasCold){
-          keptCold++;
-          if(keptCold > maxColdCombos){
-            selected[i] = nonColdCombos[replaceIdx];
-            replaceIdx++;
-          }
-        }
-      }
-    }
+    // 위치 무작위 섞기
+    selected = shuffleArray([...coldCombos, ...nonColdCombos]).slice(0, count);
   }
 
-  // ★ 직전 회차 겹침 0개 조합 강제 포함
+  // ★ 직전 회차 겹침 0개 조합
   if(lastDrawNums.length > 0 && zeroOverlapCount > 0){
     const zeroOverlapCombos = pop.filter(c => 
       c.filter(n => lastDrawNums.includes(n)).length === 0
@@ -1230,24 +1368,20 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
       let maxLastOv = -1;
       for(let i=0; i<selected.length; i++){
         const ov = selected[i].filter(n => lastDrawNums.includes(n)).length;
-        if(ov > maxLastOv){
-          maxLastOv = ov;
-          targetIdx = i;
-        }
+        if(ov > maxLastOv){ maxLastOv = ov; targetIdx = i; }
       }
-
       if(targetIdx >= 0){
         let bestReplacement = null;
         let bestScore = -Infinity;
         for(const zc of zeroOverlapCombos.slice(0, 20)){
-          let minOverlapWithOthers = Infinity;
+          let minOv = Infinity;
           for(let i=0; i<selected.length; i++){
             if(i === targetIdx) continue;
             const ov = zc.filter(n => selected[i].includes(n)).length;
-            if(ov < minOverlapWithOthers) minOverlapWithOthers = ov;
+            if(ov < minOv) minOv = ov;
           }
           const zcScore = zc.reduce((a,n)=> a + (baseScore[n]||0), 0) 
-                        + (minOverlapWithOthers <= 3 ? 10 : 0);
+                        + (minOv <= 3 ? 10 : 0);
           if(zcScore > bestScore){
             bestScore = zcScore;
             bestReplacement = zc;
@@ -1261,6 +1395,15 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
   }
 
   return selected;
+}
+
+function shuffleArray(arr){
+  const a = [...arr];
+  for(let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 function combinations(arr, k){
@@ -1420,7 +1563,6 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
   const wrap = document.getElementById(targetId);
   wrap.innerHTML = "";
 
-  // ★ 장기(20~39) + 초장기(40+) 표시용
   const allColdNums = scored.filter(s => s.lastSeen >= COLD_THRESHOLD).map(s => s.num);
   const longColdNums = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).map(s => s.num);
 
@@ -1583,7 +1725,7 @@ function renderColdNumbers(targetId, scored){
         : '<span class="muted">없음</span>'}
     </div>
     <p class="muted" style="margin-top:10px; font-size:12px;">
-      ※ 초장기(40회+) / 장기(20~39회) 미출현 번호는 5조합 중 <b>1~2개 조합</b>에만 반영됩니다.
+      ※ 초장기(40회+) / 장기(20~39회) 미출현 번호는 프리셋별 목표 개수만큼 반영되며, 위치는 매번 무작위입니다.
     </p>
   `;
 }
@@ -1755,9 +1897,10 @@ function renderNextTab(history, scores){
     ["30번대 유지", "30번대 1개 → 1~2개 유지"],
     ["40번대 보완", "40번대 1개 → 0~1개"],
     ["직전 앞뒤 번호", "직전 회차 번호 ±1에 +6점 가중치"],
-    ["초장기 미출현", "40회 이상 미출현 +12점, 후보 포함, 1~2조합 반영"],
-    ["장기 미출현", "20~39회 미출현 +4~8점, 후보 포함, 1~2조합 반영"],
-    ["직전 회차 겹침 0개", "5조합 중 1개는 직전 회차와 겹침 0개"],
+    ["초장기 미출현", "40회 이상 미출현 +12점, 후보 포함"],
+    ["장기 미출현", "20~39회 미출현 +4~8점, 후보 포함"],
+    ["직전 회차 겹침 0개", "프리셋별 0~1개 포함"],
+    ["장기 위치 무작위", "안정형/2등 기대형 무작위 배치"],
     ["냉각 반등", cold],
     ["보너스 회귀", `${last.bonus-1}, ${last.bonus}, ${last.bonus+1}`],
     ["연속번호 회귀", "18, 21, 29, 30"],
@@ -1767,8 +1910,6 @@ function renderNextTab(history, scores){
     ["홀짝 균형", "홀 3~4, 짝 2~3"],
     ["동시 출현 네트워크", "13→18,34,38 / 20→30,40 / 44→1,14,34,45"],
     ["네트워크 중심성", "연결 많은 번호"],
-    ["군집", "중심성 높은 번호"],
-    ["베이지안 가중치", "사전 13.33% 업데이트"],
     ["날짜/회차 숫자", `${next} → ${String(next).split('').join(', ')}`],
   ];
   const box = document.getElementById("reasonBox");
@@ -1876,21 +2017,18 @@ function initBudget(){
   info.innerHTML = `<b>5,000원</b> 예산 · 최대 <b>5조합</b><br>→ <span class="tab-link" data-goto="predict">추천 조합 5개</span>로 충분`;
 }
 
-/* ===== 편향 강도 버튼 ===== */
-function setupBiasButtons(history){
-  const info = document.getElementById("biasInfo");
-  const labels = {
-    low: "현재: <b>약 (장기 중심)</b> — 직전 최대 1개 / 장기 2조합 / 겹침 0개 1조합",
-    medium: "현재: <b>중 (균형)</b> — 직전 최대 2개 / 장기 2조합 / 겹침 0개 1조합",
-    high: "현재: <b>강 (기존 로직)</b> — 직전 최대 3개 / 장기 1조합 / 겹침 0개 0조합"
-  };
+/* ===== 프리셋 버튼 ===== */
+function setupPresetButtons(history){
+  const info = document.getElementById("presetInfo");
 
-  document.querySelectorAll(".bias-btn").forEach(btn=>{
+  document.querySelectorAll(".preset-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      document.querySelectorAll(".bias-btn").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".preset-btn").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
-      currentBias = btn.dataset.bias;
-      info.innerHTML = labels[currentBias];
+      currentPreset = btn.dataset.preset;
+
+      const p = PRESETS[currentPreset];
+      info.innerHTML = `현재: <b>${p.label}</b> — ${p.desc} (타겟: <b>${p.targetRank}</b>)`;
 
       clearCoverCache();
 
@@ -2183,7 +2321,7 @@ function setupExperimentRange(){
   setupBudgetPresets();
   initBudget();
   setupExperimentRange();
-  setupBiasButtons(history);
+  setupPresetButtons(history);
 
   document.getElementById("btRunBtn").addEventListener("click", ()=>{
     runCoveringBacktest(history);
@@ -2203,7 +2341,7 @@ function setupExperimentRange(){
 
   goToTab('strategy');
 
-  console.log("Bias:", currentBias);
+  console.log("Preset:", currentPreset);
   console.log("Stages:", stages);
   console.log("Candidates:", candidates);
   console.log("Combos:", combos);
