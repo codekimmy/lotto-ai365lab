@@ -174,6 +174,25 @@
     padding:12px; margin-top:10px; font-size:13px;
   }
 
+  .bias-btns{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;}
+  .bias-btn{
+    padding:12px 18px; border-radius:10px; cursor:pointer;
+    background:#0b1220; color:var(--muted); border:1px solid #334155;
+    font-size:14px; font-weight:600; transition:all .2s;
+    min-width:160px; text-align:center;
+  }
+  .bias-btn:hover{color:var(--text); border-color:var(--accent);}
+  .bias-btn.active{
+    background:var(--accent); color:#06202e; border-color:var(--accent);
+  }
+  .bias-btn.recommended{
+    border-color:#22c55e;
+    box-shadow:0 0 0 1px #22c55e inset;
+  }
+  .bias-btn.recommended::after{
+    content:" ⭐";
+  }
+
   .bt-cover-result{
     background:#0b1220; border:1px solid #334155; border-radius:10px;
     padding:12px; margin-top:10px;
@@ -242,7 +261,7 @@
     h2 { font-size: 16px; }
     .footer-inner{flex-direction:column; align-items:flex-start;}
     .footer-meta{text-align:left;}
-    .budget-btn{min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); padding:8px 10px; font-size:12px;}
+    .budget-btn, .bias-btn{min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); padding:8px 10px; font-size:12px;}
     .card, .pred-card, .exp-card{padding:12px;}
     table{font-size:12px;}
     th,td{padding:5px 3px;}
@@ -330,6 +349,49 @@
       <h2>📌 최신 회차</h2>
       <div id="latestInfo" class="muted">-</div>
       <div id="latestBalls" class="row" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- ★ 편향 강도 선택 -->
+    <div class="card" style="margin-top:16px;">
+      <h2>🎚️ 직전 회차 편향 강도</h2>
+      <p class="muted">
+        직전 회차 번호를 얼마나 반영할지 선택하세요.<br>
+        실제 로또는 직전 회차와 <b>평균 0.8개</b>만 겹칩니다. 우리 로직은 이를 조절합니다.
+      </p>
+      <div class="bias-btns" id="biasBtns">
+        <button class="bias-btn" data-bias="low">🟢 약</button>
+        <button class="bias-btn active recommended" data-bias="medium">🟡 중 (권장)</button>
+        <button class="bias-btn" data-bias="high">🔴 강</button>
+      </div>
+      <div class="budget-info" id="biasInfo">
+        현재: <b>중 (균형)</b> — 직전 회차 번호 최대 2개 반영
+      </div>
+      <p class="muted" style="margin-top:10px; font-size:12px;">
+        🟢 약: 실제 로또와 가장 유사 (직전 회차 평균 0.8개 겹침)<br>
+        🟡 중: 균형 (권장) — 직전 회차 2개 이하<br>
+        🔴 강: 기존 로직 — 직전 회차 편향 최대<br>
+        <br>
+        <b style="color:var(--accent);">※ 편향 강도를 변경하면 번호별 점수, 후보 15개, 추천 조합, 커버링 디자인이 모두 재계산됩니다.</b>
+      </p>
+    </div>
+
+    <!-- ★ 추천 조합 산출 규정 -->
+    <div class="card" style="margin-top:16px;">
+      <div class="collapsible-header">
+        <span>📐 추천 조합 산출 규정</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div class="collapsible-body">
+        <ol class="method-list">
+          <li><b>점수 계산</b>: 최근 5/10/30/100회 출현 × 가중치 (편향 강도별 조정)</li>
+          <li><b>후보 추출</b>: 45 → 15 → 12 → 10 → 8 → 보정 후 (최대 10개)</li>
+          <li><b>조합 생성</b>: GA (개체군 300, 세대 40, 엘리트 20%)</li>
+          <li><b>적합도</b>: 점수 + 홀짝/저고/합계/연속/40번대 + 동시 출현</li>
+          <li><b>다양성 필터</b>: 조합 간 5개 이상 겹침 제외</li>
+          <li><b>직전 회차 제한</b>: 편향 강도에 따라 최대 1~3개만 허용</li>
+          <li><b>최종 선택</b>: 위 조건을 모두 통과한 상위 5개</li>
+        </ol>
+      </div>
     </div>
 
     <div class="grid grid-2" style="margin-top:16px;">
@@ -590,7 +652,7 @@
       <div class="collapsible-body open">
         <ul class="method-list">
           <li><b>롤링 백테스트</b>: N회차 예측 시 N-1회차까지의 데이터만 사용 (미래 정보 차단)</li>
-          <li><b>후보 추출</b>: 점수 기반 상위 N개 후보 선정 (최근 5/10/30/100회, 거울·보색, 보너스 회귀, 네트워크 중심성, 냉각 반등 종합)</li>
+          <li><b>후보 추출</b>: 점수 기반 상위 N개 후보 선정</li>
           <li><b>조합 생성</b>: GA + MLP + RL 스타일 스코어링으로 5조합 생성</li>
           <li><b>채점</b>: 실제 당첨번호와 비교해 최고 적중 조합 기록</li>
           <li><b>등수 판정</b>: 3개=5등, 4개=4등, 5개=3등, 5개+보너스=2등, 6개=1등</li>
@@ -857,10 +919,20 @@ async function loadData(){
   }
 }
 
+/* ===== 편향 강도 설정 ===== */
+let currentBias = "medium"; // 디폴트: 중
+
+const BIAS_CONFIG = {
+  low:    {W5:1,   W10:1.5, W30:2, W100:2, maxOverlap:1, label:"약"},
+  medium: {W5:2,   W10:2,   W30:2, W100:1, maxOverlap:2, label:"중"},
+  high:   {W5:4,   W10:3,   W30:2, W100:1, maxOverlap:3, label:"강"}
+};
+
 /* ===== 알고리즘 ===== */
 let baseScore = {};
 
 function scoreNumbers(history){
+  const cfg = BIAS_CONFIG[currentBias];
   const N = history.length;
   const recent = k => history.slice(Math.max(0,N-k));
   const r5 = recent(5), r10 = recent(10), r30 = recent(30), r100 = recent(100);
@@ -887,10 +959,10 @@ function scoreNumbers(history){
   const scores = [];
   for(let n=1;n<=45;n++){
     let s = 0;
-    s += countIn(r5,n)*4;
-    s += countIn(r10,n)*3;
-    s += countIn(r30,n)*2;
-    s += countIn(r100,n)*1;
+    s += countIn(r5,n)*cfg.W5;
+    s += countIn(r10,n)*cfg.W10;
+    s += countIn(r30,n)*cfg.W30;
+    s += countIn(r100,n)*cfg.W100;
     const mirror = 45-n;
     if(mirror>=1 && mirror<=45) s += countIn(r30,mirror)*1.5;
     s += r30.filter(h=>h.bonus===n).length*2;
@@ -933,7 +1005,10 @@ function pickCandidates(scored, k=8){
   return { candidates: unique, stages };
 }
 
-function generateCombos(candidates, co, count=5){
+function generateCombos(candidates, co, count=5, lastDrawNums=[]){
+  const cfg = BIAS_CONFIG[currentBias];
+  const maxOverlap = cfg.maxOverlap;
+
   const popSize = 300, generations = 40;
 
   function fitness(combo){
@@ -955,6 +1030,14 @@ function generateCombos(candidates, co, count=5){
       for(let j=i+1;j<combo.length;j++)
         coScore += co[combo[i]][combo[j]];
     f += Math.min(coScore/10, 6);
+
+    // 직전 회차 겹침 패널티
+    if(lastDrawNums.length > 0){
+      const overlapWithLast = combo.filter(n=>lastDrawNums.includes(n)).length;
+      if(overlapWithLast > maxOverlap){
+        f -= (overlapWithLast - maxOverlap) * 20;
+      }
+    }
     return f;
   }
 
@@ -971,7 +1054,6 @@ function generateCombos(candidates, co, count=5){
 
   for(let g=0;g<generations;g++){
     pop.sort((a,b)=> fitness(b)-fitness(a));
-
     const elite = [];
     const seenElite = new Set();
     for(const c of pop){
@@ -982,7 +1064,6 @@ function generateCombos(candidates, co, count=5){
       }
       if(elite.length >= Math.floor(popSize*0.2)) break;
     }
-
     const next = [...elite];
     while(next.length < popSize){
       const p1 = elite[Math.floor(Math.random()*elite.length)];
@@ -1019,6 +1100,11 @@ function generateCombos(candidates, co, count=5){
     const key = c.join("-");
     if(seenKeys.has(key)) continue;
 
+    if(lastDrawNums.length > 0){
+      const overlapWithLast = c.filter(n=>lastDrawNums.includes(n)).length;
+      if(overlapWithLast > maxOverlap) continue;
+    }
+
     let tooSimilar = false;
     for(const s of selected){
       const overlap = c.filter(n=>s.includes(n)).length;
@@ -1035,6 +1121,11 @@ function generateCombos(candidates, co, count=5){
     for(const c of pop){
       const key = c.join("-");
       if(seenKeys.has(key)) continue;
+
+      if(lastDrawNums.length > 0){
+        const overlapWithLast = c.filter(n=>lastDrawNums.includes(n)).length;
+        if(overlapWithLast > maxOverlap + 1) continue;
+      }
 
       let tooSimilar = false;
       for(const s of selected){
@@ -1134,6 +1225,10 @@ function generateCoveringDesign(candidates, coverSize, maxCombos=30){
   return final;
 }
 
+function clearCoverCache(){
+  Object.keys(coverCache).forEach(k => delete coverCache[k]);
+}
+
 /* ===== 날짜 헬퍼 ===== */
 function formatKDateLong(dateStr){
   if(!dateStr) return "-";
@@ -1202,14 +1297,12 @@ function renderPicksProgress(targetId, stages){
   `;
 }
 
-function renderPicks(combos, targetId){
+function renderPicks(combos, targetId, lastDrawNums=[]){
   const wrap = document.getElementById(targetId);
   wrap.innerHTML = "";
 
   const overlapStats = combos.map((c, i)=>{
-    let maxOverlap = 0;
-    let sumOverlap = 0;
-    let cnt = 0;
+    let maxOverlap = 0, sumOverlap = 0, cnt = 0;
     combos.forEach((other, j)=>{
       if(i === j) return;
       const overlap = c.filter(n=>other.includes(n)).length;
@@ -1237,17 +1330,23 @@ function renderPicks(combos, targetId){
     const ovIcon = ov.max <= 1 ? "🟢" : ov.max <= 3 ? "🟡" : "🔴";
     const ovBadge = `<span style="color:${ovColor}; font-weight:700;">${ovIcon} 중복 ${ov.max}/6</span>`;
 
+    let lastBadge = "";
+    if(lastDrawNums.length > 0){
+      const lastOverlap = c.filter(n=>lastDrawNums.includes(n)).length;
+      const lastColor = lastOverlap <= 1 ? "#22c55e" : lastOverlap <= 2 ? "#eab308" : "#ef4444";
+      lastBadge = `<span style="color:${lastColor}; font-weight:700;">📌 직전 ${lastOverlap}개</span>`;
+    }
+
     const tooltipLines = combos.map((other, j)=>{
       if(j === idx) return null;
       const common = c.filter(n=>other.includes(n));
       return `#${j+1}: ${common.length}개 (${common.join(",") || "없음"})`;
     }).filter(Boolean).join("\n");
-
     div.title = `다른 조합과의 겹침\n${tooltipLines}`;
 
     div.innerHTML = `<div class="row" style="justify-content:space-between;">
         <span class="tag ${tagClass}">${label}</span>
-        <span class="muted">합계 ${sum} · 홀${odd}:짝${6-odd} · ${ovBadge}</span>
+        <span class="muted">합계 ${sum} · 홀${odd}:짝${6-odd} · ${ovBadge} ${lastBadge}</span>
       </div><div class="row" style="margin-top:10px;"></div>`;
     const row = div.querySelector(".row:last-child");
     sorted.forEach(n=>{
@@ -1259,14 +1358,20 @@ function renderPicks(combos, targetId){
 
   if(overlapStats.length > 0){
     const avgMax = (overlapStats.reduce((a,b)=>a+b.max, 0) / overlapStats.length).toFixed(1);
+    const avgLast = lastDrawNums.length > 0
+      ? (combos.reduce((a,c)=>a + c.filter(n=>lastDrawNums.includes(n)).length, 0) / combos.length).toFixed(1)
+      : null;
+
     const summary = document.createElement("p");
     summary.className = "muted";
     summary.style.marginTop = "10px";
     summary.style.paddingTop = "10px";
     summary.style.borderTop = "1px solid #334155";
-    summary.innerHTML = `🔀 전체 다양성 지표: 평균 최대 겹침 <b>${avgMax}/6</b> ${
-      avgMax <= 2 ? '🟢 매우 다양' : avgMax <= 3.5 ? '🟡 보통' : '🔴 중복 심함'
-    }`;
+    let html = `🔀 조합 간 평균 최대 겹침: <b>${avgMax}/6</b> ${avgMax <= 2 ? '🟢' : avgMax <= 3.5 ? '🟡' : '🔴'}`;
+    if(avgLast !== null){
+      html += `<br>📌 직전 회차 평균 겹침: <b>${avgLast}/6</b> ${avgLast <= 1 ? '🟢' : avgLast <= 2 ? '🟡' : '🔴'}`;
+    }
+    summary.innerHTML = html;
     wrap.appendChild(summary);
   }
 }
@@ -1598,7 +1703,56 @@ function initBudget(){
   info.innerHTML = `<b>5,000원</b> 예산 · 최대 <b>5조합</b><br>→ <span class="tab-link" data-goto="predict">추천 조합 5개</span>로 충분`;
 }
 
-/* ===== 회귀 분석 실험 (전체 회차별 상세) ===== */
+/* ===== 편향 강도 버튼 ===== */
+function setupBiasButtons(history){
+  const info = document.getElementById("biasInfo");
+  const labels = {
+    low: "현재: <b>약 (장기 중심)</b> — 직전 회차 번호 최대 1개 반영",
+    medium: "현재: <b>중 (균형)</b> — 직전 회차 번호 최대 2개 반영",
+    high: "현재: <b>강 (기존 로직)</b> — 직전 회차 번호 최대 3개 반영"
+  };
+
+  document.querySelectorAll(".bias-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll(".bias-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      currentBias = btn.dataset.bias;
+      info.innerHTML = labels[currentBias];
+
+      // 캐시 초기화
+      clearCoverCache();
+
+      // 재계산
+      const lastDraw = history[history.length-1];
+      const {scores, co} = scoreNumbers(history);
+      baseScore = {};
+      scores.forEach(s=> baseScore[s.num] = s.score);
+
+      const {candidates, stages} = pickCandidates(scores, 8);
+      const combos = generateCombos(candidates, co, 5, lastDraw.nums);
+
+      renderPicksProgress("picksProgress", stages);
+      renderPicks(combos, "picks", lastDraw.nums);
+      renderScores(scores, "scores", 15);
+
+      renderTierGoals("tierGoals");
+      renderCandidateScores("candidateScores", scores, 15);
+      renderPicks(combos, "nextPicks", lastDraw.nums);
+      renderExtraPicks("extraPicks", candidates, co, 10);
+      renderScores(scores, "nextScores", 20);
+      renderNextTab(history, scores);
+
+      // 커버링 디자인 재계산
+      const top15 = scores.slice(0, 15).map(s=>s.num).sort((a,b)=>a-b);
+      const top10 = scores.slice(0, 10).map(s=>s.num).sort((a,b)=>a-b);
+      renderCoveringDesign("cover3", top15, 3, 25, "c3");
+      renderCoveringDesign("cover4", top15, 4, 40, "c4");
+      renderCoveringDesign("cover5", top10, 5, 50, "c5");
+    });
+  });
+}
+
+/* ===== 회귀 분석 실험 ===== */
 let expResultsData = null;
 let expAborted = false;
 let expCurrentRange = "quick";
@@ -1661,7 +1815,6 @@ async function renderExperiment(history){
   const stages = getStageConfig(expCurrentRange);
   const allResults = {};
 
-  // 전체 회차 수 미리 계산
   const totalAll = stages.reduce((sum, st)=>{
     return sum + Math.max(0, Math.min(st.range, history.length-1));
   }, 0);
@@ -1695,7 +1848,6 @@ async function renderExperiment(history){
       }
 
       const bonusHit = bestCombo && bestCombo.includes(actual.bonus) ? 1 : 0;
-
       const rank = bestHit >= 6 ? "1등" :
                    (bestHit >= 5 && bonusHit) ? "2등" :
                    bestHit >= 5 ? "3등" :
@@ -1717,15 +1869,10 @@ async function renderExperiment(history){
       `);
 
       results.push({
-        stage: st.stage,
-        method: st.method,
-        draw: actual.draw,
-        date: actual.date,
-        actual: actual.nums.join(" "),
-        bonus: actual.bonus,
+        stage: st.stage, method: st.method, draw: actual.draw, date: actual.date,
+        actual: actual.nums.join(" "), bonus: actual.bonus,
         prediction: bestCombo ? [...bestCombo].sort((a,b)=>a-b).join(" ") : "",
-        hit: bestHit,
-        rank: rank
+        hit: bestHit, rank: rank
       });
 
       doneAll++;
@@ -1766,12 +1913,8 @@ async function renderExperiment(history){
         <table style="width:100%; font-size:12px;">
           <thead>
             <tr>
-              <th>회차</th>
-              <th>날짜</th>
-              <th>실제 당첨번호</th>
-              <th>예측 조합 (최고 적중)</th>
-              <th>적중</th>
-              <th>등수</th>
+              <th>회차</th><th>날짜</th><th>실제 당첨번호</th>
+              <th>예측 조합 (최고 적중)</th><th>적중</th><th>등수</th>
             </tr>
           </thead>
           <tbody>${rows.join("")}</tbody>
@@ -1797,14 +1940,12 @@ async function renderExperiment(history){
 
 function downloadExperimentCSV(){
   if(!expResultsData) return;
-
   let csv = "단계,방법,회차,날짜,실제당첨번호,보너스,예측조합,적중수,등수\n";
   Object.keys(expResultsData).forEach(stage=>{
     expResultsData[stage].forEach(r=>{
       csv += `${r.stage},${r.method},${r.draw},${r.date},"${r.actual}",${r.bonus},"${r.prediction}",${r.hit},${r.rank}\n`;
     });
   });
-
   const blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -1814,7 +1955,6 @@ function downloadExperimentCSV(){
   URL.revokeObjectURL(url);
 }
 
-/* ===== 실험 범위 프리셋 ===== */
 function setupExperimentRange(){
   const info = document.getElementById("expRangeInfo");
   const labels = {
@@ -1823,7 +1963,6 @@ function setupExperimentRange(){
     detail: "🔍 정밀: 각 단계 100회 (약 5분)",
     full: "⏳ 전체: 1~6단계 원래 범위 (약 10분 이상)"
   };
-
   document.querySelectorAll(".budget-btn[data-range]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       document.querySelectorAll(".budget-btn[data-range]").forEach(b=>b.classList.remove("active"));
@@ -1839,21 +1978,23 @@ function setupExperimentRange(){
   const history = await loadData();
   renderLatest(history);
 
+  const lastDraw = history[history.length-1];
+
   const {scores, co} = scoreNumbers(history);
   baseScore = {};
   scores.forEach(s=> baseScore[s.num] = s.score);
 
   const {candidates, stages} = pickCandidates(scores, 8);
-  const combos = generateCombos(candidates, co, 5);
+  const combos = generateCombos(candidates, co, 5, lastDraw.nums);
 
   renderPicksProgress("picksProgress", stages);
-  renderPicks(combos, "picks");
+  renderPicks(combos, "picks", lastDraw.nums);
   renderScores(scores, "scores", 15);
   renderBacktest();
 
   renderTierGoals("tierGoals");
   renderCandidateScores("candidateScores", scores, 15);
-  renderPicks(combos, "nextPicks");
+  renderPicks(combos, "nextPicks", lastDraw.nums);
   renderExtraPicks("extraPicks", candidates, co, 10);
 
   renderScores(scores, "nextScores", 20);
@@ -1868,6 +2009,7 @@ function setupExperimentRange(){
   setupBudgetPresets();
   initBudget();
   setupExperimentRange();
+  setupBiasButtons(history);
 
   document.getElementById("btRunBtn").addEventListener("click", ()=>{
     runCoveringBacktest(history);
@@ -1887,6 +2029,7 @@ function setupExperimentRange(){
 
   goToTab('strategy');
 
+  console.log("Bias:", currentBias);
   console.log("Stages:", stages);
   console.log("Candidates:", candidates);
   console.log("Combos:", combos);
