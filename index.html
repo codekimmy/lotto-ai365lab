@@ -20,6 +20,7 @@
   h1{font-size:24px;}
   h2{font-size:18px; color:var(--accent);}
   h3{font-size:15px; color:var(--muted);}
+  h4{font-size:14px; color:var(--accent); margin:14px 0 8px;}
   .grid{display:grid; gap:16px;}
   .grid-2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));}
   .grid-3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
@@ -39,6 +40,7 @@
   }
   .ball.bonus{background:#fbbf24; color:#1f2937;}
   .ball.small{width:34px;height:34px;font-size:13px;}
+  .ball.tiny{width:26px;height:26px;font-size:11px;}
   .ball.pick{background:var(--accent); color:#06202e;}
   .ball.c3{background:#22c55e; color:#052e16;}
   .ball.c4{background:#eab308; color:#1f2937;}
@@ -74,6 +76,7 @@
     padding:10px 16px; border-radius:10px 10px 0 0; cursor:pointer;
     background:transparent; color:var(--muted); font-weight:600;
     border:1px solid transparent; border-bottom:none; font-size:14px;
+    white-space:nowrap;
   }
   .tab:hover{color:var(--text); background:#1e293b;}
   .tab.active{color:var(--accent); background:var(--card); border-color:#334155;}
@@ -107,9 +110,10 @@
   /* 예산 프리셋 버튼 */
   .budget-btns{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;}
   .budget-btn{
-    padding:8px 14px; border-radius:10px; cursor:pointer;
+    padding:10px 16px; border-radius:10px; cursor:pointer;
     background:#0b1220; color:var(--muted); border:1px solid #334155;
     font-size:13px; font-weight:600; transition:all .2s;
+    min-width:120px; text-align:center;
   }
   .budget-btn:hover{color:var(--text); border-color:var(--accent);}
   .budget-btn.active{
@@ -117,10 +121,19 @@
   }
   .budget-info{
     background:#0b1220; border:1px solid #334155; border-radius:10px;
-    padding:12px; margin-top:10px;
+    padding:12px; margin-top:10px; font-size:13px;
   }
 
-  /* ===== 푸터 (YouTube 배지 포함) ===== */
+  /* 백테스트 결과 */
+  .bt-cover-result{
+    background:#0b1220; border:1px solid #334155; border-radius:10px;
+    padding:12px; margin-top:10px;
+  }
+  .bt-cover-result .big{
+    font-size:24px; font-weight:700; color:var(--accent);
+  }
+
+  /* 푸터 */
   footer{
     margin-top:32px; padding:24px 0 8px;
     border-top:1px solid #334155;
@@ -159,16 +172,25 @@
     text-align:right; font-size:12px; color:var(--muted);
   }
   .footer-meta b{color:var(--text); font-weight:600;}
+
+  /* ===== 모바일 최적화 ===== */
   @media (max-width: 600px) {
-    .container{padding:14px;}
-    .tabs{padding:8px 12px;}
+    .container{padding:12px;}
+    .tabs{padding:8px 8px; gap:4px; overflow-x:auto; flex-wrap:nowrap;}
     .tab{padding:8px 10px; font-size:12px;}
-    .ball { width: 36px; height: 36px; font-size: 14px; }
-    .ball.small{width:30px;height:30px;font-size:12px;}
-    .grid-2 { grid-template-columns: 1fr; }
-    h1 { font-size: 20px; }
+    .ball { width: 34px; height: 34px; font-size: 13px; }
+    .ball.small{width:28px;height:28px;font-size:12px;}
+    .ball.tiny{width:22px;height:22px;font-size:10px;}
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    h1 { font-size: 18px; }
+    h2 { font-size: 16px; }
     .footer-inner{flex-direction:column; align-items:flex-start;}
     .footer-meta{text-align:left;}
+    .budget-btn{min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); padding:8px 10px; font-size:12px;}
+    .card, .pred-card, .exp-card{padding:12px;}
+    .scroll{max-height:300px;}
+    table{font-size:12px;}
+    th,td{padding:5px 3px;}
   }
 </style>
 </head>
@@ -178,6 +200,7 @@
   <div class="tab active" data-tab="predict">📊 이번 주 예측</div>
   <div class="tab" data-tab="next">🔮 다음 회차 상세</div>
   <div class="tab" data-tab="cover">🛡️ 커버링 디자인</div>
+  <div class="tab" data-tab="backtest">🧪 커버링 백테스트</div>
   <div class="tab" data-tab="strategy">🎯 전략 소개</div>
   <div class="tab" data-tab="experiment">🧪 회귀 분석 실험</div>
   <div class="tab" data-tab="techniques">📜 창의적 기법 사전</div>
@@ -249,13 +272,13 @@
 
       <div id="tierGoals" style="margin:10px 0;"></div>
 
-      <h4 style="color:var(--accent); margin-top:14px;">📊 후보 15개 점수 분포</h4>
+      <h4>📊 후보 15개 점수 분포</h4>
       <div id="candidateScores" style="margin-top:8px;"></div>
 
-      <h4 style="color:var(--accent); margin-top:14px;">🎯 추천 조합 5개 (안정형 3 + 2등 기대형 2)</h4>
+      <h4>🎯 추천 조합 5개 (안정형 3 + 2등 기대형 2)</h4>
       <div id="nextPicks"></div>
 
-      <h4 style="color:var(--accent); margin-top:14px;">📋 참고용 추가 조합 10개 (주관적 선택)</h4>
+      <h4>📋 참고용 추가 조합 10개 (주관적 선택)</h4>
       <div id="extraPicks"></div>
     </div>
 
@@ -274,11 +297,10 @@
   <div class="tab-content" id="tab-cover">
     <h1>🛡️ 커버링 디자인</h1>
     <p class="muted">
-      후보 15개 안에 실제 당첨번호 N개 이상이 들어있으면, 
-      최소 1조합에서 N개 적중이 보장되는 조합 세트입니다.
+      후보 N개 안에 실제 당첨번호 M개 이상이 들어있으면, 
+      최소 1조합에서 M개 적중이 보장되는 조합 세트입니다.
     </p>
 
-    <!-- 예산 프리셋 -->
     <div class="card">
       <h2>💰 예산별 자동 선택</h2>
       <p class="muted">예산을 선택하면 그에 맞는 조합 세트를 보여줍니다.</p>
@@ -293,37 +315,24 @@
       </div>
     </div>
 
-    <!-- 3-cover -->
     <div class="pred-card">
       <h3>🛡️ 3개 적중 보장 조합 (3-cover)</h3>
-      <p class="muted">
-        후보 15개 안에 실제 당첨번호 <b>3개 이상</b>이 들어있으면, 
-        최소 1조합에서 3개 적중이 보장됩니다. (5등 목표)
-      </p>
+      <p class="muted">후보 15개 안에 실제 당첨번호 3개 이상이 들어있으면, 최소 1조합에서 3개 적중 보장. (5등 목표)</p>
       <div id="cover3"></div>
     </div>
 
-    <!-- 4-cover -->
     <div class="pred-card">
       <h3>🛡️ 4개 적중 보장 조합 (4-cover)</h3>
-      <p class="muted">
-        후보 15개 안에 실제 당첨번호 <b>4개 이상</b>이 들어있으면, 
-        최소 1조합에서 4개 적중이 보장됩니다. (4등 목표)
-      </p>
+      <p class="muted">후보 15개 안에 실제 당첨번호 4개 이상이 들어있으면, 최소 1조합에서 4개 적중 보장. (4등 목표)</p>
       <div id="cover4"></div>
     </div>
 
-    <!-- 5-cover -->
     <div class="pred-card">
       <h3>🛡️ 5개 적중 보장 조합 (5-cover)</h3>
-      <p class="muted">
-        후보 10개 안에 실제 당첨번호 <b>5개 이상</b>이 들어있으면, 
-        최소 1조합에서 5개 적중이 보장됩니다. (3등 목표, 조합 수 많음)
-      </p>
+      <p class="muted">후보 10개 안에 실제 당첨번호 5개 이상이 들어있으면, 최소 1조합에서 5개 적중 보장. (3등 목표)</p>
       <div id="cover5"></div>
     </div>
 
-    <!-- 이론값 표 -->
     <div class="card" style="margin-top:16px;">
       <h2>📐 커버링 디자인 이론값</h2>
       <table>
@@ -336,13 +345,59 @@
           <tr><td>15개</td><td>약 10조합</td><td>약 70조합</td><td>약 400조합</td></tr>
         </tbody>
       </table>
-      <p class="muted" style="margin-top:10px;">
-        ※ 위 표는 이론적 최소값이며, 실제 그리디 알고리즘은 이보다 많을 수 있습니다.
-      </p>
     </div>
   </div>
 
-  <!-- TAB 4 -->
+  <!-- TAB 4: 커버링 백테스트 -->
+  <div class="tab-content" id="tab-backtest">
+    <h1>🧪 커버링 디자인 자동 백테스트</h1>
+    <p class="muted">
+      과거 회차를 대상으로 커버링 디자인이 실제로 몇 개 적중을 보장했는지 검증합니다.
+      최근 50회차를 대상으로 실행합니다. (시간이 걸릴 수 있습니다)
+    </p>
+
+    <div class="card">
+      <h2>⚙️ 백테스트 설정</h2>
+      <div class="grid grid-3">
+        <div>
+          <h3>커버 종류</h3>
+          <select id="btCoverSize" style="width:100%; padding:8px; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px;">
+            <option value="3">3-cover (5등)</option>
+            <option value="4" selected>4-cover (4등)</option>
+            <option value="5">5-cover (3등)</option>
+          </select>
+        </div>
+        <div>
+          <h3>후보 수</h3>
+          <select id="btCandidateCount" style="width:100%; padding:8px; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px;">
+            <option value="10">10개</option>
+            <option value="12" selected>12개</option>
+            <option value="15">15개</option>
+          </select>
+        </div>
+        <div>
+          <h3>검증 회차</h3>
+          <select id="btRange" style="width:100%; padding:8px; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px;">
+            <option value="20">최근 20회</option>
+            <option value="50" selected>최근 50회</option>
+            <option value="100">최근 100회</option>
+          </select>
+        </div>
+      </div>
+      <button id="btRunBtn" class="budget-btn active" style="margin-top:12px; min-width:200px;">
+        ▶ 백테스트 실행
+      </button>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>📊 백테스트 결과</h2>
+      <div id="btResult">
+        <p class="muted">백테스트를 실행하면 결과가 여기에 표시됩니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5 -->
   <div class="tab-content" id="tab-strategy">
     <h1>🎯 전략 소개</h1>
     <p class="muted">목표: <b>1등을 노리는 것이 아니라, 3·4등을 꾸준히 맞추면서 간혹 2등을 노리는 것</b>.</p>
@@ -386,7 +441,7 @@
     </div>
   </div>
 
-  <!-- TAB 5 -->
+  <!-- TAB 6 -->
   <div class="tab-content" id="tab-experiment">
     <h1>🧪 회귀 분석 실험 (1~6단계)</h1>
     <p class="muted">과거 데이터 롤링 백테스트. 각 단계는 이전 단계의 한계를 보완.</p>
@@ -447,21 +502,23 @@
 
     <div class="card" style="margin-top:16px;">
       <h2>📊 1~6단계 누적 비교</h2>
-      <table>
-        <thead><tr><th>단계</th><th>범위</th><th>방법</th><th>3개</th><th>4개</th><th>5개</th><th>6개</th></tr></thead>
-        <tbody>
-          <tr><td>1단계</td><td>20회</td><td>창의적 기법</td><td>75% [15/20]</td><td>25% [5/20]</td><td>0% [0/20]</td><td>0% [0/20]</td></tr>
-          <tr><td>2단계</td><td>50회</td><td>후보 압축</td><td>80% [40/50]</td><td>20% [10/50]</td><td>0% [0/50]</td><td>0% [0/50]</td></tr>
-          <tr><td>3단계</td><td>100회</td><td>8~10개 압축</td><td>71% [71/100]</td><td>24% [24/100]</td><td>2% [2/100]</td><td>0% [0/100]</td></tr>
-          <tr><td>4단계</td><td>200회</td><td>6~8개+상관관계</td><td>59% [118/200]</td><td>34% [68/200]</td><td>6% [12/200]</td><td>0% [0/200]</td></tr>
-          <tr><td>5단계</td><td>500회</td><td>네트워크+군집+베이지안</td><td>54.2% [271/500]</td><td>35.8% [179/500]</td><td>8.4% [42/500]</td><td>0% [0/500]</td></tr>
-          <tr><td><b>6단계</b></td><td><b>500회</b></td><td><b>GA+MLP+RL</b></td><td><b>49.6% [248/500]</b></td><td><b>38.6% [193/500]</b></td><td><b>10.8% [54/500]</b></td><td><b>0% [0/500]</b></td></tr>
-        </tbody>
-      </table>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>단계</th><th>범위</th><th>방법</th><th>3개</th><th>4개</th><th>5개</th><th>6개</th></tr></thead>
+          <tbody>
+            <tr><td>1단계</td><td>20회</td><td>창의적 기법</td><td>75% [15/20]</td><td>25% [5/20]</td><td>0% [0/20]</td><td>0% [0/20]</td></tr>
+            <tr><td>2단계</td><td>50회</td><td>후보 압축</td><td>80% [40/50]</td><td>20% [10/50]</td><td>0% [0/50]</td><td>0% [0/50]</td></tr>
+            <tr><td>3단계</td><td>100회</td><td>8~10개 압축</td><td>71% [71/100]</td><td>24% [24/100]</td><td>2% [2/100]</td><td>0% [0/100]</td></tr>
+            <tr><td>4단계</td><td>200회</td><td>6~8개+상관관계</td><td>59% [118/200]</td><td>34% [68/200]</td><td>6% [12/200]</td><td>0% [0/200]</td></tr>
+            <tr><td>5단계</td><td>500회</td><td>네트워크+군집+베이지안</td><td>54.2% [271/500]</td><td>35.8% [179/500]</td><td>8.4% [42/500]</td><td>0% [0/500]</td></tr>
+            <tr><td><b>6단계</b></td><td><b>500회</b></td><td><b>GA+MLP+RL</b></td><td><b>49.6% [248/500]</b></td><td><b>38.6% [193/500]</b></td><td><b>10.8% [54/500]</b></td><td><b>0% [0/500]</b></td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- TAB 6 -->
+  <!-- TAB 7 -->
   <div class="tab-content" id="tab-techniques">
     <h1>📜 창의적 기법 사전</h1>
     <p class="muted">1~6단계 실험에서 사용된 20가지 비정형 기법.</p>
@@ -490,7 +547,7 @@
     </div>
   </div>
 
-  <!-- TAB 7 -->
+  <!-- TAB 8 -->
   <div class="tab-content" id="tab-guide">
     <h1>📖 활용 가이드</h1>
     <p class="muted">매주 대시보드 활용법.</p>
@@ -678,7 +735,6 @@ function scoreNumbers(history){
 
 function pickCandidates(scored, k=8){
   const stages = [];
-
   stages.push({label:"전체 번호", count:45, color:"#475569"});
   const top15 = scored.slice(0,15).map(x=>x.num);
   stages.push({label:"상위 15개", count:top15.length, color:"#64748b"});
@@ -786,52 +842,78 @@ function combinations(arr, k){
   return result;
 }
 
-/* ===== 커버링 디자인 생성 (그리디 + 샘플링) ===== */
+/* ===== 커버링 디자인 캐시 ===== */
+const coverCache = {};
+
+/* ===== 커버링 디자인 최적화 ===== */
 function generateCoveringDesign(candidates, coverSize, maxCombos=30){
+  const cacheKey = candidates.join(",")+"_"+coverSize+"_"+maxCombos;
+  if(coverCache[cacheKey]) return coverCache[cacheKey];
+
   const n = candidates.length;
   if(n < 6) return [];
 
   const allCombos = combinations(candidates, 6);
-  if(allCombos.length <= maxCombos) return allCombos;
-
-  const targetSubsets = combinations(candidates, coverSize);
-  const uncovered = new Set(targetSubsets.map(s => s.join(",")));
-
-  const selected = [];
-
-  while(uncovered.size > 0 && selected.length < maxCombos){
-    let best = null;
-    let bestCovered = 0;
-
-    // 무작위 샘플링 (성능)
-    const sampleSize = Math.min(allCombos.length, 800);
-    const used = new Set();
-    const sample = [];
-    while(sample.length < sampleSize){
-      const idx = Math.floor(Math.random() * allCombos.length);
-      if(!used.has(idx)){ used.add(idx); sample.push(allCombos[idx]); }
-    }
-
-    for(const combo of sample){
-      const subs = combinations(combo, coverSize);
-      let cnt = 0;
-      for(const s of subs){
-        if(uncovered.has(s.join(","))) cnt++;
-      }
-      if(cnt > bestCovered){
-        bestCovered = cnt;
-        best = combo;
-      }
-    }
-
-    if(!best || bestCovered === 0) break;
-
-    selected.push(best);
-    const subs = combinations(best, coverSize);
-    for(const s of subs) uncovered.delete(s.join(","));
+  if(allCombos.length <= maxCombos){
+    coverCache[cacheKey] = allCombos;
+    return allCombos;
   }
 
-  return selected;
+  const targetSubsets = combinations(candidates, coverSize);
+  const allSubsetKeys = targetSubsets.map(s => s.join(","));
+
+  // 그리디 + 로컬 개선
+  function greedySelect(seed){
+    const uncovered = new Set(allSubsetKeys);
+    const selected = [];
+
+    while(uncovered.size > 0 && selected.length < maxCombos){
+      let best = null;
+      let bestCovered = 0;
+      const sampleSize = Math.min(allCombos.length, 800);
+      const used = new Set();
+      const sample = [];
+      while(sample.length < sampleSize){
+        const idx = Math.floor(Math.random() * allCombos.length);
+        if(!used.has(idx)){ used.add(idx); sample.push(allCombos[idx]); }
+      }
+      for(const combo of sample){
+        const subs = combinations(combo, coverSize);
+        let cnt = 0;
+        for(const s of subs){
+          if(uncovered.has(s.join(","))) cnt++;
+        }
+        if(cnt > bestCovered){ bestCovered = cnt; best = combo; }
+      }
+      if(!best || bestCovered === 0) break;
+      selected.push(best);
+      const subs = combinations(best, coverSize);
+      for(const s of subs) uncovered.delete(s.join(","));
+    }
+    return selected;
+  }
+
+  // 여러 시드로 시도 후 가장 적은 조합 선택
+  let bestResult = null;
+  const attempts = coverSize === 5 ? 2 : 4;
+  for(let a=0; a<attempts; a++){
+    const result = greedySelect(a);
+    if(!bestResult || result.length < bestResult.length){
+      bestResult = result;
+    }
+    if(bestResult.length <= Math.ceil(allCombos.length * 0.05)) break; // 충분히 좋으면 중단
+  }
+
+  // 로컬 개선: 중복 제거
+  const seen = new Set();
+  const final = [];
+  for(const c of bestResult){
+    const key = c.join("-");
+    if(!seen.has(key)){ seen.add(key); final.push(c); }
+  }
+
+  coverCache[cacheKey] = final;
+  return final;
 }
 
 /* ===== 날짜 헬퍼 ===== */
@@ -886,9 +968,7 @@ function renderPicksProgress(targetId, stages){
 
   const max = stages[0].count || 1;
   wrap.innerHTML = `
-    <div class="muted" style="margin-bottom:6px;">
-      🔽 후보 압축 단계 (실제 알고리즘 기준)
-    </div>
+    <div class="muted" style="margin-bottom:6px;">🔽 후보 압축 단계 (실제 알고리즘 기준)</div>
     <div style="display:flex; flex-direction:column; gap:6px;">
       ${stages.map(s=>`
         <div style="display:flex; align-items:center; gap:10px;">
@@ -900,9 +980,7 @@ function renderPicksProgress(targetId, stages){
         </div>
       `).join("")}
     </div>
-    <p class="muted" style="margin-top:6px;">
-      실제 후보 수: ${stages.map(s=>s.count).join(" → ")}
-    </p>
+    <p class="muted" style="margin-top:6px;">실제 후보 수: ${stages.map(s=>s.count).join(" → ")}</p>
   `;
 }
 
@@ -981,19 +1059,21 @@ function renderTierGoals(targetId){
 
   wrap.innerHTML = `
     <div class="muted" style="margin-bottom:6px;">🔽 단계별 적중 목표와 필요 후보 수</div>
-    <table style="width:100%; font-size:13px;">
-      <thead><tr><th>등수</th><th>필요 적중</th><th>필요 후보 수</th><th>기대</th></tr></thead>
-      <tbody>
-        ${tiers.map(t=>`
-          <tr>
-            <td style="color:${t.color}; font-weight:700;">${t.name}</td>
-            <td>${t.need}개</td>
-            <td>${t.candidates}개</td>
-            <td class="muted">${t.note}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
+    <div class="scroll">
+      <table style="width:100%; font-size:13px;">
+        <thead><tr><th>등수</th><th>필요 적중</th><th>필요 후보</th><th>기대</th></tr></thead>
+        <tbody>
+          ${tiers.map(t=>`
+            <tr>
+              <td style="color:${t.color}; font-weight:700;">${t.name}</td>
+              <td>${t.need}개</td>
+              <td>${t.candidates}개</td>
+              <td class="muted">${t.note}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
   `;
 }
 
@@ -1022,50 +1102,17 @@ function renderExtraPicks(targetId, candidates, co, count=10){
 
   const extras = generateCombos(candidates, co, count);
   wrap.innerHTML = `
-    <table style="width:100%; font-size:13px;">
-      <thead><tr><th>#</th><th>조합</th><th>합계</th><th>홀:짝</th></tr></thead>
-      <tbody>
-        ${extras.map((c, i)=>{
-          const sum = c.reduce((a,b)=>a+b,0);
-          const odd = c.filter(n=>n%2).length;
-          return `
-            <tr>
-              <td class="muted">${i+1}</td>
-              <td>${c.map(n=>`<span style="display:inline-block; width:26px; height:26px; line-height:26px; text-align:center; border-radius:50%; background:#38bdf8; color:#06202e; font-weight:700; font-size:12px; margin:1px;">${n}</span>`).join("")}</td>
-              <td class="muted">${sum}</td>
-              <td class="muted">${odd}:${6-odd}</td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballClass){
-  const wrap = document.getElementById(targetId);
-  if(!wrap) return;
-
-  const combos = generateCoveringDesign(candidates, coverSize, maxCombos);
-  const totalCombos = combinations(candidates, 6).length;
-
-  wrap.innerHTML = `
-    <div class="muted" style="margin-bottom:8px;">
-      후보 <b>${candidates.length}개</b> 기준 · 
-      전체 6번호 조합 <b>${totalCombos.toLocaleString()}개</b> 중 
-      <b>${combos.length}개</b>로 ${coverSize}개 적중 보장
-    </div>
     <div class="scroll">
       <table style="width:100%; font-size:13px;">
         <thead><tr><th>#</th><th>조합</th><th>합계</th><th>홀:짝</th></tr></thead>
         <tbody>
-          ${combos.map((c, i)=>{
+          ${extras.map((c, i)=>{
             const sum = c.reduce((a,b)=>a+b,0);
             const odd = c.filter(n=>n%2).length;
             return `
               <tr>
                 <td class="muted">${i+1}</td>
-                <td>${c.map(n=>`<span class="ball small ${ballClass}" style="margin:1px;">${n}</span>`).join("")}</td>
+                <td>${c.map(n=>`<span class="ball tiny pick" style="margin:1px;">${n}</span>`).join("")}</td>
                 <td class="muted">${sum}</td>
                 <td class="muted">${odd}:${6-odd}</td>
               </tr>
@@ -1074,11 +1121,51 @@ function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballCl
         </tbody>
       </table>
     </div>
-    <p class="muted" style="margin-top:8px;">
-      ※ 후보 ${candidates.length}개 안에 실제 당첨번호 6개 중 ${coverSize}개 이상이 들어있다면, 
-      위 ${combos.length}개 조합 중 최소 1개에서 ${coverSize}개 적중이 보장됩니다.
-    </p>
   `;
+}
+
+function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballClass){
+  const wrap = document.getElementById(targetId);
+  if(!wrap) return;
+
+  wrap.innerHTML = `<p class="muted">⏳ 커버링 디자인 생성 중...</p>`;
+
+  // 비동기로 처리해서 UI 블로킹 방지
+  setTimeout(()=>{
+    const combos = generateCoveringDesign(candidates, coverSize, maxCombos);
+    const totalCombos = combinations(candidates, 6).length;
+
+    wrap.innerHTML = `
+      <div class="muted" style="margin-bottom:8px;">
+        후보 <b>${candidates.length}개</b> 기준 · 
+        전체 6번호 조합 <b>${totalCombos.toLocaleString()}개</b> 중 
+        <b>${combos.length}개</b>로 ${coverSize}개 적중 보장
+      </div>
+      <div class="scroll">
+        <table style="width:100%; font-size:13px;">
+          <thead><tr><th>#</th><th>조합</th><th>합계</th><th>홀:짝</th></tr></thead>
+          <tbody>
+            ${combos.map((c, i)=>{
+              const sum = c.reduce((a,b)=>a+b,0);
+              const odd = c.filter(n=>n%2).length;
+              return `
+                <tr>
+                  <td class="muted">${i+1}</td>
+                  <td>${c.map(n=>`<span class="ball tiny ${ballClass}" style="margin:1px;">${n}</span>`).join("")}</td>
+                  <td class="muted">${sum}</td>
+                  <td class="muted">${odd}:${6-odd}</td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="margin-top:8px;">
+        ※ 후보 ${candidates.length}개 안에 실제 당첨번호 6개 중 ${coverSize}개 이상이 들어있다면, 
+        위 ${combos.length}개 조합 중 최소 1개에서 ${coverSize}개 적중이 보장됩니다.
+      </p>
+    `;
+  }, 50);
 }
 
 function renderNextTab(history, scores){
@@ -1128,33 +1215,128 @@ function renderNextTab(history, scores){
 }
 
 /* ===== 예산 프리셋 ===== */
-function setupBudgetPresets(candidates, co){
+function setupBudgetPresets(){
   const info = document.getElementById("budgetInfo");
-
-  document.querySelectorAll(".budget-btn").forEach(btn=>{
+  document.querySelectorAll(".budget-btn[data-budget]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      document.querySelectorAll(".budget-btn").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".budget-btn[data-budget]").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
 
       const budget = Number(btn.dataset.budget);
       const count = Math.floor(budget / 1000);
 
       let html = `<b>${budget.toLocaleString()}원</b> 예산 · 최대 <b>${count}조합</b><br>`;
-
-      if(count <= 5){
-        html += `→ 추천 조합 5개로 충분`;
-      } else if(count <= 10){
-        html += `→ 추천 5 + 참고 5 = 10조합`;
-      } else if(count <= 20){
-        html += `→ 추천 5 + 참고 15 = 20조합 (3-cover 근사)`;
-      } else if(count <= 60){
-        html += `→ 4-cover 30조합 권장 (4등 목표)`;
-      } else {
-        html += `→ 5-cover 50조합 권장 (3등 목표, 비용 부담 큼)`;
-      }
+      if(count <= 5) html += `→ 추천 조합 5개로 충분`;
+      else if(count <= 10) html += `→ 추천 5 + 참고 5 = 10조합`;
+      else if(count <= 20) html += `→ 추천 5 + 참고 15 = 20조합 (3-cover 근사)`;
+      else if(count <= 60) html += `→ 4-cover 40조합 권장 (4등 목표)`;
+      else html += `→ 5-cover 50조합 권장 (3등 목표, 비용 부담 큼)`;
       info.innerHTML = html;
     });
   });
+}
+
+/* ===== 커버링 백테스트 ===== */
+async function runCoveringBacktest(history, scores){
+  const resultBox = document.getElementById("btResult");
+  const coverSize = Number(document.getElementById("btCoverSize").value);
+  const candidateCount = Number(document.getElementById("btCandidateCount").value);
+  const range = Number(document.getElementById("btRange").value);
+
+  resultBox.innerHTML = `<p class="muted">⏳ 백테스트 실행 중... (${range}회차, ${coverSize}-cover, 후보 ${candidateCount}개)</p>`;
+
+  // 비동기 처리
+  setTimeout(()=>{
+    const start = Math.max(0, history.length - range - 1);
+    const testCases = [];
+    for(let i=start; i<history.length-1; i++){
+      testCases.push({predictIdx: i, actualIdx: i+1});
+    }
+
+    let hit3 = 0, hit4 = 0, hit5 = 0, hit6 = 0;
+    let guaranteed = 0; // 실제 후보에 coverSize개 이상 포함된 경우
+    let coverSuccess = 0; // 그 경우 커버링이 보장한 경우
+
+    for(const tc of testCases){
+      const pastHistory = history.slice(0, tc.predictIdx + 1);
+      const actual = history[tc.actualIdx];
+
+      // 후보 추출
+      const {scores: pastScores} = scoreNumbers(pastHistory);
+      const topCandidates = pastScores.slice(0, candidateCount).map(s=>s.num).sort((a,b)=>a-b);
+
+      // 실제 당첨번호와 후보 비교
+      const actualInCandidates = actual.nums.filter(n=>topCandidates.includes(n));
+      if(actualInCandidates.length >= coverSize) guaranteed++;
+
+      // 커버링 생성
+      const coverCombos = generateCoveringDesign(topCandidates, coverSize, 50);
+
+      // 각 조합이 실제 당첨번호와 몇 개 맞는지 확인
+      let maxHit = 0;
+      for(const combo of coverCombos){
+        const hit = combo.filter(n=>actual.nums.includes(n)).length;
+        if(hit > maxHit) maxHit = hit;
+      }
+      if(maxHit >= 3) hit3++;
+      if(maxHit >= 4) hit4++;
+      if(maxHit >= 5) hit5++;
+      if(maxHit >= 6) hit6++;
+      if(actualInCandidates.length >= coverSize && maxHit >= coverSize) coverSuccess++;
+    }
+
+    const total = testCases.length;
+    const pct = (n)=> (n/total*100).toFixed(1);
+
+    resultBox.innerHTML = `
+      <div class="bt-cover-result">
+        <p class="muted">검증 회차: ${total}회 · ${coverSize}-cover · 후보 ${candidateCount}개</p>
+        <div class="grid grid-3" style="margin-top:12px;">
+          <div>
+            <div class="muted">3개 이상 적중</div>
+            <div class="big">${pct(hit3)}%</div>
+            <div class="muted">${hit3}/${total}</div>
+          </div>
+          <div>
+            <div class="muted">4개 이상 적중</div>
+            <div class="big" style="color:#84cc16;">${pct(hit4)}%</div>
+            <div class="muted">${hit4}/${total}</div>
+          </div>
+          <div>
+            <div class="muted">5개 이상 적중</div>
+            <div class="big" style="color:#eab308;">${pct(hit5)}%</div>
+            <div class="muted">${hit5}/${total}</div>
+          </div>
+        </div>
+        <div class="grid grid-3" style="margin-top:12px;">
+          <div>
+            <div class="muted">6개 적중</div>
+            <div class="big" style="color:#f97316;">${pct(hit6)}%</div>
+            <div class="muted">${hit6}/${total}</div>
+          </div>
+          <div>
+            <div class="muted">후보에 ${coverSize}개 이상 포함</div>
+            <div class="big">${pct(guaranteed)}%</div>
+            <div class="muted">${guaranteed}/${total}</div>
+          </div>
+          <div>
+            <div class="muted">보장 성공률</div>
+            <div class="big" style="color:#22c55e;">${guaranteed ? (coverSuccess/guaranteed*100).toFixed(1) : 0}%</div>
+            <div class="muted">${coverSuccess}/${guaranteed}</div>
+          </div>
+        </div>
+        <p class="muted" style="margin-top:12px;">
+          ※ "보장 성공률" = 후보에 실제 당첨번호 ${coverSize}개 이상이 포함된 경우, 커버링 조합이 실제로 ${coverSize}개 적중을 달성한 비율.
+        </p>
+      </div>
+    `;
+  }, 100);
+}
+
+/* ===== 예산 프리셋 초기화 ===== */
+function initBudget(){
+  const info = document.getElementById("budgetInfo");
+  info.innerHTML = `<b>5,000원</b> 예산 · 최대 <b>5조합</b><br>→ 추천 조합 5개로 충분`;
 }
 
 /* ===== 메인 ===== */
@@ -1192,7 +1374,13 @@ function setupBudgetPresets(candidates, co){
   renderCoveringDesign("cover5", top10, 5, 50, "c5");
 
   // 예산 프리셋
-  setupBudgetPresets(candidates, co);
+  setupBudgetPresets();
+  initBudget();
+
+  // 커버링 백테스트 버튼
+  document.getElementById("btRunBtn").addEventListener("click", ()=>{
+    runCoveringBacktest(history, scores);
+  });
 
   console.log("Stages:", stages);
   console.log("Candidates:", candidates);
