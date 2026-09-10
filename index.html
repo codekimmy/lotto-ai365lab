@@ -42,6 +42,7 @@
   .ball.small{width:34px;height:34px;font-size:13px;}
   .ball.tiny{width:26px;height:26px;font-size:11px;}
   .ball.pick{background:var(--accent); color:#06202e;}
+  .ball.cold{background:#ef4444; color:#fff;}
   .ball.c3{background:#22c55e; color:#052e16;}
   .ball.c4{background:#eab308; color:#1f2937;}
   .ball.c5{background:#f97316; color:#1f2937;}
@@ -56,6 +57,7 @@
   .tag.warn{background:#78350f; color:#fde68a;}
   .tag.bad{background:#7f1d1d; color:#fecaca;}
   .tag.info{background:#0c4a6e; color:#bae6fd;}
+  .tag.cold{background:#7f1d1d; color:#fecaca;}
   .status{padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:12px;}
   .status.ok{background:#052e16; color:#bbf7d0; border:1px solid #14532d;}
   .status.err{background:#450a0a; color:#fecaca; border:1px solid #7f1d1d;}
@@ -351,7 +353,7 @@
       <div id="latestBalls" class="row" style="margin-top:10px;"></div>
     </div>
 
-    <!-- 편향 강도 선택 -->
+    <!-- 편향 강도 -->
     <div class="card" style="margin-top:16px;">
       <h2>🎚️ 직전 회차 편향 강도</h2>
       <p class="muted">
@@ -367,15 +369,12 @@
         현재: <b>중 (균형)</b> — 직전 회차 번호 최대 2개 반영
       </div>
       <p class="muted" style="margin-top:10px; font-size:12px;">
-        🟢 약: 실제 로또와 가장 유사 (직전 회차 평균 0.8개 겹침)<br>
-        🟡 중: 균형 (권장) — 직전 회차 2개 이하<br>
-        🔴 강: 기존 로직 — 직전 회차 편향 최대<br>
-        <br>
-        <b style="color:var(--accent);">※ 편향 강도를 변경하면 번호별 점수, 후보 15개, 추천 조합, 커버링 디자인이 모두 재계산됩니다.</b>
+        🟢 약: 실제 로또와 가장 유사 / 🟡 중: 균형 (권장) / 🔴 강: 기존 로직<br>
+        <b style="color:var(--accent);">※ 편향 강도를 변경하면 모든 결과가 재계산됩니다.</b>
       </p>
     </div>
 
-    <!-- 추천 조합 산출 규정 -->
+    <!-- 산출 규정 -->
     <div class="card" style="margin-top:16px;">
       <div class="collapsible-header">
         <span>📐 추천 조합 산출 규정</span>
@@ -385,14 +384,15 @@
         <ol class="method-list">
           <li><b>점수 계산</b>: 최근 5/10/30/100회 출현 × 가중치 (편향 강도별 조정)</li>
           <li><b>직전 앞뒤 번호</b>: 직전 회차 번호 ±1에 <b>+6점</b> 가중치</li>
-          <li><b>장기 냉각 보너스</b>: 50회 이상 미출현 <b>+15점</b> / 30회 +8점 / 20회 +4점 / 15회 +2점</li>
-          <li><b>후보 추출</b>: 45 → 15 → 12 → 10 → 상위 K (약 12개 / 중 10개 / 강 8개) → 보정 후</li>
+          <li><b>장기 냉각 보너스</b>: 50회 이상 미출현 <b>+15점</b> / 30회 +8점 / 20회 +4점</li>
+          <li><b>장기 미출현 반영</b>: 50회 이상 미출현 번호는 후보에 포함되며, 
+              5조합 중 <b>1~2개 조합에만</b> 들어갑니다 (장기화 위험 고려).</li>
+          <li><b>후보 추출</b>: 45 → 15 → 12 → 10 → 상위 K (약 12 / 중 10 / 강 8) → 보정</li>
           <li><b>조합 생성</b>: GA (개체군 300, 세대 40, 엘리트 20%)</li>
           <li><b>적합도</b>: 점수 + 홀짝/저고/합계/연속/40번대 + 동시 출현</li>
           <li><b>다양성 필터</b>: 조합 간 5개 이상 겹침 제외</li>
           <li><b>직전 회차 제한</b>: 편향 강도에 따라 최대 1~3개만 허용</li>
-          <li><b>자동 완화</b>: 5조합 미달 시 다양성·겹침 조건을 단계적으로 완화</li>
-          <li><b>최종 선택</b>: 위 조건을 모두 통과한 상위 5개</li>
+          <li><b>자동 완화</b>: 5조합 미달 시 조건을 단계적으로 완화</li>
         </ol>
       </div>
     </div>
@@ -413,6 +413,18 @@
           <p class="muted">최근 5/10/30/100회, 거울·보색, 보너스 회귀, 네트워크 중심성, 냉각 반등, 직전 앞뒤.</p>
           <div id="scores"></div>
         </div>
+      </div>
+    </div>
+
+    <!-- 장기 미출현 번호 -->
+    <div class="card" style="margin-top:16px;">
+      <div class="collapsible-header open">
+        <span>❄️ 장기 미출현 번호</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div class="collapsible-body open">
+        <p class="muted">50회 이상 미출현 번호는 후보에 포함되며, 5조합 중 1~2개에 반영됩니다.</p>
+        <div id="coldNumbers"></div>
       </div>
     </div>
 
@@ -473,7 +485,7 @@
       </div>
 
       <div class="collapsible-header open">
-        <span>🎯 추천 조합 5개 (안정형 3 + 2등 기대형 2)</span>
+        <span>🎯 추천 조합 5개</span>
         <span class="arrow">▶</span>
       </div>
       <div class="collapsible-body open">
@@ -481,7 +493,7 @@
       </div>
 
       <div class="collapsible-header">
-        <span>📋 참고용 추가 조합 10개 (주관적 선택)</span>
+        <span>📋 참고용 추가 조합 10개</span>
         <span class="arrow">▶</span>
       </div>
       <div class="collapsible-body">
@@ -520,16 +532,13 @@
 
     <div class="card">
       <h2>💰 예산별 자동 선택</h2>
-      <p class="muted">예산을 선택하면 그에 맞는 조합 세트를 보여줍니다.</p>
       <div class="budget-btns" id="budgetBtns">
         <button class="budget-btn active" data-budget="5000">5,000원 (5조합)</button>
         <button class="budget-btn" data-budget="10000">10,000원 (10조합)</button>
         <button class="budget-btn" data-budget="20000">20,000원 (20조합)</button>
         <button class="budget-btn" data-budget="60000">60,000원 (60조합)</button>
       </div>
-      <div class="budget-info" id="budgetInfo">
-        예산을 선택하세요.
-      </div>
+      <div class="budget-info" id="budgetInfo">예산을 선택하세요.</div>
     </div>
 
     <div class="pred-card">
@@ -588,10 +597,7 @@
   <!-- ===== TAB 5: 커버링 백테스트 ===== -->
   <div class="tab-content" id="tab-backtest">
     <h1>🧪 커버링 디자인 자동 백테스트</h1>
-    <p class="muted">
-      과거 회차를 대상으로 커버링 디자인이 실제로 몇 개 적중을 보장했는지 검증합니다.
-      최근 50회차를 대상으로 실행합니다. (시간이 걸릴 수 있습니다)
-    </p>
+    <p class="muted">과거 회차를 대상으로 커버링 디자인이 실제로 몇 개 적중을 보장했는지 검증합니다.</p>
 
     <div class="card">
       <h2>⚙️ 백테스트 설정</h2>
@@ -682,26 +688,18 @@
             <tr><td><b>6단계</b></td><td><b>500회</b></td><td><b>GA+MLP+RL</b></td><td><b>8개</b></td><td><b>49.6%</b></td><td><b>38.6%</b></td><td><b>10.8%</b></td><td><b>0%</b></td></tr>
           </tbody>
         </table>
-        <p class="muted" style="margin-top:10px;">
-          ※ 위 표는 이전 실험 결과 요약입니다. 아래 버튼으로 <b>실제 회차별 상세 결과</b>를 생성할 수 있습니다.
-        </p>
       </div>
     </div>
 
     <div class="card" style="margin-bottom:16px;">
       <h2>🔍 회차별 상세 결과</h2>
-      <p class="muted">
-        실제 회차별 백테스트 결과입니다. 
-        “실제 당첨번호”와 “예측 조합”을 비교해 몇 개 적중했는지 확인할 수 있습니다.
-      </p>
-
       <div style="margin-top:12px;">
         <h3 style="color:var(--accent);">🔽 실험 범위 선택</h3>
         <div class="budget-btns" id="expRangeBtns">
           <button class="budget-btn active" data-range="quick">⚡ 빠른 검증 (각 단계 20회)</button>
           <button class="budget-btn" data-range="normal">⏱️ 보통 (50회)</button>
           <button class="budget-btn" data-range="detail">🔍 정밀 (100회)</button>
-          <button class="budget-btn" data-range="full">⏳ 전체 (1~6단계 원래 범위)</button>
+          <button class="budget-btn" data-range="full">⏳ 전체 (원래 범위)</button>
         </div>
         <p class="muted" id="expRangeInfo">빠른 검증: 각 단계 20회 (약 30초)</p>
       </div>
@@ -732,10 +730,10 @@
       <div class="tech-card"><h4>2. 보색 번호</h4><p>45 - 번호. 거울 번호와 동일.</p></div>
       <div class="tech-card"><h4>3. 보너스 회귀</h4><p>이전 보너스 번호가 다음 회차 당첨번호로.</p></div>
       <div class="tech-card"><h4>4. 연속번호 회귀</h4><p>연속번호 다음 회차 패턴.</p></div>
-      <div class="tech-card"><h4>5. 냉각 후 반등</h4><p>30회 이상 미출현 번호 반등. 50회 이상 +15점.</p></div>
+      <div class="tech-card"><h4>5. 냉각 후 반등</h4><p>50회 이상 미출현 +15점, 30회 +8점.</p></div>
       <div class="tech-card"><h4>6. 회차 숫자 분해</h4><p>1239 → 1,2,3,9 → 12,13,19,21,23,29...</p></div>
       <div class="tech-card"><h4>7. 날짜 숫자 분해</h4><p>2026-09-05 → 2,0,2,6,0,9,0,5 → 2,5,6,9,15.</p></div>
-      <div class="tech-card"><h4>8. 인접 번호</h4><p>당첨번호 ±1. 직전 회차 앞뒤 번호 +6점.</p></div>
+      <div class="tech-card"><h4>8. 인접 번호</h4><p>직전 회차 ±1에 +6점.</p></div>
       <div class="tech-card"><h4>9. 끝수 분석</h4><p>끝수 합, 분포, 보완 끝수.</p></div>
       <div class="tech-card"><h4>10. 합계값 회귀</h4><p>평균 135~140. 120~160 목표.</p></div>
       <div class="tech-card"><h4>11. 홀짝 비율</h4><p>홀 3~4, 짝 2~3.</p></div>
@@ -924,13 +922,14 @@ async function loadData(){
 let currentBias = "medium";
 
 const BIAS_CONFIG = {
-  low:    {W5:1, W10:1.5, W30:2, W100:2, maxOverlap:1, candidateK:12, label:"약"},
-  medium: {W5:2, W10:2,   W30:2, W100:1, maxOverlap:2, candidateK:10, label:"중"},
-  high:   {W5:4, W10:3,   W30:2, W100:1, maxOverlap:3, candidateK:8,  label:"강"}
+  low:    {W5:1, W10:1.5, W30:2, W100:2, maxOverlap:1, candidateK:12, maxColdCombos:2, label:"약"},
+  medium: {W5:2, W10:2,   W30:2, W100:1, maxOverlap:2, candidateK:10, maxColdCombos:2, label:"중"},
+  high:   {W5:4, W10:3,   W30:2, W100:1, maxOverlap:3, candidateK:8,  maxColdCombos:1, label:"강"}
 };
 
 /* ===== 알고리즘 ===== */
 let baseScore = {};
+let currentScores = []; // 전역 참조용
 
 function scoreNumbers(history){
   const cfg = BIAS_CONFIG[currentBias];
@@ -939,7 +938,6 @@ function scoreNumbers(history){
   const r5 = recent(5), r10 = recent(10), r30 = recent(30), r100 = recent(100);
   const countIn = (arr, num)=> arr.filter(h=>h.nums.includes(num)).length;
 
-  // 직전 회차 앞뒤 번호
   const lastDraw = history[N-1].nums;
   const lastNeighbors = new Set();
   lastDraw.forEach(n=>{
@@ -976,17 +974,15 @@ function scoreNumbers(history){
 
     const mirror = 45-n;
     if(mirror>=1 && mirror<=45) s += countIn(r30,mirror)*1.5;
-
     s += r30.filter(h=>h.bonus===n).length*2;
 
-    // ★ 직전 회차 앞뒤 번호 가중치
     if(lastNeighbors.has(n)) s += 6;
 
-    // ★ 냉각 후 반등 강화
-    if(lastSeen[n] >= 50) s += 15;
-    else if(lastSeen[n] >= 30) s += 8;
-    else if(lastSeen[n] >= 20) s += 4;
-    else if(lastSeen[n] >= 15) s += 2;
+    // 냉각 반등 (점수 자체에는 반영하되 너무 세지 않게)
+    if(lastSeen[n] >= 50) s += 8;
+    else if(lastSeen[n] >= 30) s += 5;
+    else if(lastSeen[n] >= 20) s += 3;
+    else if(lastSeen[n] >= 15) s += 1.5;
 
     let centrality = 0;
     for(let m=1;m<=45;m++) centrality += co[n][m];
@@ -1014,6 +1010,17 @@ function pickCandidates(scored, k=8){
   let cand = scored.slice(0,useK).map(x=>x.num);
   stages.push({label:`상위 ${useK}개`, count:cand.length, color:"#22c55e"});
 
+  // 장기 미출현 후보 강제 삽입 (최대 2개)
+  const longCold = scored.filter(s => s.lastSeen >= 50).sort((a,b)=>b.lastSeen - a.lastSeen);
+  const midCold = scored.filter(s => s.lastSeen >= 30 && s.lastSeen < 50).sort((a,b)=>b.lastSeen - a.lastSeen);
+
+  if(longCold.length > 0 && !cand.includes(longCold[0].num)){
+    cand.push(longCold[0].num);
+  }
+  if(midCold.length > 0 && !cand.includes(midCold[0].num)){
+    cand.push(midCold[0].num);
+  }
+
   if(!cand.some(n=>n>=40)){
     const best40 = scored.find(x=>x.num>=40);
     if(best40) cand.push(best40.num);
@@ -1022,16 +1029,23 @@ function pickCandidates(scored, k=8){
     const best10 = scored.find(x=>x.num>=10 && x.num<=19);
     if(best10) cand.push(best10.num);
   }
-  const unique = [...new Set(cand)].slice(0, useK + 2).sort((a,b)=>a-b);
+
+  const unique = [...new Set(cand)].slice(0, useK + 4).sort((a,b)=>a-b);
   stages.push({label:"보정 후 후보", count:unique.length, color:"#f59e0b"});
   stages.push({label:"최종 조합", count:5, color:"#ef4444"});
 
   return { candidates: unique, stages };
 }
 
-function generateCombos(candidates, co, count=5, lastDrawNums=[]){
+function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
   const cfg = BIAS_CONFIG[currentBias];
   const maxOverlap = cfg.maxOverlap;
+  const maxColdCombos = cfg.maxColdCombos;
+
+  // 장기 미출현 번호 목록
+  const longColdNums = scored.filter(s => s.lastSeen >= 50).map(s => s.num);
+  const midColdNums = scored.filter(s => s.lastSeen >= 30 && s.lastSeen < 50).map(s => s.num);
+  const allColdNums = [...longColdNums, ...midColdNums];
 
   const popSize = 300, generations = 40;
 
@@ -1061,6 +1075,11 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[]){
         f -= (overlapWithLast - maxOverlap) * 15;
       }
     }
+
+    // 장기 미출현 약한 보너스 (+3점만)
+    const coldInCombo = combo.filter(n => allColdNums.includes(n)).length;
+    f += coldInCombo * 3;
+
     return f;
   }
 
@@ -1140,25 +1159,55 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[]){
   let pop = runGA(popSize, generations);
   let selected = selectCombos(pop, count, maxOverlap, 5);
 
-  // 2차: 다양성 완화
   if(selected.length < count) selected = selectCombos(pop, count, maxOverlap, 4);
-
-  // 3차: 겹침 상한 완화
   if(selected.length < count) selected = selectCombos(pop, count, maxOverlap + 1, 4);
-
-  // 4차: 완전 완화 + GA 강화
   if(selected.length < count){
     pop = runGA(500, 60);
     selected = selectCombos(pop, count, maxOverlap + 2, 3);
   }
-
-  // 5차: 강제 채우기
   if(selected.length < count){
     for(const c of pop){
       const key = c.join("-");
       if(selected.some(s => s.join("-") === key)) continue;
       selected.push(c);
       if(selected.length >= count) break;
+    }
+  }
+
+  // ★ 장기 미출현 조합 개수 조정
+  if(allColdNums.length > 0){
+    let coldComboCount = selected.filter(c => c.some(n => allColdNums.includes(n))).length;
+
+    // 1) 0개면 → 1개 강제 포함
+    if(coldComboCount === 0){
+      const coldNum = longColdNums[0] || midColdNums[0];
+      const targetIdx = selected.length - 1;
+      const target = [...selected[targetIdx]];
+      let minScore = Infinity, minIdx = 0;
+      target.forEach((n, i)=>{
+        const sc = baseScore[n] || 0;
+        if(sc < minScore){ minScore = sc; minIdx = i; }
+      });
+      target[minIdx] = coldNum;
+      selected[targetIdx] = [...new Set(target)].sort((a,b)=>a-b);
+      coldComboCount = 1;
+    }
+
+    // 2) maxColdCombos 초과면 → 초과분 교체
+    if(coldComboCount > maxColdCombos){
+      const nonColdCombos = pop.filter(c => !c.some(n => allColdNums.includes(n)));
+      let replaceIdx = 0;
+      let keptCold = 0;
+      for(let i=0; i<selected.length && replaceIdx < nonColdCombos.length; i++){
+        const hasCold = selected[i].some(n => allColdNums.includes(n));
+        if(hasCold){
+          keptCold++;
+          if(keptCold > maxColdCombos){
+            selected[i] = nonColdCombos[replaceIdx];
+            replaceIdx++;
+          }
+        }
+      }
     }
   }
 
@@ -1318,9 +1367,11 @@ function renderPicksProgress(targetId, stages){
   `;
 }
 
-function renderPicks(combos, targetId, lastDrawNums=[]){
+function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
   const wrap = document.getElementById(targetId);
   wrap.innerHTML = "";
+
+  const allColdNums = scored.filter(s => s.lastSeen >= 30).map(s => s.num);
 
   const overlapStats = combos.map((c, i)=>{
     let maxOverlap = 0, sumOverlap = 0, cnt = 0;
@@ -1358,6 +1409,13 @@ function renderPicks(combos, targetId, lastDrawNums=[]){
       lastBadge = `<span style="color:${lastColor}; font-weight:700;">📌 직전 ${lastOverlap}개</span>`;
     }
 
+    // ❄️ 장기 미출현 배지
+    const coldInCombo = sorted.filter(n => allColdNums.includes(n));
+    let coldBadge = "";
+    if(coldInCombo.length > 0){
+      coldBadge = `<span style="color:#f87171; font-weight:700;">❄️ 장기 ${coldInCombo.join(",")}</span>`;
+    }
+
     const tooltipLines = combos.map((other, j)=>{
       if(j === idx) return null;
       const common = c.filter(n=>other.includes(n));
@@ -1367,12 +1425,15 @@ function renderPicks(combos, targetId, lastDrawNums=[]){
 
     div.innerHTML = `<div class="row" style="justify-content:space-between;">
         <span class="tag ${tagClass}">${label}</span>
-        <span class="muted">합계 ${sum} · 홀${odd}:짝${6-odd} · ${ovBadge} ${lastBadge}</span>
+        <span class="muted">합계 ${sum} · 홀${odd}:짝${6-odd} · ${ovBadge} ${lastBadge} ${coldBadge}</span>
       </div><div class="row" style="margin-top:10px;"></div>`;
     const row = div.querySelector(".row:last-child");
     sorted.forEach(n=>{
       const d = document.createElement("div");
-      d.className = "ball small pick"; d.textContent = n; row.appendChild(d);
+      const isCold = allColdNums.includes(n);
+      d.className = "ball small " + (isCold ? "cold" : "pick");
+      d.textContent = n;
+      row.appendChild(d);
     });
     wrap.appendChild(div);
   });
@@ -1382,6 +1443,7 @@ function renderPicks(combos, targetId, lastDrawNums=[]){
     const avgLast = lastDrawNums.length > 0
       ? (combos.reduce((a,c)=>a + c.filter(n=>lastDrawNums.includes(n)).length, 0) / combos.length).toFixed(1)
       : null;
+    const coldComboCount = combos.filter(c => c.some(n => allColdNums.includes(n))).length;
 
     const summary = document.createElement("p");
     summary.className = "muted";
@@ -1392,17 +1454,17 @@ function renderPicks(combos, targetId, lastDrawNums=[]){
     if(avgLast !== null){
       html += `<br>📌 직전 회차 평균 겹침: <b>${avgLast}/6</b> ${avgLast <= 1 ? '🟢' : avgLast <= 2 ? '🟡' : '🔴'}`;
     }
+    html += `<br>❄️ 장기 미출현 포함 조합: <b>${coldComboCount}개 / 5개</b>`;
     summary.innerHTML = html;
     wrap.appendChild(summary);
   }
 
-  // 5개 미만 경고
   if(combos.length < 5){
     const warning = document.createElement("p");
     warning.className = "muted";
     warning.style.color = "#f59e0b";
     warning.style.marginTop = "8px";
-    warning.innerHTML = `⚠️ 조건을 만족하는 조합이 ${combos.length}개만 생성되었습니다. 편향 강도를 완화하거나 다시 시도해주세요.`;
+    warning.innerHTML = `⚠️ 조건을 만족하는 조합이 ${combos.length}개만 생성되었습니다.`;
     wrap.appendChild(warning);
   }
 }
@@ -1414,14 +1476,45 @@ function renderScores(scored, targetId, limit){
   scored.slice(0,limit).forEach(s=>{
     const row = document.createElement("div");
     row.style.marginBottom = "8px";
+    const isCold = s.lastSeen >= 30;
     row.innerHTML = `
       <div class="row" style="justify-content:space-between;">
-        <span><b>${s.num}</b> <span class="muted">(미출현 ${s.lastSeen}회)</span></span>
+        <span>
+          <b>${s.num}</b> 
+          <span class="muted">(미출현 ${s.lastSeen}회)</span>
+          ${isCold ? '<span class="tag cold" style="font-size:10px;">❄️</span>' : ''}
+        </span>
         <span class="muted">${s.score}</span>
       </div>
-      <div class="bar"><i style="width:${Math.min(100,(s.score/max)*100)}%"></i></div>`;
+      <div class="bar"><i style="width:${Math.min(100,(s.score/max)*100)}%; ${isCold ? 'background:#ef4444;' : ''}"></i></div>`;
     wrap.appendChild(row);
   });
+}
+
+function renderColdNumbers(targetId, scored){
+  const wrap = document.getElementById(targetId);
+  if(!wrap) return;
+
+  const longCold = scored.filter(s => s.lastSeen >= 50).sort((a,b)=>b.lastSeen - a.lastSeen);
+  const midCold = scored.filter(s => s.lastSeen >= 30 && s.lastSeen < 50).sort((a,b)=>b.lastSeen - a.lastSeen);
+
+  wrap.innerHTML = `
+    <div style="margin-bottom:8px;">
+      <b style="color:#ef4444;">초장기 (50회+)</b>:
+      ${longCold.length > 0
+        ? longCold.slice(0,8).map(s=>`<span class="ball tiny cold" style="margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ")
+        : '<span class="muted">없음</span>'}
+    </div>
+    <div>
+      <b style="color:#f59e0b;">장기 (30~49회)</b>:
+      ${midCold.length > 0
+        ? midCold.slice(0,8).map(s=>`<span class="ball tiny" style="background:#f59e0b; color:#1f2937; margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ")
+        : '<span class="muted">없음</span>'}
+    </div>
+    <p class="muted" style="margin-top:10px; font-size:12px;">
+      ※ 이 번호들은 5조합 중 <b>1~2개 조합</b>에만 반영됩니다 (장기화 위험 고려).
+    </p>
+  `;
 }
 
 function renderBacktest(){
@@ -1479,16 +1572,19 @@ function renderCandidateScores(targetId, scored, limit=15){
   const top = scored.slice(0, limit);
   const max = top[0].score || 1;
 
-  wrap.innerHTML = top.map(s=>`
+  wrap.innerHTML = top.map(s=>{
+    const isCold = s.lastSeen >= 30;
+    return `
     <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
-      <div style="width:32px; font-size:13px; font-weight:700; color:var(--accent); text-align:right;">${s.num}</div>
+      <div style="width:32px; font-size:13px; font-weight:700; color:${isCold ? '#ef4444' : 'var(--accent)'}; text-align:right;">${s.num}</div>
       <div style="flex:1; height:14px; background:#334155; border-radius:6px; overflow:hidden;">
-        <div style="width:${(s.score/max*100).toFixed(1)}%; height:100%; background:linear-gradient(90deg,#0ea5e9,#38bdf8);"></div>
+        <div style="width:${(s.score/max*100).toFixed(1)}%; height:100%; background:linear-gradient(90deg,${isCold ? '#ef4444,#f87171' : '#0ea5e9,#38bdf8'});"></div>
       </div>
       <div style="width:48px; font-size:12px; color:var(--muted); text-align:right;">${s.score}</div>
       <div style="width:70px; font-size:11px; color:var(--muted); text-align:right;">미출현 ${s.lastSeen}회</div>
     </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 function renderExtraPicks(targetId, candidates, co, count=10){
@@ -1555,7 +1651,6 @@ function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballCl
       <p class="muted" style="margin-top:8px;">
         ※ 후보 ${candidates.length}개 안에 실제 당첨번호 6개 중 ${coverSize}개 이상이 들어있다면, 
         위 ${combos.length}개 조합 중 최소 1개에서 ${coverSize}개 적중이 보장됩니다.
-        <br>실제 적중률은 <span class="tab-link" data-goto="backtest">커버링 백테스트</span> 탭에서 확인하세요.
       </p>
     `;
     setupCollapsibles();
@@ -1586,12 +1681,9 @@ function renderNextTab(history, scores){
     ["20번대 회귀", "20번대 1개 → 2개 내외 회귀"],
     ["30번대 유지", "30번대 1개 → 1~2개 유지"],
     ["40번대 보완", "40번대 1개 → 0~1개"],
-    ["44의 회귀", "1, 14, 34, 45"],
-    ["31의 회귀", "30, 32, 33, 37, 38, 40"],
-    ["13의 회귀", "12, 13, 14"],
-    ["11의 회귀", "10, 12, 21, 31, 41"],
-    ["20의 회귀", "19, 21, 29, 30, 40"],
-    ["19의 회귀", "18, 20, 29, 39"],
+    ["직전 앞뒤 번호", "직전 회차 번호 ±1에 +6점 가중치"],
+    ["장기 미출현", "50회 이상 미출현 번호 후보 포함, 1~2개 조합에 반영"],
+    ["냉각 반등", cold],
     ["보너스 회귀", `${last.bonus-1}, ${last.bonus}, ${last.bonus+1}`],
     ["연속번호 회귀", "18, 21, 29, 30"],
     ["3의 배수 보완", "3의 배수 0개 → 1~2개"],
@@ -1599,7 +1691,10 @@ function renderNextTab(history, scores){
     ["합계 조정", "합계 138 → 125~155"],
     ["홀짝 균형", "홀 3~4, 짝 2~3"],
     ["동시 출현 네트워크", "13→18,34,38 / 20→30,40 / 44→1,14,34,45"],
-    ["냉각 반등", cold],
+    ["네트워크 중심성", "연결 많은 번호"],
+    ["군집", "중심성 높은 번호"],
+    ["베이지안 가중치", "사전 13.33% 업데이트"],
+    ["GA+MLP+RL", "유전 알고리즘 + MLP + RL 보상"],
     ["날짜/회차 숫자", `${next} → ${String(next).split('').join(', ')}`],
   ];
   const box = document.getElementById("reasonBox");
@@ -1625,11 +1720,11 @@ function setupBudgetPresets(){
       } else if(count <= 10){
         html += `→ <span class="tab-link" data-goto="predict">추천 5개</span> + <span class="tab-link" data-goto="cover">참고 5개</span> = 10조합`;
       } else if(count <= 20){
-        html += `→ <span class="tab-link" data-goto="predict">추천 5개</span> + <span class="tab-link" data-goto="cover">참고 15개</span> = 20조합 (<span class="tab-link" data-goto="cover">3-cover 근사</span>)`;
+        html += `→ <span class="tab-link" data-goto="predict">추천 5개</span> + <span class="tab-link" data-goto="cover">참고 15개</span> = 20조합`;
       } else if(count <= 60){
         html += `→ <span class="tab-link" data-goto="cover">4-cover 40조합</span> 권장 (4등 목표)`;
       } else {
-        html += `→ <span class="tab-link" data-goto="cover">5-cover 50조합</span> 권장 (3등 목표, 비용 부담 큼)`;
+        html += `→ <span class="tab-link" data-goto="cover">5-cover 50조합</span> 권장 (3등 목표)`;
       }
       info.innerHTML = html;
     });
@@ -1687,42 +1782,15 @@ async function runCoveringBacktest(history){
       <div class="bt-cover-result">
         <p class="muted">검증 회차: ${total}회 · ${coverSize}-cover · 후보 ${candidateCount}개</p>
         <div class="grid grid-3" style="margin-top:12px;">
-          <div>
-            <div class="muted">3개 이상 적중</div>
-            <div class="big">${pct(hit3)}%</div>
-            <div class="muted">${hit3}/${total}</div>
-          </div>
-          <div>
-            <div class="muted">4개 이상 적중</div>
-            <div class="big" style="color:#84cc16;">${pct(hit4)}%</div>
-            <div class="muted">${hit4}/${total}</div>
-          </div>
-          <div>
-            <div class="muted">5개 이상 적중</div>
-            <div class="big" style="color:#eab308;">${pct(hit5)}%</div>
-            <div class="muted">${hit5}/${total}</div>
-          </div>
+          <div><div class="muted">3개 이상 적중</div><div class="big">${pct(hit3)}%</div><div class="muted">${hit3}/${total}</div></div>
+          <div><div class="muted">4개 이상 적중</div><div class="big" style="color:#84cc16;">${pct(hit4)}%</div><div class="muted">${hit4}/${total}</div></div>
+          <div><div class="muted">5개 이상 적중</div><div class="big" style="color:#eab308;">${pct(hit5)}%</div><div class="muted">${hit5}/${total}</div></div>
         </div>
         <div class="grid grid-3" style="margin-top:12px;">
-          <div>
-            <div class="muted">6개 적중</div>
-            <div class="big" style="color:#f97316;">${pct(hit6)}%</div>
-            <div class="muted">${hit6}/${total}</div>
-          </div>
-          <div>
-            <div class="muted">후보에 ${coverSize}개 이상 포함</div>
-            <div class="big">${pct(guaranteed)}%</div>
-            <div class="muted">${guaranteed}/${total}</div>
-          </div>
-          <div>
-            <div class="muted">보장 성공률</div>
-            <div class="big" style="color:#22c55e;">${guaranteed ? (coverSuccess/guaranteed*100).toFixed(1) : 0}%</div>
-            <div class="muted">${coverSuccess}/${guaranteed}</div>
-          </div>
+          <div><div class="muted">6개 적중</div><div class="big" style="color:#f97316;">${pct(hit6)}%</div><div class="muted">${hit6}/${total}</div></div>
+          <div><div class="muted">후보에 ${coverSize}개 이상 포함</div><div class="big">${pct(guaranteed)}%</div><div class="muted">${guaranteed}/${total}</div></div>
+          <div><div class="muted">보장 성공률</div><div class="big" style="color:#22c55e;">${guaranteed ? (coverSuccess/guaranteed*100).toFixed(1) : 0}%</div><div class="muted">${coverSuccess}/${guaranteed}</div></div>
         </div>
-        <p class="muted" style="margin-top:12px;">
-          ※ "보장 성공률" = 후보에 실제 당첨번호 ${coverSize}개 이상이 포함된 경우, 커버링 조합이 실제로 ${coverSize}개 적중을 달성한 비율.
-        </p>
       </div>
     `;
   }, 100);
@@ -1738,9 +1806,9 @@ function initBudget(){
 function setupBiasButtons(history){
   const info = document.getElementById("biasInfo");
   const labels = {
-    low: "현재: <b>약 (장기 중심)</b> — 직전 회차 번호 최대 1개 반영",
-    medium: "현재: <b>중 (균형)</b> — 직전 회차 번호 최대 2개 반영",
-    high: "현재: <b>강 (기존 로직)</b> — 직전 회차 번호 최대 3개 반영"
+    low: "현재: <b>약 (장기 중심)</b> — 직전 회차 최대 1개 / 장기 미출현 최대 2조합",
+    medium: "현재: <b>중 (균형)</b> — 직전 회차 최대 2개 / 장기 미출현 최대 2조합",
+    high: "현재: <b>강 (기존 로직)</b> — 직전 회차 최대 3개 / 장기 미출현 최대 1조합"
   };
 
   document.querySelectorAll(".bias-btn").forEach(btn=>{
@@ -1754,19 +1822,21 @@ function setupBiasButtons(history){
 
       const lastDraw = history[history.length-1];
       const {scores, co} = scoreNumbers(history);
+      currentScores = scores;
       baseScore = {};
       scores.forEach(s=> baseScore[s.num] = s.score);
 
       const {candidates, stages} = pickCandidates(scores, 8);
-      const combos = generateCombos(candidates, co, 5, lastDraw.nums);
+      const combos = generateCombos(candidates, co, 5, lastDraw.nums, scores);
 
       renderPicksProgress("picksProgress", stages);
-      renderPicks(combos, "picks", lastDraw.nums);
+      renderPicks(combos, "picks", lastDraw.nums, scores);
       renderScores(scores, "scores", 15);
+      renderColdNumbers("coldNumbers", scores);
 
       renderTierGoals("tierGoals");
       renderCandidateScores("candidateScores", scores, 15);
-      renderPicks(combos, "nextPicks", lastDraw.nums);
+      renderPicks(combos, "nextPicks", lastDraw.nums, scores);
       renderExtraPicks("extraPicks", candidates, co, 10);
       renderScores(scores, "nextScores", 20);
       renderNextTab(history, scores);
@@ -1788,39 +1858,39 @@ let expCurrentRange = "quick";
 function getStageConfig(rangeMode){
   if(rangeMode === "quick"){
     return [
-      {stage:1, range:20,  method:"창의적 기법",        candidates:15},
-      {stage:2, range:20,  method:"후보 압축",           candidates:15},
-      {stage:3, range:20,  method:"8~10개 압축",         candidates:10},
-      {stage:4, range:20,  method:"6~8개+상관관계",      candidates:8},
+      {stage:1, range:20,  method:"창의적 기법", candidates:15},
+      {stage:2, range:20,  method:"후보 압축", candidates:15},
+      {stage:3, range:20,  method:"8~10개 압축", candidates:10},
+      {stage:4, range:20,  method:"6~8개+상관관계", candidates:8},
       {stage:5, range:20,  method:"네트워크+군집+베이지안", candidates:8},
-      {stage:6, range:20,  method:"GA+MLP+RL",           candidates:8},
+      {stage:6, range:20,  method:"GA+MLP+RL", candidates:8},
     ];
   } else if(rangeMode === "normal"){
     return [
-      {stage:1, range:50,  method:"창의적 기법",        candidates:15},
-      {stage:2, range:50,  method:"후보 압축",           candidates:15},
-      {stage:3, range:50,  method:"8~10개 압축",         candidates:10},
-      {stage:4, range:50,  method:"6~8개+상관관계",      candidates:8},
+      {stage:1, range:50,  method:"창의적 기법", candidates:15},
+      {stage:2, range:50,  method:"후보 압축", candidates:15},
+      {stage:3, range:50,  method:"8~10개 압축", candidates:10},
+      {stage:4, range:50,  method:"6~8개+상관관계", candidates:8},
       {stage:5, range:50,  method:"네트워크+군집+베이지안", candidates:8},
-      {stage:6, range:50,  method:"GA+MLP+RL",           candidates:8},
+      {stage:6, range:50,  method:"GA+MLP+RL", candidates:8},
     ];
   } else if(rangeMode === "detail"){
     return [
-      {stage:1, range:100, method:"창의적 기법",        candidates:15},
-      {stage:2, range:100, method:"후보 압축",           candidates:15},
-      {stage:3, range:100, method:"8~10개 압축",         candidates:10},
-      {stage:4, range:100, method:"6~8개+상관관계",      candidates:8},
+      {stage:1, range:100, method:"창의적 기법", candidates:15},
+      {stage:2, range:100, method:"후보 압축", candidates:15},
+      {stage:3, range:100, method:"8~10개 압축", candidates:10},
+      {stage:4, range:100, method:"6~8개+상관관계", candidates:8},
       {stage:5, range:100, method:"네트워크+군집+베이지안", candidates:8},
-      {stage:6, range:100, method:"GA+MLP+RL",           candidates:8},
+      {stage:6, range:100, method:"GA+MLP+RL", candidates:8},
     ];
   } else {
     return [
-      {stage:1, range:20,  method:"창의적 기법",        candidates:15},
-      {stage:2, range:50,  method:"후보 압축",           candidates:15},
-      {stage:3, range:100, method:"8~10개 압축",         candidates:10},
-      {stage:4, range:200, method:"6~8개+상관관계",      candidates:8},
+      {stage:1, range:20,  method:"창의적 기법", candidates:15},
+      {stage:2, range:50,  method:"후보 압축", candidates:15},
+      {stage:3, range:100, method:"8~10개 압축", candidates:10},
+      {stage:4, range:200, method:"6~8개+상관관계", candidates:8},
       {stage:5, range:500, method:"네트워크+군집+베이지안", candidates:8},
-      {stage:6, range:500, method:"GA+MLP+RL",           candidates:8},
+      {stage:6, range:500, method:"GA+MLP+RL", candidates:8},
     ];
   }
 }
@@ -1866,7 +1936,7 @@ async function renderExperiment(history){
 
       const {scores: pScores, co: pCo} = scoreNumbers(predictHistory);
       const cands = pScores.slice(0, Math.min(st.candidates, 10)).map(s=>s.num).sort((a,b)=>a-b);
-      const predCombos = generateCombos(cands, pCo, 3);
+      const predCombos = generateCombos(cands, pCo, 3, history[i].nums, pScores);
 
       let bestCombo = null;
       let bestHit = 0;
@@ -2009,20 +2079,22 @@ function setupExperimentRange(){
   const lastDraw = history[history.length-1];
 
   const {scores, co} = scoreNumbers(history);
+  currentScores = scores;
   baseScore = {};
   scores.forEach(s=> baseScore[s.num] = s.score);
 
   const {candidates, stages} = pickCandidates(scores, 8);
-  const combos = generateCombos(candidates, co, 5, lastDraw.nums);
+  const combos = generateCombos(candidates, co, 5, lastDraw.nums, scores);
 
   renderPicksProgress("picksProgress", stages);
-  renderPicks(combos, "picks", lastDraw.nums);
+  renderPicks(combos, "picks", lastDraw.nums, scores);
   renderScores(scores, "scores", 15);
+  renderColdNumbers("coldNumbers", scores);
   renderBacktest();
 
   renderTierGoals("tierGoals");
   renderCandidateScores("candidateScores", scores, 15);
-  renderPicks(combos, "nextPicks", lastDraw.nums);
+  renderPicks(combos, "nextPicks", lastDraw.nums, scores);
   renderExtraPicks("extraPicks", candidates, co, 10);
 
   renderScores(scores, "nextScores", 20);
