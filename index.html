@@ -43,6 +43,7 @@
   .ball.tiny{width:26px;height:26px;font-size:11px;}
   .ball.pick{background:var(--accent); color:#06202e;}
   .ball.cold{background:#ef4444; color:#fff;}
+  .ball.midcold{background:#f59e0b; color:#1f2937;}
   .ball.zero{background:#22c55e; color:#052e16;}
   .ball.c3{background:#22c55e; color:#052e16;}
   .ball.c4{background:#eab308; color:#1f2937;}
@@ -59,6 +60,7 @@
   .tag.bad{background:#7f1d1d; color:#fecaca;}
   .tag.info{background:#0c4a6e; color:#bae6fd;}
   .tag.cold{background:#7f1d1d; color:#fecaca;}
+  .tag.midcold{background:#78350f; color:#fde68a;}
   .tag.zero{background:#14532d; color:#bbf7d0;}
   .status{padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:12px;}
   .status.ok{background:#052e16; color:#bbf7d0; border:1px solid #14532d;}
@@ -386,8 +388,8 @@
         <ol class="method-list">
           <li><b>점수 계산</b>: 최근 5/10/30/100회 출현 × 가중치 (편향 강도별 조정)</li>
           <li><b>직전 앞뒤 번호</b>: 직전 회차 번호 ±1에 <b>+6점</b> 가중치</li>
-          <li><b>장기 냉각 보너스</b>: 50회 이상 미출현 <b>+8점</b> / 30회 +5점 / 20회 +3점</li>
-          <li><b>장기 미출현 반영</b>: 50회 이상 미출현 번호는 후보에 포함되며, 5조합 중 <b>1~2개 조합에만</b> 들어갑니다.</li>
+          <li><b>장기 냉각 보너스</b>: <b>40회 이상(초장기) +12점</b> / 30회 +8점 / 20회 +4점 / 15회 +2점</li>
+          <li><b>장기 미출현 반영</b>: <b>40회 이상(초장기) / 20~39회(장기)</b> 미출현 번호는 후보에 포함되며, 5조합 중 <b>1~2개 조합에만</b> 들어갑니다.</li>
           <li><b>직전 회차 겹침 0개 조합</b>: 5조합 중 <b>1개는 직전 회차와 겹침 0개</b>로 생성됩니다 (실제 확률 약 27%).</li>
           <li><b>후보 추출</b>: 45 → 15 → 12 → 10 → 상위 K (약 12 / 중 10 / 강 8) → 보정</li>
           <li><b>조합 생성</b>: GA (개체군 300, 세대 40, 엘리트 20%)</li>
@@ -417,14 +419,14 @@
       </div>
     </div>
 
-    <!-- 장기 미출현 번호 -->
+    <!-- 장기 미출현 -->
     <div class="card" style="margin-top:16px;">
       <div class="collapsible-header open">
-        <span>❄️ 장기 미출현 번호</span>
+        <span>❄️ 장기 미출현 번호 (20회 이상)</span>
         <span class="arrow">▶</span>
       </div>
       <div class="collapsible-body open">
-        <p class="muted">50회 이상 미출현 번호는 후보에 포함되며, 5조합 중 1~2개에 반영됩니다.</p>
+        <p class="muted">초장기(40회+) / 장기(20~39회) 미출현 번호는 후보에 포함되며, 5조합 중 1~2개에 반영됩니다.</p>
         <div id="coldNumbers"></div>
       </div>
     </div>
@@ -731,7 +733,7 @@
       <div class="tech-card"><h4>2. 보색 번호</h4><p>45 - 번호. 거울 번호와 동일.</p></div>
       <div class="tech-card"><h4>3. 보너스 회귀</h4><p>이전 보너스 번호가 다음 회차 당첨번호로.</p></div>
       <div class="tech-card"><h4>4. 연속번호 회귀</h4><p>연속번호 다음 회차 패턴.</p></div>
-      <div class="tech-card"><h4>5. 냉각 후 반등</h4><p>50회 이상 미출현 +8점, 30회 +5점.</p></div>
+      <div class="tech-card"><h4>5. 냉각 후 반등</h4><p>40회 이상(초장기) +12점 / 30회 +8점 / 20회 +4점.</p></div>
       <div class="tech-card"><h4>6. 회차 숫자 분해</h4><p>1239 → 1,2,3,9 → 12,13,19,21,23,29...</p></div>
       <div class="tech-card"><h4>7. 날짜 숫자 분해</h4><p>2026-09-05 → 2,0,2,6,0,9,0,5 → 2,5,6,9,15.</p></div>
       <div class="tech-card"><h4>8. 인접 번호</h4><p>직전 회차 ±1에 +6점.</p></div>
@@ -928,6 +930,10 @@ const BIAS_CONFIG = {
   high:   {W5:4, W10:3,   W30:2, W100:1, maxOverlap:3, candidateK:8,  maxColdCombos:1, zeroOverlapCount:0, label:"강"}
 };
 
+/* ===== 장기/초장기 기준 ===== */
+const COLD_THRESHOLD = 20;   // 장기 (20~39회)
+const LONG_COLD_THRESHOLD = 40; // 초장기 (40회+)
+
 /* ===== 알고리즘 ===== */
 let baseScore = {};
 let currentScores = [];
@@ -979,10 +985,11 @@ function scoreNumbers(history){
 
     if(lastNeighbors.has(n)) s += 6;
 
-    if(lastSeen[n] >= 50) s += 8;
-    else if(lastSeen[n] >= 30) s += 5;
-    else if(lastSeen[n] >= 20) s += 3;
-    else if(lastSeen[n] >= 15) s += 1.5;
+    // ★ 장기/초장기 기준 (20~39 / 40+)
+    if(lastSeen[n] >= 40) s += 12;       // 초장기
+    else if(lastSeen[n] >= 30) s += 8;
+    else if(lastSeen[n] >= 20) s += 4;   // 장기
+    else if(lastSeen[n] >= 15) s += 2;
 
     let centrality = 0;
     for(let m=1;m<=45;m++) centrality += co[n][m];
@@ -1010,8 +1017,9 @@ function pickCandidates(scored, k=8){
   let cand = scored.slice(0,useK).map(x=>x.num);
   stages.push({label:`상위 ${useK}개`, count:cand.length, color:"#22c55e"});
 
-  const longCold = scored.filter(s => s.lastSeen >= 50).sort((a,b)=>b.lastSeen - a.lastSeen);
-  const midCold = scored.filter(s => s.lastSeen >= 30 && s.lastSeen < 50).sort((a,b)=>b.lastSeen - a.lastSeen);
+  // ★ 초장기(40+) 1개 + 장기(20~39) 1개 강제 삽입
+  const longCold = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
+  const midCold = scored.filter(s => s.lastSeen >= COLD_THRESHOLD && s.lastSeen < LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
 
   if(longCold.length > 0 && !cand.includes(longCold[0].num)){
     cand.push(longCold[0].num);
@@ -1042,8 +1050,9 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
   const maxColdCombos = cfg.maxColdCombos;
   const zeroOverlapCount = cfg.zeroOverlapCount;
 
-  const longColdNums = scored.filter(s => s.lastSeen >= 50).map(s => s.num);
-  const midColdNums = scored.filter(s => s.lastSeen >= 30 && s.lastSeen < 50).map(s => s.num);
+  // ★ 초장기(40+) / 장기(20~39)
+  const longColdNums = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).map(s => s.num);
+  const midColdNums = scored.filter(s => s.lastSeen >= COLD_THRESHOLD && s.lastSeen < LONG_COLD_THRESHOLD).map(s => s.num);
   const allColdNums = [...longColdNums, ...midColdNums];
 
   const popSize = 300, generations = 40;
@@ -1217,7 +1226,6 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
     ).length;
 
     if(currentZeroCount < zeroOverlapCount && zeroOverlapCombos.length > 0){
-      // 교체 대상: 겹침이 많은 조합 중 하나
       let targetIdx = -1;
       let maxLastOv = -1;
       for(let i=0; i<selected.length; i++){
@@ -1229,18 +1237,15 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
       }
 
       if(targetIdx >= 0){
-        // 가장 겹침 적은 대체 조합 찾기 (다른 조합과의 다양성 고려)
         let bestReplacement = null;
         let bestScore = -Infinity;
         for(const zc of zeroOverlapCombos.slice(0, 20)){
-          // 다른 선택된 조합과의 다양성 점수
           let minOverlapWithOthers = Infinity;
           for(let i=0; i<selected.length; i++){
             if(i === targetIdx) continue;
             const ov = zc.filter(n => selected[i].includes(n)).length;
             if(ov < minOverlapWithOthers) minOverlapWithOthers = ov;
           }
-          // 점수 = baseScore + 다양성 보너스
           const zcScore = zc.reduce((a,n)=> a + (baseScore[n]||0), 0) 
                         + (minOverlapWithOthers <= 3 ? 10 : 0);
           if(zcScore > bestScore){
@@ -1415,7 +1420,9 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
   const wrap = document.getElementById(targetId);
   wrap.innerHTML = "";
 
-  const allColdNums = scored.filter(s => s.lastSeen >= 30).map(s => s.num);
+  // ★ 장기(20~39) + 초장기(40+) 표시용
+  const allColdNums = scored.filter(s => s.lastSeen >= COLD_THRESHOLD).map(s => s.num);
+  const longColdNums = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).map(s => s.num);
 
   const overlapStats = combos.map((c, i)=>{
     let maxOverlap = 0, sumOverlap = 0, cnt = 0;
@@ -1460,7 +1467,9 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
     const coldInCombo = sorted.filter(n => allColdNums.includes(n));
     let coldBadge = "";
     if(coldInCombo.length > 0){
-      coldBadge = `<span style="color:#f87171; font-weight:700;">❄️ 장기 ${coldInCombo.join(",")}</span>`;
+      const hasLong = coldInCombo.some(n => longColdNums.includes(n));
+      const icon = hasLong ? "❄️" : "🌡️";
+      coldBadge = `<span style="color:${hasLong ? '#f87171' : '#f59e0b'}; font-weight:700;">${icon} ${coldInCombo.join(",")}</span>`;
     }
 
     const tooltipLines = combos.map((other, j)=>{
@@ -1477,11 +1486,14 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
     const row = div.querySelector(".row:last-child");
     sorted.forEach(n=>{
       const d = document.createElement("div");
-      const isCold = allColdNums.includes(n);
+      const isLongCold = longColdNums.includes(n);
+      const isMidCold = !isLongCold && allColdNums.includes(n);
       const isLast = lastDrawNums.includes(n);
+      const isZeroCombo = lastDrawNums.length > 0 && c.filter(x=>lastDrawNums.includes(x)).length === 0;
       let cls = "ball small ";
-      if(isCold) cls += "cold";
-      else if(!isLast && lastDrawNums.length > 0 && c.filter(x=>lastDrawNums.includes(x)).length === 0) cls += "zero";
+      if(isLongCold) cls += "cold";
+      else if(isMidCold) cls += "midcold";
+      else if(isZeroCombo && !isLast) cls += "zero";
       else cls += "pick";
       d.className = cls;
       d.textContent = n;
@@ -1496,6 +1508,7 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
       ? (combos.reduce((a,c)=>a + c.filter(n=>lastDrawNums.includes(n)).length, 0) / combos.length).toFixed(1)
       : null;
     const coldComboCount = combos.filter(c => c.some(n => allColdNums.includes(n))).length;
+    const longColdComboCount = combos.filter(c => c.some(n => longColdNums.includes(n))).length;
     const zeroOverlapComboCount = lastDrawNums.length > 0
       ? combos.filter(c => c.filter(n => lastDrawNums.includes(n)).length === 0).length
       : 0;
@@ -1510,7 +1523,8 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
       html += `<br>📌 직전 회차 평균 겹침: <b>${avgLast}/6</b> ${avgLast <= 1 ? '🟢' : avgLast <= 2 ? '🟡' : '🔴'}`;
     }
     html += `<br>✨ 직전 회차 겹침 0개 조합: <b>${zeroOverlapComboCount}개 / ${combos.length}개</b>`;
-    html += `<br>❄️ 장기 미출현 포함 조합: <b>${coldComboCount}개 / ${combos.length}개</b>`;
+    html += `<br>❄️ 초장기(40회+) 포함 조합: <b>${longColdComboCount}개 / ${combos.length}개</b>`;
+    html += `<br>🌡️ 장기(20~39회) 포함 조합: <b>${coldComboCount - longColdComboCount}개 / ${combos.length}개</b>`;
     summary.innerHTML = html;
     wrap.appendChild(summary);
   }
@@ -1532,17 +1546,18 @@ function renderScores(scored, targetId, limit){
   scored.slice(0,limit).forEach(s=>{
     const row = document.createElement("div");
     row.style.marginBottom = "8px";
-    const isCold = s.lastSeen >= 30;
+    const isLong = s.lastSeen >= LONG_COLD_THRESHOLD;
+    const isMid = !isLong && s.lastSeen >= COLD_THRESHOLD;
+    const tag = isLong ? '<span class="tag cold" style="font-size:10px;">❄️ 초장기</span>' 
+              : isMid ? '<span class="tag midcold" style="font-size:10px;">🌡️ 장기</span>' 
+              : '';
+    const barColor = isLong ? '#ef4444' : isMid ? '#f59e0b' : 'var(--accent)';
     row.innerHTML = `
       <div class="row" style="justify-content:space-between;">
-        <span>
-          <b>${s.num}</b> 
-          <span class="muted">(미출현 ${s.lastSeen}회)</span>
-          ${isCold ? '<span class="tag cold" style="font-size:10px;">❄️</span>' : ''}
-        </span>
+        <span><b>${s.num}</b> <span class="muted">(미출현 ${s.lastSeen}회)</span> ${tag}</span>
         <span class="muted">${s.score}</span>
       </div>
-      <div class="bar"><i style="width:${Math.min(100,(s.score/max)*100)}%; ${isCold ? 'background:#ef4444;' : ''}"></i></div>`;
+      <div class="bar"><i style="width:${Math.min(100,(s.score/max)*100)}%; background:${barColor};"></i></div>`;
     wrap.appendChild(row);
   });
 }
@@ -1551,24 +1566,24 @@ function renderColdNumbers(targetId, scored){
   const wrap = document.getElementById(targetId);
   if(!wrap) return;
 
-  const longCold = scored.filter(s => s.lastSeen >= 50).sort((a,b)=>b.lastSeen - a.lastSeen);
-  const midCold = scored.filter(s => s.lastSeen >= 30 && s.lastSeen < 50).sort((a,b)=>b.lastSeen - a.lastSeen);
+  const longCold = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
+  const midCold = scored.filter(s => s.lastSeen >= COLD_THRESHOLD && s.lastSeen < LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
 
   wrap.innerHTML = `
     <div style="margin-bottom:8px;">
-      <b style="color:#ef4444;">초장기 (50회+)</b>:
+      <b style="color:#ef4444;">❄️ 초장기 (40회+)</b>:
       ${longCold.length > 0
         ? longCold.slice(0,8).map(s=>`<span class="ball tiny cold" style="margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ")
         : '<span class="muted">없음</span>'}
     </div>
     <div>
-      <b style="color:#f59e0b;">장기 (30~49회)</b>:
+      <b style="color:#f59e0b;">🌡️ 장기 (20~39회)</b>:
       ${midCold.length > 0
-        ? midCold.slice(0,8).map(s=>`<span class="ball tiny" style="background:#f59e0b; color:#1f2937; margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ")
+        ? midCold.slice(0,8).map(s=>`<span class="ball tiny midcold" style="margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ")
         : '<span class="muted">없음</span>'}
     </div>
     <p class="muted" style="margin-top:10px; font-size:12px;">
-      ※ 이 번호들은 5조합 중 <b>1~2개 조합</b>에만 반영됩니다 (장기화 위험 고려).
+      ※ 초장기(40회+) / 장기(20~39회) 미출현 번호는 5조합 중 <b>1~2개 조합</b>에만 반영됩니다.
     </p>
   `;
 }
@@ -1629,12 +1644,14 @@ function renderCandidateScores(targetId, scored, limit=15){
   const max = top[0].score || 1;
 
   wrap.innerHTML = top.map(s=>{
-    const isCold = s.lastSeen >= 30;
+    const isLong = s.lastSeen >= LONG_COLD_THRESHOLD;
+    const isMid = !isLong && s.lastSeen >= COLD_THRESHOLD;
+    const color = isLong ? '#ef4444' : isMid ? '#f59e0b' : 'var(--accent)';
     return `
     <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
-      <div style="width:32px; font-size:13px; font-weight:700; color:${isCold ? '#ef4444' : 'var(--accent)'}; text-align:right;">${s.num}</div>
+      <div style="width:32px; font-size:13px; font-weight:700; color:${color}; text-align:right;">${s.num}</div>
       <div style="flex:1; height:14px; background:#334155; border-radius:6px; overflow:hidden;">
-        <div style="width:${(s.score/max*100).toFixed(1)}%; height:100%; background:linear-gradient(90deg,${isCold ? '#ef4444,#f87171' : '#0ea5e9,#38bdf8'});"></div>
+        <div style="width:${(s.score/max*100).toFixed(1)}%; height:100%; background:linear-gradient(90deg,${color},${color}99);"></div>
       </div>
       <div style="width:48px; font-size:12px; color:var(--muted); text-align:right;">${s.score}</div>
       <div style="width:70px; font-size:11px; color:var(--muted); text-align:right;">미출현 ${s.lastSeen}회</div>
@@ -1725,7 +1742,7 @@ function renderNextTab(history, scores){
     .map(([n,c])=>`${n}(${c}회)`).join(", ");
   document.getElementById("strongNums").textContent = strong || "-";
 
-  const cold = scores.filter(s=>s.lastSeen>=30).slice(0,12).map(s=>s.num).join(", ");
+  const cold = scores.filter(s=>s.lastSeen>=COLD_THRESHOLD).slice(0,12).map(s=>s.num).join(", ");
   document.getElementById("coldNums").textContent = cold || "-";
 
   const mirror = last.nums.map(n=>45-n).filter(n=>n>=1&&n<=45).sort((a,b)=>a-b);
@@ -1738,7 +1755,8 @@ function renderNextTab(history, scores){
     ["30번대 유지", "30번대 1개 → 1~2개 유지"],
     ["40번대 보완", "40번대 1개 → 0~1개"],
     ["직전 앞뒤 번호", "직전 회차 번호 ±1에 +6점 가중치"],
-    ["장기 미출현", "50회 이상 미출현 번호 후보 포함, 1~2개 조합에 반영"],
+    ["초장기 미출현", "40회 이상 미출현 +12점, 후보 포함, 1~2조합 반영"],
+    ["장기 미출현", "20~39회 미출현 +4~8점, 후보 포함, 1~2조합 반영"],
     ["직전 회차 겹침 0개", "5조합 중 1개는 직전 회차와 겹침 0개"],
     ["냉각 반등", cold],
     ["보너스 회귀", `${last.bonus-1}, ${last.bonus}, ${last.bonus+1}`],
