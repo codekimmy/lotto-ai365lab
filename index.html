@@ -172,11 +172,11 @@
     <p class="muted">6단계 실험(창의적 기법 + 네트워크 + GA + MLP + RL 스타일 보상) 기반.</p>
     <div id="status" class="status ok">Google Sheets 데이터를 불러오는 중...</div>
 
+    <!-- ★ 최신 회차: latestMeta 삭제됨 -->
     <div class="card">
       <h2>📌 최신 회차</h2>
       <div id="latestInfo" class="muted">-</div>
       <div id="latestBalls" class="row" style="margin-top:10px;"></div>
-      <div id="latestMeta" class="muted" style="margin-top:8px;"></div>
     </div>
 
     <div class="grid grid-2" style="margin-top:16px;">
@@ -669,7 +669,6 @@ function formatKDateLong(dateStr){
   return `${y}년 ${Number(m)}월 ${Number(d)}일`;
 }
 
-// ★ 방법 B: 최신 회차 날짜 + 7일
 function getNextDrawDate(lastDate){
   const d = new Date(lastDate);
   d.setDate(d.getDate() + 7);
@@ -697,10 +696,9 @@ function renderLatest(history){
   const b = document.createElement("div");
   b.className = "ball bonus"; b.textContent = last.bonus; box.appendChild(b);
 
-  document.getElementById("latestMeta").innerHTML =
-    `다음 예측 대상: <b>${next}회</b> (${formatKDateLong(nextDate)}) · 데이터 기준: ${history.length}회차`;
+  // ★ latestMeta 삭제됨 (요청 1)
 
-  // ★ 탭 제목에 [회차, 날짜] 반영
+  // 탭 제목에 [회차, 날짜] 반영
   document.getElementById("predictTitle").innerHTML =
     `🎯 이번 주 예측 <span class="muted" style="font-size:14px;">[${next}회, ${formatKDateLong(nextDate)} 추첨 예정]</span>`;
   document.getElementById("nextTitle").innerHTML =
@@ -714,15 +712,10 @@ function renderLatest(history){
   document.getElementById("lastBonus").textContent = last.bonus;
 }
 
-function renderPicks(combos, targetId, nextDrawNo, nextDate){
+/* ★ renderPicks: 중복 회차/날짜 헤더 삭제됨 (요청 2, 3) */
+function renderPicks(combos, targetId){
   const wrap = document.getElementById(targetId);
   wrap.innerHTML = "";
-
-  const header = document.createElement("p");
-  header.className = "muted";
-  header.style.marginBottom = "10px";
-  header.innerHTML = `[${nextDrawNo}회, ${formatKDateLong(nextDate)}]`;
-  wrap.appendChild(header);
 
   combos.forEach((c, idx)=>{
     const div = document.createElement("div");
@@ -784,7 +777,6 @@ function renderBacktest(){
 function renderNextTab(history, scores){
   const last = history[history.length-1];
   const next = last.draw + 1;
-  const nextDate = getNextDrawDate(last.date);
 
   const r10 = history.slice(-10);
   const cnt = {};
@@ -840,21 +832,16 @@ function renderNextTab(history, scores){
   const candidates = pickCandidates(scores, 8);
   const combos = generateCombos(candidates, co, 5);
 
-  const last = history[history.length-1];
-  const next = last.draw + 1;
-  const nextDate = getNextDrawDate(last.date);
-
-  renderPicks(combos, "picks", next, nextDate);
+  renderPicks(combos, "picks");
   renderScores(scores, "scores", 15);
   renderBacktest();
 
-  renderPicks(combos, "nextPicks", next, nextDate);
+  renderPicks(combos, "nextPicks");
   renderScores(scores, "nextScores", 20);
   renderNextTab(history, scores);
 
   console.log("Candidates:", candidates);
   console.log("Combos:", combos);
-  console.log("Next draw:", next, nextDate);
 })();
 </script>
 </body>
