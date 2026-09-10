@@ -915,8 +915,10 @@ function pickCandidates(scored, k=8){
   return { candidates: unique, stages };
 }
 
+/* ===== 조합 생성 (다양성 강제) ===== */
 function generateCombos(candidates, co, count=5){
   const popSize = 300, generations = 40;
+
   function fitness(combo){
     let f = 0;
     combo.forEach(n=> f += baseScore[n]||0);
@@ -938,47 +940,100 @@ function generateCombos(candidates, co, count=5){
     f += Math.min(coScore/10, 6);
     return f;
   }
+
+  function normalize(combo){
+    return [...new Set(combo)].sort((a,b)=>a-b);
+  }
+
   function randCombo(){
     const shuffled = [...candidates].sort(()=>Math.random()-0.5);
-    return shuffled.slice(0,6).sort((a,b)=>a-b);
+    return normalize(shuffled.slice(0,6));
   }
+
   let pop = Array.from({length:popSize}, randCombo);
+
   for(let g=0;g<generations;g++){
     pop.sort((a,b)=> fitness(b)-fitness(a));
-    const elite = pop.slice(0, Math.floor(popSize*0.2));
+
+    const elite = [];
+    const seenElite = new Set();
+    for(const c of pop){
+      const key = c.join("-");
+      if(!seenElite.has(key)){
+        seenElite.add(key);
+        elite.push(c);
+      }
+      if(elite.length >= Math.floor(popSize*0.2)) break;
+    }
+
     const next = [...elite];
     while(next.length < popSize){
       const p1 = elite[Math.floor(Math.random()*elite.length)];
       const p2 = elite[Math.floor(Math.random()*elite.length)];
       const cut = 2 + Math.floor(Math.random()*3);
-      let child = [...new Set([...p1.slice(0,cut), ...p2.slice(cut)])];
+      let child = normalize([...new Set([...p1.slice(0,cut), ...p2.slice(cut)])]);
       while(child.length<6){
         const r = candidates[Math.floor(Math.random()*candidates.length)];
         if(!child.includes(r)) child.push(r);
       }
-      child = child.slice(0,6).sort((a,b)=>a-b);
+      child = normalize(child.slice(0,6));
       if(Math.random()<0.3){
         const idx = Math.floor(Math.random()*6);
         const r = candidates[Math.floor(Math.random()*candidates.length)];
         child[idx] = r;
-        child = [...new Set(child)].sort((a,b)=>a-b);
+        child = normalize(child);
         while(child.length<6){
           const rr = candidates[Math.floor(Math.random()*candidates.length)];
           if(!child.includes(rr)) child.push(rr);
         }
+        child = normalize(child);
       }
       next.push(child);
     }
     pop = next;
   }
+
   pop.sort((a,b)=> fitness(b)-fitness(a));
-  const uniq = [], seen = new Set();
+
+  const selected = [];
+  const seenKeys = new Set();
+
   for(const c of pop){
     const key = c.join("-");
-    if(!seen.has(key)){ seen.add(key); uniq.push(c); }
-    if(uniq.length>=count) break;
+    if(seenKeys.has(key)) continue;
+
+    let tooSimilar = false;
+    for(const s of selected){
+      const overlap = c.filter(n=>s.includes(n)).length;
+      if(overlap >= 5){ tooSimilar = true; break; }
+    }
+    if(tooSimilar) continue;
+
+    seenKeys.add(key);
+    selected.push(c);
+    if(selected.length >= count) break;
   }
-  return uniq;
+
+  // 조건 완화 fallback
+  if(selected.length < count){
+    for(const c of pop){
+      const key = c.join("-");
+      if(seenKeys.has(key)) continue;
+
+      let tooSimilar = false;
+      for(const s of selected){
+        const overlap = c.filter(n=>s.includes(n)).length;
+        if(overlap >= 4){ tooSimilar = true; break; }
+      }
+      if(tooSimilar) continue;
+
+      seenKeys.add(key);
+      selected.push(c);
+      if(selected.length >= count) break;
+    }
+  }
+
+  return selected;
 }
 
 /* ===== 조합 유틸 ===== */
@@ -996,7 +1051,7 @@ function combinations(arr, k){
   return result;
 }
 
-/* ===== 커버링 디자인 캐시 ===== */
+/* ===== 커버링 디자인 ===== */
 const coverCache = {};
 
 function generateCoveringDesign(candidates, coverSize, maxCombos=30){
@@ -1133,30 +1188,76 @@ function renderPicksProgress(targetId, stages){
   `;
 }
 
+/* ===== 추천 조합 렌더링 (중복도 표시) ===== */
 function renderPicks(combos, targetId){
   const wrap = document.getElementById(targetId);
   wrap.innerHTML = "";
 
+  // 각 조합의 다른 조합과의 최대 겹침 수 계산
+  const overlapStats = combos.map((c, i)=>{
+    let maxOverlap = 0;
+    let sumOverlap = 0;
+    let cnt = 0;
+    combos.forEach((other, j)=>{
+      if(i === j) return;
+      const overlap = c.filter(n=>other.includes(n)).length;
+      if(overlap > maxOverlap) maxOverlap = overlap;
+      sumOverlap += overlap;
+      cnt++;
+    });
+    return { max: maxOverlap, avg: cnt > 0 ? sumOverlap/cnt : 0 };
+  });
+
   combos.forEach((c, idx)=>{
+    const sorted = [...c].sort((a,b)=>a-b);
+
     const div = document.createElement("div");
     div.className = "card";
     div.style.marginBottom = "10px";
     div.style.background = idx<3 ? "#0b1220" : "#1a2a44";
     const label = idx<3 ? "안정형 (3·4등 목표)" : "2등 기대형";
     const tagClass = idx<3 ? "good" : "warn";
-    const sum = c.reduce((a,b)=>a+b,0);
-    const odd = c.filter(n=>n%2).length;
+    const sum = sorted.reduce((a,b)=>a+b,0);
+    const odd = sorted.filter(n=>n%2).length;
+
+    const ov = overlapStats[idx];
+    const ovColor = ov.max <= 1 ? "#22c55e" : ov.max <= 3 ? "#eab308" : "#ef4444";
+    const ovIcon = ov.max <= 1 ? "🟢" : ov.max <= 3 ? "🟡" : "🔴";
+    const ovBadge = `<span style="color:${ovColor}; font-weight:700;">${ovIcon} 중복 ${ov.max}/6</span>`;
+
+    const tooltipLines = combos.map((other, j)=>{
+      if(j === idx) return null;
+      const common = c.filter(n=>other.includes(n));
+      return `#${j+1}: ${common.length}개 (${common.join(",") || "없음"})`;
+    }).filter(Boolean).join("\n");
+
+    div.title = `다른 조합과의 겹침\n${tooltipLines}`;
+
     div.innerHTML = `<div class="row" style="justify-content:space-between;">
         <span class="tag ${tagClass}">${label}</span>
-        <span class="muted">합계 ${sum} · 홀${odd}:짝${6-odd}</span>
+        <span class="muted">합계 ${sum} · 홀${odd}:짝${6-odd} · ${ovBadge}</span>
       </div><div class="row" style="margin-top:10px;"></div>`;
     const row = div.querySelector(".row:last-child");
-    c.forEach(n=>{
+    sorted.forEach(n=>{
       const d = document.createElement("div");
       d.className = "ball small pick"; d.textContent = n; row.appendChild(d);
     });
     wrap.appendChild(div);
   });
+
+  // 전체 다양성 요약
+  if(overlapStats.length > 0){
+    const avgMax = (overlapStats.reduce((a,b)=>a+b.max, 0) / overlapStats.length).toFixed(1);
+    const summary = document.createElement("p");
+    summary.className = "muted";
+    summary.style.marginTop = "10px";
+    summary.style.paddingTop = "10px";
+    summary.style.borderTop = "1px solid #334155";
+    summary.innerHTML = `🔀 전체 다양성 지표: 평균 최대 겹침 <b>${avgMax}/6</b> ${
+      avgMax <= 2 ? '🟢 매우 다양' : avgMax <= 3.5 ? '🟡 보통' : '🔴 중복 심함'
+    }`;
+    wrap.appendChild(summary);
+  }
 }
 
 function renderScores(scored, targetId, limit){
@@ -1253,12 +1354,13 @@ function renderExtraPicks(targetId, candidates, co, count=10){
       <thead><tr><th>#</th><th>조합</th><th>합계</th><th>홀:짝</th></tr></thead>
       <tbody>
         ${extras.map((c, i)=>{
-          const sum = c.reduce((a,b)=>a+b,0);
-          const odd = c.filter(n=>n%2).length;
+          const sorted = [...c].sort((a,b)=>a-b);
+          const sum = sorted.reduce((a,b)=>a+b,0);
+          const odd = sorted.filter(n=>n%2).length;
           return `
             <tr>
               <td class="muted">${i+1}</td>
-              <td>${c.map(n=>`<span class="ball tiny pick" style="margin:1px;">${n}</span>`).join("")}</td>
+              <td>${sorted.map(n=>`<span class="ball tiny pick" style="margin:1px;">${n}</span>`).join("")}</td>
               <td class="muted">${sum}</td>
               <td class="muted">${odd}:${6-odd}</td>
             </tr>
@@ -1289,12 +1391,13 @@ function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballCl
         <thead><tr><th>#</th><th>조합</th><th>합계</th><th>홀:짝</th></tr></thead>
         <tbody>
           ${combos.map((c, i)=>{
-            const sum = c.reduce((a,b)=>a+b,0);
-            const odd = c.filter(n=>n%2).length;
+            const sorted = [...c].sort((a,b)=>a-b);
+            const sum = sorted.reduce((a,b)=>a+b,0);
+            const odd = sorted.filter(n=>n%2).length;
             return `
               <tr>
                 <td class="muted">${i+1}</td>
-                <td>${c.map(n=>`<span class="ball tiny ${ballClass}" style="margin:1px;">${n}</span>`).join("")}</td>
+                <td>${sorted.map(n=>`<span class="ball tiny ${ballClass}" style="margin:1px;">${n}</span>`).join("")}</td>
                 <td class="muted">${sum}</td>
                 <td class="muted">${odd}:${6-odd}</td>
               </tr>
@@ -1496,13 +1599,11 @@ function initBudget(){
   const {candidates, stages} = pickCandidates(scores, 8);
   const combos = generateCombos(candidates, co, 5);
 
-  // 탭 (이번 주 예측)
   renderPicksProgress("picksProgress", stages);
   renderPicks(combos, "picks");
   renderScores(scores, "scores", 15);
   renderBacktest();
 
-  // 탭 (다음 회차 상세)
   renderTierGoals("tierGoals");
   renderCandidateScores("candidateScores", scores, 15);
   renderPicks(combos, "nextPicks");
@@ -1511,28 +1612,23 @@ function initBudget(){
   renderScores(scores, "nextScores", 20);
   renderNextTab(history, scores);
 
-  // 탭 (커버링 디자인)
   const top15 = scores.slice(0, 15).map(s=>s.num).sort((a,b)=>a-b);
   const top10 = scores.slice(0, 10).map(s=>s.num).sort((a,b)=>a-b);
   renderCoveringDesign("cover3", top15, 3, 25, "c3");
   renderCoveringDesign("cover4", top15, 4, 40, "c4");
   renderCoveringDesign("cover5", top10, 5, 50, "c5");
 
-  // 예산 프리셋
   setupBudgetPresets();
   initBudget();
 
-  // 커버링 백테스트 버튼
   document.getElementById("btRunBtn").addEventListener("click", ()=>{
     runCoveringBacktest(history);
   });
 
-  // 접기/펼치기 초기화
   setupCollapsibles();
   setTimeout(setupCollapsibles, 500);
   setTimeout(setupCollapsibles, 1500);
 
-  // 초기 탭을 전략 소개로 설정
   goToTab('strategy');
 
   console.log("Stages:", stages);
