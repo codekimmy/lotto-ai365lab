@@ -59,9 +59,9 @@
   .kpi b{display:block; font-size:20px; color:var(--accent);}
   .bar{height:10px; background:#334155; border-radius:6px; overflow:hidden; margin-top:4px;}
   .bar > i{display:block; height:100%; background:var(--accent);}
-  footer{margin-top:24px; color:var(--muted); font-size:12px; text-align:center;}
   .scroll{max-height:400px; overflow:auto;}
   code{background:#0b1220; padding:2px 6px; border-radius:6px; color:#7dd3fc;}
+
   .tabs{
     display:flex; flex-wrap:wrap; gap:6px;
     background:#0b1220; border-bottom:1px solid #334155;
@@ -76,6 +76,7 @@
   .tab.active{color:var(--accent); background:var(--card); border-color:#334155;}
   .tab-content{display:none;}
   .tab-content.active{display:block;}
+
   .exp-card{
     background:#0b1220; border:1px solid #334155; border-radius:12px;
     padding:16px; margin-bottom:14px;
@@ -85,18 +86,60 @@
   .exp-card .meta span{font-size:12px;}
   .method-list{margin:8px 0 0 0; padding-left:18px; font-size:13px; color:var(--muted);}
   .method-list li{margin-bottom:4px;}
+
   .tech-card{
     background:#0b1220; border:1px solid #334155; border-radius:12px;
     padding:14px; margin-bottom:12px;
   }
   .tech-card h4{margin:0 0 6px; color:var(--accent); font-size:14px;}
   .tech-card p{margin:0; font-size:13px; color:var(--muted);}
+
   .pred-card{
     background:linear-gradient(135deg,#0b1220,#1a2a44);
     border:1px solid #334155; border-radius:12px; padding:16px;
     margin-bottom:14px;
   }
   .pred-card h3{color:var(--accent); margin-bottom:10px;}
+
+  /* ===== 푸터 (YouTube 배지 포함) ===== */
+  footer{
+    margin-top:32px; padding:24px 0 8px;
+    border-top:1px solid #334155;
+    color:var(--muted); font-size:12px;
+  }
+  .footer-inner{
+    display:flex; flex-wrap:wrap; gap:16px;
+    align-items:center; justify-content:space-between;
+  }
+  .yt-badge{
+    display:inline-flex; align-items:center; gap:10px;
+    background:#0b1220; border:1px solid #334155;
+    border-radius:999px; padding:8px 16px 8px 10px;
+    text-decoration:none; color:var(--text);
+    transition:border-color .2s, background .2s;
+  }
+  .yt-badge:hover{border-color:var(--accent); background:#111c33;}
+  .yt-icon{
+    width:28px; height:20px; background:#ff0000; border-radius:5px;
+    display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .yt-icon::after{
+    content:""; display:block;
+    border-left:8px solid #fff;
+    border-top:5px solid transparent;
+    border-bottom:5px solid transparent;
+    margin-left:2px;
+  }
+  .yt-text{
+    font-weight:700; font-size:14px; color:var(--accent);
+    letter-spacing:.2px;
+  }
+  .footer-meta{
+    display:flex; flex-direction:column; gap:2px;
+    text-align:right; font-size:12px; color:var(--muted);
+  }
+  .footer-meta b{color:var(--text); font-weight:600;}
   @media (max-width: 600px) {
     .container{padding:14px;}
     .tabs{padding:8px 12px;}
@@ -105,6 +148,8 @@
     .ball.small{width:30px;height:30px;font-size:12px;}
     .grid-2 { grid-template-columns: 1fr; }
     h1 { font-size: 20px; }
+    .footer-inner{flex-direction:column; align-items:flex-start;}
+    .footer-meta{text-align:left;}
   }
 </style>
 </head>
@@ -123,7 +168,7 @@
 
   <!-- TAB 1 -->
   <div class="tab-content active" id="tab-predict">
-    <h1>🎯 이번 주 예측</h1>
+    <h1 id="predictTitle">🎯 이번 주 예측</h1>
     <p class="muted">6단계 실험(창의적 기법 + 네트워크 + GA + MLP + RL 스타일 보상) 기반.</p>
     <div id="status" class="status ok">Google Sheets 데이터를 불러오는 중...</div>
 
@@ -136,7 +181,7 @@
 
     <div class="grid grid-2" style="margin-top:16px;">
       <div class="card">
-        <h2>🎲 이번 주 추천 조합</h2>
+        <h2 id="picksTitle">🎲 이번 주 추천 조합</h2>
         <p class="muted">안정형 3조합(3·4등 목표) + 2등 기대형 2조합.</p>
         <div id="picks"></div>
       </div>
@@ -163,7 +208,7 @@
 
   <!-- TAB 2 -->
   <div class="tab-content" id="tab-next">
-    <h1>🔮 다음 회차 상세 분석</h1>
+    <h1 id="nextTitle">🔮 다음 회차 상세 분석</h1>
     <p class="muted">
       최신 회차까지의 데이터만 사용해 다음 회차를 예측한 상세 결과입니다.
       최신 회차 실제 당첨번호: <b id="lastDrawNums">-</b> / 보너스 <b id="lastBonus">-</b>
@@ -188,7 +233,7 @@
     </div>
 
     <div class="pred-card">
-      <h3>🎲 6단계 알고리즘 추천 조합</h3>
+      <h3 id="nextPicksTitle">🎲 6단계 알고리즘 추천 조합</h3>
       <p class="muted">GA 50세대 + MLP 스코어링 + RL 보상 기반</p>
       <div id="nextPicks"></div>
     </div>
@@ -225,11 +270,11 @@
         <table>
           <thead><tr><th>등수</th><th>조건</th><th>백테스트 확률</th></tr></thead>
           <tbody>
-            <tr><td>5등</td><td>3개 적중</td><td>49.6%</td></tr>
-            <tr><td>4등</td><td>4개 적중</td><td>38.6%</td></tr>
-            <tr><td>3등</td><td>5개 적중</td><td>10.8%</td></tr>
+            <tr><td>5등</td><td>3개 적중</td><td>49.6% [248/500]</td></tr>
+            <tr><td>4등</td><td>4개 적중</td><td>38.6% [193/500]</td></tr>
+            <tr><td>3등</td><td>5개 적중</td><td>10.8% [54/500]</td></tr>
             <tr><td>2등</td><td>5개+보너스</td><td>약 1~2%</td></tr>
-            <tr><td>1등</td><td>6개 적중</td><td>0% (500회)</td></tr>
+            <tr><td>1등</td><td>6개 적중</td><td>0% [0/500]</td></tr>
           </tbody>
         </table>
       </div>
@@ -257,7 +302,7 @@
       <h3>1단계: 창의적 기법 (20회)</h3>
       <div class="meta">
         <span class="tag info">범위: 20회</span><span class="tag info">후보: 12~15개</span>
-        <span class="tag good">3개: 75%</span><span class="tag warn">4개: 25%</span><span class="tag bad">5개: 0%</span>
+        <span class="tag good">3개: 75% [15/20]</span><span class="tag warn">4개: 25% [5/20]</span><span class="tag bad">5개: 0% [0/20]</span>
       </div>
       <p class="muted">거울/보색, 보너스 회귀, 연속번호 회귀, 냉각 반등, 회차/날짜 분해, 인접 번호.</p>
     </div>
@@ -266,7 +311,7 @@
       <h3>2단계: 후보 압축 (50회)</h3>
       <div class="meta">
         <span class="tag info">범위: 50회</span><span class="tag info">후보: 12~15개</span>
-        <span class="tag good">3개: 80%</span><span class="tag warn">4개: 20%</span><span class="tag bad">5개: 0%</span>
+        <span class="tag good">3개: 80% [40/50]</span><span class="tag warn">4개: 20% [10/50]</span><span class="tag bad">5개: 0% [0/50]</span>
       </div>
       <p class="muted">가중치 부여, 후보 12~15개 압축.</p>
     </div>
@@ -275,7 +320,7 @@
       <h3>3단계: 8~10개 압축 (100회)</h3>
       <div class="meta">
         <span class="tag info">범위: 100회</span><span class="tag info">후보: 8~10개</span>
-        <span class="tag good">3개: 71%</span><span class="tag warn">4개: 24%</span><span class="tag warn">5개: 2%</span>
+        <span class="tag good">3개: 71% [71/100]</span><span class="tag warn">4개: 24% [24/100]</span><span class="tag warn">5개: 2% [2/100]</span>
       </div>
       <p class="muted">후보 8~10개 압축. 처음 5개 적중 2회.</p>
     </div>
@@ -284,7 +329,7 @@
       <h3>4단계: 6~8개 + 상관관계 (200회)</h3>
       <div class="meta">
         <span class="tag info">범위: 200회</span><span class="tag info">후보: 6~8개</span>
-        <span class="tag good">3개: 59%</span><span class="tag warn">4개: 34%</span><span class="tag warn">5개: 6%</span><span class="tag bad">6개: 0%</span>
+        <span class="tag good">3개: 59% [118/200]</span><span class="tag warn">4개: 34% [68/200]</span><span class="tag warn">5개: 6% [12/200]</span><span class="tag bad">6개: 0% [0/200]</span>
       </div>
       <p class="muted">후보 6~8개 극단 압축. 동시 출현 상관관계 반영.</p>
     </div>
@@ -293,7 +338,7 @@
       <h3>5단계: 네트워크+군집+베이지안 (500회)</h3>
       <div class="meta">
         <span class="tag info">범위: 500회</span><span class="tag info">후보: 6~8개</span>
-        <span class="tag good">3개: 54.2%</span><span class="tag warn">4개: 35.8%</span><span class="tag warn">5개: 8.4%</span><span class="tag bad">6개: 0%</span>
+        <span class="tag good">3개: 54.2% [271/500]</span><span class="tag warn">4개: 35.8% [179/500]</span><span class="tag warn">5개: 8.4% [42/500]</span><span class="tag bad">6개: 0% [0/500]</span>
       </div>
       <p class="muted">동시 출현 네트워크 + 군집 + 베이지안 가중치.</p>
     </div>
@@ -302,7 +347,7 @@
       <h3>6단계: GA+MLP+RL (500회) ⭐ 현재 사용</h3>
       <div class="meta">
         <span class="tag info">범위: 500회</span><span class="tag info">후보: 6~8개</span>
-        <span class="tag good">3개: 49.6%</span><span class="tag warn">4개: 38.6%</span><span class="tag warn">5개: 10.8%</span><span class="tag bad">6개: 0%</span>
+        <span class="tag good">3개: 49.6% [248/500]</span><span class="tag warn">4개: 38.6% [193/500]</span><span class="tag warn">5개: 10.8% [54/500]</span><span class="tag bad">6개: 0% [0/500]</span>
       </div>
       <p class="muted">유전 알고리즘 + MLP 스코어링 + RL 스타일 보상.</p>
     </div>
@@ -312,12 +357,12 @@
       <table>
         <thead><tr><th>단계</th><th>범위</th><th>방법</th><th>3개</th><th>4개</th><th>5개</th><th>6개</th></tr></thead>
         <tbody>
-          <tr><td>1단계</td><td>20회</td><td>창의적 기법</td><td>75%</td><td>25%</td><td>0%</td><td>0%</td></tr>
-          <tr><td>2단계</td><td>50회</td><td>후보 압축</td><td>80%</td><td>20%</td><td>0%</td><td>0%</td></tr>
-          <tr><td>3단계</td><td>100회</td><td>8~10개 압축</td><td>71%</td><td>24%</td><td>2%</td><td>0%</td></tr>
-          <tr><td>4단계</td><td>200회</td><td>6~8개+상관관계</td><td>59%</td><td>34%</td><td>6%</td><td>0%</td></tr>
-          <tr><td>5단계</td><td>500회</td><td>네트워크+군집+베이지안</td><td>54.2%</td><td>35.8%</td><td>8.4%</td><td>0%</td></tr>
-          <tr><td><b>6단계</b></td><td><b>500회</b></td><td><b>GA+MLP+RL</b></td><td><b>49.6%</b></td><td><b>38.6%</b></td><td><b>10.8%</b></td><td><b>0%</b></td></tr>
+          <tr><td>1단계</td><td>20회</td><td>창의적 기법</td><td>75% [15/20]</td><td>25% [5/20]</td><td>0% [0/20]</td><td>0% [0/20]</td></tr>
+          <tr><td>2단계</td><td>50회</td><td>후보 압축</td><td>80% [40/50]</td><td>20% [10/50]</td><td>0% [0/50]</td><td>0% [0/50]</td></tr>
+          <tr><td>3단계</td><td>100회</td><td>8~10개 압축</td><td>71% [71/100]</td><td>24% [24/100]</td><td>2% [2/100]</td><td>0% [0/100]</td></tr>
+          <tr><td>4단계</td><td>200회</td><td>6~8개+상관관계</td><td>59% [118/200]</td><td>34% [68/200]</td><td>6% [12/200]</td><td>0% [0/200]</td></tr>
+          <tr><td>5단계</td><td>500회</td><td>네트워크+군집+베이지안</td><td>54.2% [271/500]</td><td>35.8% [179/500]</td><td>8.4% [42/500]</td><td>0% [0/500]</td></tr>
+          <tr><td><b>6단계</b></td><td><b>500회</b></td><td><b>GA+MLP+RL</b></td><td><b>49.6% [248/500]</b></td><td><b>38.6% [193/500]</b></td><td><b>10.8% [54/500]</b></td><td><b>0% [0/500]</b></td></tr>
         </tbody>
       </table>
     </div>
@@ -393,8 +438,20 @@
     </div>
   </div>
 
+  <!-- ===== 푸터 ===== -->
   <footer>
-    로또 3·4등 전략 대시보드 · 데이터: Google Sheets · 알고리즘: 6단계 실험 기반 · 참고용
+    <div class="footer-inner">
+      <a class="yt-badge"
+         href="https://youtube.com/@surisuriai"
+         target="_blank" rel="noopener noreferrer">
+        <span class="yt-icon" aria-hidden="true"></span>
+        <span class="yt-text">youtube.com/@surisuriai</span>
+      </a>
+      <div class="footer-meta">
+        <span><b>Ai365Lab</b> · Lotto Pattern Lab</span>
+        <span>로또 3·4등 전략 대시보드 · 데이터: Google Sheets · 참고용</span>
+      </div>
+    </div>
   </footer>
 </div>
 
@@ -605,11 +662,32 @@ function generateCombos(candidates, co, count=5){
   return uniq;
 }
 
+/* ===== 날짜 헬퍼 ===== */
+function formatKDateLong(dateStr){
+  if(!dateStr) return "-";
+  const [y,m,d] = dateStr.split("-");
+  return `${y}년 ${Number(m)}월 ${Number(d)}일`;
+}
+
+// ★ 방법 B: 최신 회차 날짜 + 7일
+function getNextDrawDate(lastDate){
+  const d = new Date(lastDate);
+  d.setDate(d.getDate() + 7);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 /* 렌더링 */
 function renderLatest(history){
   const last = history[history.length-1];
+  const next = last.draw + 1;
+  const nextDate = getNextDrawDate(last.date);
+
   document.getElementById("latestInfo").innerHTML =
-    `<b>${last.draw}회</b> · ${last.date} · 보너스 <b>${last.bonus}</b>`;
+    `<b>${last.draw}회</b> · ${formatKDateLong(last.date)} · 보너스 <b>${last.bonus}</b>`;
+
   const box = document.getElementById("latestBalls");
   box.innerHTML = "";
   last.nums.forEach(n=>{
@@ -618,15 +696,34 @@ function renderLatest(history){
   });
   const b = document.createElement("div");
   b.className = "ball bonus"; b.textContent = last.bonus; box.appendChild(b);
+
   document.getElementById("latestMeta").innerHTML =
-    `다음 예측 대상: <b>${last.draw + 1}회</b> · 데이터 기준: ${history.length}회차`;
-  document.getElementById("lastDrawNums").textContent = last.nums.join(", ");
+    `다음 예측 대상: <b>${next}회</b> (${formatKDateLong(nextDate)}) · 데이터 기준: ${history.length}회차`;
+
+  // ★ 탭 제목에 [회차, 날짜] 반영
+  document.getElementById("predictTitle").innerHTML =
+    `🎯 이번 주 예측 <span class="muted" style="font-size:14px;">[${next}회, ${formatKDateLong(nextDate)} 추첨 예정]</span>`;
+  document.getElementById("nextTitle").innerHTML =
+    `🔮 다음 회차 상세 분석 <span class="muted" style="font-size:14px;">[${next}회, ${formatKDateLong(nextDate)}]</span>`;
+  document.getElementById("picksTitle").innerHTML =
+    `🎲 이번 주 추천 조합 <span class="muted" style="font-size:13px;">[${next}회, ${formatKDateLong(nextDate)} 기준]</span>`;
+  document.getElementById("nextPicksTitle").innerHTML =
+    `🎲 6단계 알고리즘 추천 조합 <span class="muted" style="font-size:13px;">[${next}회, ${formatKDateLong(nextDate)}]</span>`;
+
+  document.getElementById("lastDrawNums").textContent = `${last.draw}회 (${last.nums.join(", ")})`;
   document.getElementById("lastBonus").textContent = last.bonus;
 }
 
-function renderPicks(combos, targetId){
+function renderPicks(combos, targetId, nextDrawNo, nextDate){
   const wrap = document.getElementById(targetId);
   wrap.innerHTML = "";
+
+  const header = document.createElement("p");
+  header.className = "muted";
+  header.style.marginBottom = "10px";
+  header.innerHTML = `[${nextDrawNo}회, ${formatKDateLong(nextDate)}]`;
+  wrap.appendChild(header);
+
   combos.forEach((c, idx)=>{
     const div = document.createElement("div");
     div.className = "card";
@@ -668,12 +765,12 @@ function renderScores(scored, targetId, limit){
 
 function renderBacktest(){
   const data = [
-    ["1단계","20회","창의적 기법","75%","25%","0%","0%"],
-    ["2단계","50회","후보 압축","80%","20%","0%","0%"],
-    ["3단계","100회","8~10개 압축","71%","24%","2%","0%"],
-    ["4단계","200회","6~8개+상관관계","59%","34%","6%","0%"],
-    ["5단계","500회","네트워크+군집+베이지안","54.2%","35.8%","8.4%","0%"],
-    ["6단계","500회","GA+MLP+RL","49.6%","38.6%","10.8%","0%"],
+    ["1단계","20회","창의적 기법","75% [15/20]","25% [5/20]","0% [0/20]","0% [0/20]"],
+    ["2단계","50회","후보 압축","80% [40/50]","20% [10/50]","0% [0/50]","0% [0/50]"],
+    ["3단계","100회","8~10개 압축","71% [71/100]","24% [24/100]","2% [2/100]","0% [0/100]"],
+    ["4단계","200회","6~8개+상관관계","59% [118/200]","34% [68/200]","6% [12/200]","0% [0/200]"],
+    ["5단계","500회","네트워크+군집+베이지안","54.2% [271/500]","35.8% [179/500]","8.4% [42/500]","0% [0/500]"],
+    ["6단계","500회","GA+MLP+RL","49.6% [248/500]","38.6% [193/500]","10.8% [54/500]","0% [0/500]"],
   ];
   const tbody = document.querySelector("#btTable tbody");
   tbody.innerHTML = data.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("");
@@ -686,7 +783,9 @@ function renderBacktest(){
 
 function renderNextTab(history, scores){
   const last = history[history.length-1];
-  // 최근 10회 강세
+  const next = last.draw + 1;
+  const nextDate = getNextDrawDate(last.date);
+
   const r10 = history.slice(-10);
   const cnt = {};
   r10.forEach(h=> h.nums.forEach(n=> cnt[n]=(cnt[n]||0)+1));
@@ -695,15 +794,12 @@ function renderNextTab(history, scores){
     .map(([n,c])=>`${n}(${c}회)`).join(", ");
   document.getElementById("strongNums").textContent = strong || "-";
 
-  // 냉각 후 반등 (30회 이상 미출현)
   const cold = scores.filter(s=>s.lastSeen>=30).slice(0,12).map(s=>s.num).join(", ");
   document.getElementById("coldNums").textContent = cold || "-";
 
-  // 거울/보색
   const mirror = last.nums.map(n=>45-n).filter(n=>n>=1&&n<=45).sort((a,b)=>a-b);
   document.getElementById("mirrorNums").textContent = [...new Set(mirror)].join(", ");
 
-  // 예측 근거 20가지
   const reasons = [
     ["최근 10회 다출현", strong],
     ["10번대 과열 조정", "10번대 3개 → 1~2개로 조정 가능"],
@@ -724,7 +820,7 @@ function renderNextTab(history, scores){
     ["홀짝 균형", "홀 3~4, 짝 2~3"],
     ["동시 출현 네트워크", "13→18,34,38 / 20→30,40 / 44→1,14,34,45"],
     ["냉각 반등", cold],
-    ["날짜/회차 숫자", `${last.draw+1} → 1, 2, 4, 1 → 1,2,4,11,12,14,21,22,24,41,42,44`],
+    ["날짜/회차 숫자", `${next} → ${String(next).split('').join(', ')}`],
   ];
   const box = document.getElementById("reasonBox");
   box.innerHTML = reasons.map(([t,d])=>`
@@ -744,16 +840,21 @@ function renderNextTab(history, scores){
   const candidates = pickCandidates(scores, 8);
   const combos = generateCombos(candidates, co, 5);
 
-  renderPicks(combos, "picks");
+  const last = history[history.length-1];
+  const next = last.draw + 1;
+  const nextDate = getNextDrawDate(last.date);
+
+  renderPicks(combos, "picks", next, nextDate);
   renderScores(scores, "scores", 15);
   renderBacktest();
 
-  renderPicks(combos, "nextPicks");
+  renderPicks(combos, "nextPicks", next, nextDate);
   renderScores(scores, "nextScores", 20);
   renderNextTab(history, scores);
 
   console.log("Candidates:", candidates);
   console.log("Combos:", combos);
+  console.log("Next draw:", next, nextDate);
 })();
 </script>
 </body>
