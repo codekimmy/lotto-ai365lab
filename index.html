@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>로또 축 기반 전략 대시보드 v3</title>
+<title>로또 축 기반 전략 대시보드 v3.1</title>
 <style>
   :root{
     --bg:#0f172a; --card:#1e293b; --card2:#273449; --text:#e2e8f0;
@@ -44,9 +44,6 @@
   .ball.cold{background:#ef4444; color:#fff;}
   .ball.midcold{background:#f59e0b; color:#1f2937;}
   .ball.zero{background:#22c55e; color:#052e16;}
-  .ball.c3{background:#22c55e; color:#052e16;}
-  .ball.c4{background:#eab308; color:#1f2937;}
-  .ball.c5{background:#f97316; color:#1f2937;}
   table{width:100%; border-collapse:collapse; font-size:13px;}
   th,td{padding:8px 6px; border-bottom:1px solid #334155; text-align:center;}
   th{color:var(--muted); font-weight:600;}
@@ -62,6 +59,7 @@
   .tag.midcold{background:#78350f; color:#fde68a;}
   .tag.zero{background:#14532d; color:#bbf7d0;}
   .tag.axis{background:#4c1d95; color:#ddd6fe;}
+  .tag.star{background:#f59e0b; color:#1f2937; font-weight:700;}
   .status{padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:12px;}
   .status.ok{background:#052e16; color:#bbf7d0; border:1px solid #14532d;}
   .status.err{background:#450a0a; color:#fecaca; border:1px solid #7f1d1d;}
@@ -70,7 +68,6 @@
   .kpi b{display:block; font-size:20px; color:var(--accent);}
   .bar{height:10px; background:#334155; border-radius:6px; overflow:hidden; margin-top:4px;}
   .bar > i{display:block; height:100%; background:var(--accent);}
-  code{background:#0b1220; padding:2px 6px; border-radius:6px; color:#7dd3fc;}
 
   .tabs{
     display:flex; flex-wrap:wrap; gap:6px;
@@ -117,24 +114,8 @@
   .collapsible-body{max-height:0; overflow:hidden; transition:max-height .3s ease-out;}
   .collapsible-body.open{max-height:none; overflow:visible;}
 
-  .tab-link{
-    color:var(--accent); text-decoration:underline;
-    text-underline-offset:2px; cursor:pointer; font-weight:700;
-  }
-  .tab-link:hover{
-    color:#7dd3fc; background:rgba(56,189,248,.1);
-    border-radius:4px; padding:0 2px;
-  }
-
   .method-list{margin:8px 0 0 0; padding-left:18px; font-size:13px; color:var(--muted);}
   .method-list li{margin-bottom:4px;}
-
-  .tech-card{
-    background:#0b1220; border:1px solid #334155; border-radius:12px;
-    padding:14px; margin-bottom:12px;
-  }
-  .tech-card h4{margin:0 0 6px; color:var(--accent); font-size:14px;}
-  .tech-card p{margin:0; font-size:13px; color:var(--muted);}
 
   .pred-card{
     background:linear-gradient(135deg,#0b1220,#1a2a44);
@@ -154,39 +135,6 @@
   .budget-btn.active{background:var(--accent); color:#06202e; border-color:var(--accent);}
   .budget-btn:disabled{opacity:.5; cursor:not-allowed;}
   .budget-btn.danger{background:#7f1d1d; color:#fecaca; border-color:#7f1d1d;}
-  .budget-btn.danger:hover:not(:disabled){background:#991b1b; color:#fff; border-color:#991b1b;}
-
-  /* 축 슬라이더 */
-  .axis-row{
-    display:flex; align-items:center; gap:12px;
-    padding:10px 0; border-bottom:1px solid #334155;
-  }
-  .axis-label{
-    width:130px; font-weight:700; color:var(--text); font-size:13px;
-  }
-  .axis-slider{
-    flex:1; -webkit-appearance:none; appearance:none;
-    height:6px; background:#334155; border-radius:3px;
-    outline:none; cursor:pointer;
-  }
-  .axis-slider::-webkit-slider-thumb{
-    -webkit-appearance:none; appearance:none;
-    width:20px; height:20px; border-radius:50%;
-    background:var(--accent); cursor:pointer;
-    box-shadow:0 2px 8px rgba(56,189,248,.5);
-  }
-  .axis-slider::-moz-range-thumb{
-    width:20px; height:20px; border-radius:50%;
-    background:var(--accent); cursor:pointer; border:none;
-  }
-  .axis-value{
-    width:80px; text-align:right; font-weight:700;
-    color:var(--accent); font-size:13px;
-  }
-  .axis-desc{
-    font-size:11px; color:var(--muted); width:100%; margin-left:142px;
-    margin-top:-6px; margin-bottom:6px;
-  }
 
   .preset-grid{
     display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -195,27 +143,18 @@
   .preset-card{
     background:#0b1220; border:1px solid #334155; border-radius:10px;
     padding:12px; cursor:pointer; transition:all .2s;
+    position:relative;
   }
   .preset-card:hover{border-color:var(--accent);}
   .preset-card.active{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent);}
   .preset-card h4{margin:0 0 6px; color:var(--accent); font-size:14px;}
   .preset-card p{margin:0; font-size:11px; color:var(--muted);}
-
-  .preset-btn{
-    position:relative;
-    padding:10px 14px; border-radius:10px; cursor:pointer;
-    background:#0b1220; color:var(--muted); border:1px solid #334155;
-    font-size:13px; font-weight:600; transition:all .2s;
-    min-width:110px; text-align:center;
+  .preset-card .star{
+    position:absolute; top:8px; right:8px;
+    background:#f59e0b; color:#1f2937;
+    padding:2px 8px; border-radius:999px;
+    font-size:10px; font-weight:700;
   }
-  .preset-btn:hover{color:var(--text); border-color:var(--accent);}
-  .preset-btn.active{background:var(--accent); color:#06202e; border-color:var(--accent);}
-
-  .bt-cover-result{
-    background:#0b1220; border:1px solid #334155; border-radius:10px;
-    padding:12px; margin-top:10px;
-  }
-  .bt-cover-result .big{font-size:24px; font-weight:700; color:var(--accent);}
 
   .progress-bar{
     height:8px; background:#334155; border-radius:6px; overflow:hidden;
@@ -224,6 +163,14 @@
   .progress-bar > i{
     display:block; height:100%; background:linear-gradient(90deg,#0ea5e9,#38bdf8);
     transition:width .2s;
+  }
+
+  .highlight-standard{
+    background:linear-gradient(135deg,#052e16,#14532d);
+    border:2px solid #22c55e;
+    border-radius:12px;
+    padding:14px;
+    margin-top:12px;
   }
 
   footer{
@@ -262,22 +209,6 @@
   }
   .footer-meta b{color:var(--text); font-weight:600;}
 
-  /* 4등/3등 강조 */
-  .highlight-4th{
-    background:linear-gradient(135deg,#78350f,#92400e);
-    border:2px solid #f59e0b;
-    border-radius:12px;
-    padding:14px;
-    margin-top:12px;
-  }
-  .highlight-3rd{
-    background:linear-gradient(135deg,#7f1d1d,#991b1b);
-    border:2px solid #ef4444;
-    border-radius:12px;
-    padding:14px;
-    margin-top:12px;
-  }
-
   @media (max-width: 600px) {
     .container{padding:12px;}
     .tabs{padding:8px 8px; gap:4px; overflow-x:auto; flex-wrap:nowrap;}
@@ -292,13 +223,10 @@
     h2 { font-size: 16px; }
     .footer-inner{flex-direction:column; align-items:flex-start;}
     .footer-meta{text-align:left;}
-    .budget-btn, .preset-btn{min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); padding:8px 10px; font-size:12px;}
+    .budget-btn{min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); padding:8px 10px; font-size:12px;}
     .card, .pred-card{padding:12px;}
     table{font-size:12px;}
     th,td{padding:5px 3px;}
-    .axis-label{width:90px; font-size:12px;}
-    .axis-value{width:60px; font-size:12px;}
-    .axis-desc{margin-left:102px;}
   }
 </style>
 </head>
@@ -306,7 +234,6 @@
 
 <div class="tabs">
   <div class="tab active" data-tab="predict">📊 이번 주 예측</div>
-  <div class="tab" data-tab="axis">🎛️ 축 조절</div>
   <div class="tab" data-tab="compare">⚖️ 프리셋 비교</div>
   <div class="tab" data-tab="verify">📈 전략 검증</div>
   <div class="tab" data-tab="guide">📖 활용 가이드</div>
@@ -316,10 +243,10 @@
 
   <!-- ===== TAB 1: 이번 주 예측 ===== -->
   <div class="tab-content active" id="tab-predict">
-    <h1 id="predictTitle">📊 이번 주 예측 <span class="tag axis">축 기반 v3</span></h1>
+    <h1 id="predictTitle">📊 이번 주 예측 <span class="tag axis">v3.1</span> <span class="tag star">S4 표준</span></h1>
     <p class="muted">
-      <b>축 기반 전략</b>: 최근 출현 / 장기 미출현 / 직전 겹침 / 번호대 균형 / 다양성 5축을 조합해 
-      <b>4등·3등 목표</b>에 최적화합니다.
+      검증 결과 <b>S4 (장기 반등)</b>이 최고 성능(5등 +45%, 손익비 12.4%)을 보였습니다. 
+      <b>S4를 표준 프리셋</b>으로 승격하고, S6/S7은 재설계했습니다.
     </p>
     <div id="status" class="status ok">Google Sheets 데이터를 불러오는 중...</div>
 
@@ -329,16 +256,25 @@
       <div id="latestBalls" class="row" style="margin-top:10px;"></div>
     </div>
 
+    <!-- 표준 프리셋 강조 -->
+    <div class="highlight-standard">
+      <h2 style="color:#bbf7d0; margin:0 0 8px;">⭐ 표준 프리셋: S4 장기 반등</h2>
+      <p class="muted" style="color:#d1fae5; margin:0;">
+        검증 결과 <b>5등 8.7회 (+45%)</b> · <b>손익비 12.4%</b> (최고) · 4등 0.3회
+      </p>
+      <button class="budget-btn active" style="margin-top:10px;" onclick="selectPreset('S4')">
+        ⭐ S4 장기 반등 선택
+      </button>
+    </div>
+
     <!-- 프리셋 선택 -->
     <div class="card" style="margin-top:16px;">
-      <h2>🎚️ 전략 프리셋 (8종)</h2>
+      <h2>🎚️ 전략 프리셋 (9종)</h2>
       <p class="muted">
-        프리셋을 선택하거나, <b>축 조절</b> 탭에서 5축을 직접 조절할 수 있습니다.
+        <b>⭐ 표준 (S4)</b> · 재설계된 4등/3등 특화 (S6/S7) · 장기 극대 (S9)
       </p>
-      <div class="preset-grid" id="presetGrid">
-        <!-- JS로 채워짐 -->
-      </div>
-      <div class="budget-info" id="presetInfo" style="background:#0b1220;border:1px solid #334155;border-radius:10px;padding:12px;margin-top:12px;font-size:13px;">
+      <div class="preset-grid" id="presetGrid"></div>
+      <div id="presetInfo" style="background:#0b1220;border:1px solid #334155;border-radius:10px;padding:12px;margin-top:12px;font-size:13px;">
         프리셋을 선택하세요.
       </div>
     </div>
@@ -373,77 +309,19 @@
     </div>
   </div>
 
-  <!-- ===== TAB 2: 축 조절 ===== -->
-  <div class="tab-content" id="tab-axis">
-    <h1>🎛️ 축 조절</h1>
-    <p class="muted">
-      5개 축을 직접 조절해 <b>나만의 전략</b>을 만들 수 있습니다.<br>
-      슬라이더를 움직이면 즉시 반영됩니다.
-    </p>
-
-    <div class="card" style="margin-top:16px;">
-      <h2>🔧 5축 슬라이더</h2>
-      <div id="axisSliders">
-        <!-- JS로 채워짐 -->
-      </div>
-      <div class="budget-btns" style="margin-top:16px;">
-        <button id="applyAxisBtn" class="budget-btn active">▶ 커스텀 축 적용</button>
-        <button id="resetAxisBtn" class="budget-btn">↺ 초기화</button>
-      </div>
-    </div>
-
-    <div class="card alt" style="margin-top:16px;">
-      <h2>📐 축별 설명</h2>
-      <div class="grid grid-2">
-        <div class="tech-card">
-          <h4>축 A: 최근 출현 편향</h4>
-          <p>최근 5회/10회에 나온 번호를 얼마나 우대할지.<br>
-          약: 최근 무시 / 강: 최근 집중</p>
-        </div>
-        <div class="tech-card">
-          <h4>축 B: 장기 미출현</h4>
-          <p>40회+/20~39회 미출현 번호를 얼마나 우대할지.<br>
-          약: 무시 / 강: 집중 (분배금 효과)</p>
-        </div>
-        <div class="tech-card">
-          <h4>축 C: 직전 회차 겹침</h4>
-          <p>직전 당첨번호와 몇 개까지 겹칠지.<br>
-          0개: 완전 독립 / 3개+: 최근 흐름</p>
-        </div>
-        <div class="tech-card">
-          <h4>축 D: 번호대 균형</h4>
-          <p>10/20/30/40번대를 고르게 분포시킬지.<br>
-          자유: 몰려도 OK / 균형: 강제 분산</p>
-        </div>
-        <div class="tech-card">
-          <h4>축 E: 다양성</h4>
-          <p>5개 조합 간 겹치는 번호 수 제한.<br>
-          낮음: 유사 조합 OK / 높음: 완전 다양</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TAB 3: 프리셋 비교 ===== -->
+  <!-- ===== TAB 2: 프리셋 비교 ===== -->
   <div class="tab-content" id="tab-compare">
     <h1>⚖️ 프리셋 비교</h1>
-    <p class="muted">8개 프리셋의 파라미터와 성능을 비교합니다.</p>
 
     <div class="card" style="margin-top:16px;">
-      <h2>📊 8프리셋 파라미터 비교</h2>
-      <div class="scroll" style="overflow-x:auto;">
+      <h2>📊 9프리셋 파라미터 비교</h2>
+      <div style="overflow-x:auto;">
         <table id="compareTable">
           <thead>
             <tr>
-              <th>프리셋</th>
-              <th>A 최근</th>
-              <th>B 장기</th>
-              <th>C 겹침</th>
-              <th>D 균형</th>
-              <th>E 다양성</th>
-              <th>후보</th>
-              <th>조합</th>
-              <th>목표</th>
+              <th>프리셋</th><th>A 최근</th><th>B 장기</th><th>C 겹침</th>
+              <th>D 균형</th><th>E 다양성</th><th>후보</th><th>조합</th>
+              <th>목표</th><th>검증 결과</th>
             </tr>
           </thead>
           <tbody id="compareTbody"></tbody>
@@ -452,53 +330,110 @@
     </div>
 
     <div class="card alt" style="margin-top:16px;">
-      <h2>🏆 추천 프리셋</h2>
-      <div class="grid grid-3">
-        <div class="highlight-4th">
-          <h3 style="color:#fde68a;">🥇 4등 최적화 (S6)</h3>
-          <p class="muted" style="color:#fef3c7;">
-            후보 20개 + 조합 10개<br>
-            목표: 4등 적중률 1~2%<br>
-            주간 비용: 10,000원
-          </p>
+      <h2>🏆 검증 기반 순위 (100회 × 3반복)</h2>
+      <table>
+        <thead>
+          <tr><th>순위</th><th>프리셋</th><th>5등</th><th>4등</th><th>손익비</th><th>판정</th></tr>
+        </thead>
+        <tbody>
+          <tr style="background:#052e16;">
+            <td>🥇 1위</td><td><b>S4 장기 반등</b></td>
+            <td>8.7</td><td>0.3</td><td style="color:#22c55e; font-weight:700;">12.4%</td>
+            <td class="tag good">표준 승격</td>
+          </tr>
+          <tr>
+            <td>🥈 2위</td><td>S8 분배 극대</td>
+            <td>11.0</td><td>0.0</td><td>11.2%</td>
+            <td class="tag good">준수</td>
+          </tr>
+          <tr>
+            <td>🥉 3위</td><td>S2 균형 표준</td>
+            <td>7.0</td><td>0.3</td><td>10.7%</td>
+            <td class="tag info">유지</td>
+          </tr>
+          <tr>
+            <td>4위</td><td>S1 안전 분산</td>
+            <td>7.7</td><td>0.0</td><td>8.0%</td>
+            <td class="tag info">유지</td>
+          </tr>
+          <tr>
+            <td>5위</td><td>S3 최근 편향</td>
+            <td>7.0</td><td>0.0</td><td>7.6%</td>
+            <td class="tag warn">하위</td>
+          </tr>
+          <tr>
+            <td>6위</td><td>S5 완전 무작위</td>
+            <td>6.0</td><td>0.0</td><td>6.1%</td>
+            <td class="tag warn">대조군</td>
+          </tr>
+          <tr>
+            <td>7위</td><td>S6 4등 최적화</td>
+            <td>9.3</td><td>0.0</td><td style="color:#ef4444;">5.1%</td>
+            <td class="tag bad">재설계</td>
+          </tr>
+          <tr>
+            <td>8위</td><td>S7 3등 도전</td>
+            <td>12.3</td><td>0.0</td><td style="color:#ef4444;">4.6%</td>
+            <td class="tag bad">재설계</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>🔧 재설계된 S6/S7</h2>
+      <div class="grid grid-2">
+        <div class="pred-card" style="border-color:#f59e0b;">
+          <h3 style="color:#f59e0b;">S6 v2: 4등 최적화</h3>
+          <ul class="method-list">
+            <li><b>후보 15개 유지</b> (노이즈 방지)</li>
+            <li><b>조합 10개</b> (확대)</li>
+            <li><b>다양성 필터 5개</b> (완화)</li>
+            <li><b>maxOverlap 3</b> (완화)</li>
+            <li>장기 미출현 2조합</li>
+          </ul>
         </div>
-        <div class="highlight-3rd">
-          <h3 style="color:#fecaca;">🥈 3등 도전 (S7)</h3>
-          <p class="muted" style="color:#fee2e2;">
-            후보 25개 + 조합 15개<br>
-            목표: 3등 적중률 0.05~0.1%<br>
-            주간 비용: 15,000원
-          </p>
+        <div class="pred-card" style="border-color:#ef4444;">
+          <h3 style="color:#ef4444;">S7 v2: 3등 도전</h3>
+          <ul class="method-list">
+            <li><b>후보 15개 유지</b></li>
+            <li><b>조합 15개</b> (확대)</li>
+            <li><b>다양성 필터 6개</b> (완전 완화)</li>
+            <li><b>maxOverlap 자유</b></li>
+            <li>장기 미출현 1조합</li>
+          </ul>
         </div>
-        <div class="card" style="background:#0b1220;">
-          <h3 style="color:var(--accent);">🥉 균형 표준 (S2)</h3>
-          <p class="muted">
-            후보 15개 + 조합 5개<br>
-            목표: 5·4등<br>
-            주간 비용: 5,000원
-          </p>
-        </div>
+      </div>
+    </div>
+
+    <div class="card alt" style="margin-top:16px;">
+      <h2>🆕 S9 장기 극대 (신규)</h2>
+      <div class="pred-card" style="border-color:#22c55e;">
+        <h3 style="color:#22c55e;">S9: 장기 극대</h3>
+        <p class="muted">S4의 강화 버전. 장기 미출현을 더 강하게 반영.</p>
+        <ul class="method-list">
+          <li>W5=0.1, W10=0.3, W30=0.8, W100=3.0</li>
+          <li>40회+ +40점, 30회 +30점, 20회 +20점</li>
+          <li>후보 15개, 조합 5개</li>
+          <li>장기 미출현 4조합 강제</li>
+        </ul>
       </div>
     </div>
   </div>
 
-  <!-- ===== TAB 4: 전략 검증 ===== -->
+  <!-- ===== TAB 3: 전략 검증 ===== -->
   <div class="tab-content" id="tab-verify">
     <h1>📈 전략 검증</h1>
-    <p class="muted">8프리셋을 과거 데이터로 백테스트합니다.</p>
 
-    <div class="subtabs" id="verifySubtabs">
+    <div class="subtabs">
       <div class="subtab active" data-subtab="abtest">🔬 프리셋 A/B 테스트</div>
-      <div class="subtab" data-subtab="axisTest">🎛️ 축별 기여도</div>
+      <div class="subtab" data-subtab="longTest">📊 장기 검증 (500회)</div>
     </div>
 
-    <!-- A. 프리셋 A/B 테스트 -->
+    <!-- A. A/B 테스트 -->
     <div class="subtab-content active" id="subtab-abtest">
       <div class="card" style="margin-top:16px;">
         <h2>🔬 프리셋 A/B 테스트</h2>
-        <p class="muted">
-          선택한 프리셋들을 <b>동일 조건</b>에서 비교합니다.
-        </p>
         <div class="grid grid-3" style="margin-top:12px;">
           <div>
             <h3>검증 기간</h3>
@@ -519,9 +454,9 @@
           <div>
             <h3>비교 프리셋</h3>
             <select id="abPreset" style="width:100%; padding:8px; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px;">
-              <option value="all">전체 8종</option>
-              <option value="4th">4등 최적화만</option>
-              <option value="3rd">3등 도전만</option>
+              <option value="all">전체 9종</option>
+              <option value="standard">표준 3종 (S2/S4/S9)</option>
+              <option value="special">특화 2종 (S6/S7)</option>
             </select>
           </div>
         </div>
@@ -548,114 +483,145 @@
       </div>
     </div>
 
-    <!-- B. 축별 기여도 -->
-    <div class="subtab-content" id="subtab-axisTest">
+    <!-- B. 장기 검증 -->
+    <div class="subtab-content" id="subtab-longTest">
       <div class="card" style="margin-top:16px;">
-        <h2>🎛️ 축별 기여도 분석</h2>
+        <h2>📊 장기 검증 (500회)</h2>
         <p class="muted">
-          각 축이 실제 성과에 얼마나 기여하는지 검증합니다.<br>
-          한 축을 낮음/중간/높음으로 바꿔가며 성능을 측정합니다.
+          <b>S4 장기 반등</b>을 <b>500회</b> 검증합니다. 4등·3등 적중률을 확인하기 위한 대규모 검증.<br>
+          ※ 시간이 오래 걸립니다 (5~10분).
         </p>
         <div class="grid grid-3" style="margin-top:12px;">
           <div>
             <h3>검증 기간</h3>
-            <select id="axisTestRange" style="width:100%; padding:8px; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px;">
-              <option value="50">최근 50회</option>
-              <option value="100" selected>최근 100회</option>
+            <select id="longRange" style="width:100%; padding:8px; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px;">
+              <option value="200">최근 200회</option>
+              <option value="500" selected>최근 500회</option>
+              <option value="800">최근 800회</option>
             </select>
           </div>
           <div>
-            <h3>분석 축</h3>
-            <select id="axisTestAxis" style="width:100%; padding:8px; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px;">
-              <option value="A">축 A: 최근 출현</option>
-              <option value="B">축 B: 장기 미출현</option>
-              <option value="C">축 C: 직전 겹침</option>
-              <option value="D">축 D: 번호대 균형</option>
-              <option value="E">축 E: 다양성</option>
+            <h3>프리셋</h3>
+            <select id="longPreset" style="width:100%; padding:8px; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px;">
+              <option value="S4" selected>S4 장기 반등 (표준)</option>
+              <option value="S9">S9 장기 극대</option>
+              <option value="S2">S2 균형 표준</option>
+              <option value="S8">S8 분배 극대</option>
             </select>
           </div>
         </div>
-        <button id="axisTestBtn" class="budget-btn active" style="margin-top:12px;">▶ 축 기여도 분석</button>
-        <div id="axisTestProgress" class="muted" style="margin-top:10px;"></div>
-        <div class="progress-bar" id="axisTestProgressBar" style="display:none;">
+        <div class="budget-btns" style="margin-top:12px;">
+          <button id="longRunBtn" class="budget-btn active">▶ 장기 검증 실행</button>
+          <button id="longStopBtn" class="budget-btn danger" style="display:none;">■ 중단</button>
+        </div>
+        <div id="longProgress" class="muted" style="margin-top:10px;"></div>
+        <div class="progress-bar" id="longProgressBar" style="display:none;">
           <i style="width:0%;"></i>
         </div>
       </div>
 
       <div class="card" style="margin-top:16px;">
         <div class="collapsible-header open">
-          <span>📊 축 기여도 결과</span>
+          <span>📊 장기 검증 결과</span>
           <span class="arrow">▶</span>
         </div>
         <div class="collapsible-body open">
-          <div id="axisTestResult">
-            <p class="muted">분석을 실행하면 결과가 표시됩니다.</p>
+          <div id="longResult">
+            <p class="muted">장기 검증을 실행하면 결과가 표시됩니다.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ===== TAB 5: 활용 가이드 ===== -->
+  <!-- ===== TAB 4: 활용 가이드 ===== -->
   <div class="tab-content" id="tab-guide">
     <h1>📖 활용 가이드</h1>
 
-    <div class="card">
-      <h2>🎯 4등·3등 목표 전략</h2>
-      <ul class="method-list">
-        <li><b>4등 (4개 적중)</b>: 상금 5만원 / 확률 1/733</li>
-        <li><b>3등 (5개 적중)</b>: 상금 150만원 / 확률 1/35,724</li>
-        <li><b>4등 1회 = 10주치 본전</b></li>
-        <li><b>3등 1회 = 300주치 본전</b></li>
+    <div class="highlight-standard">
+      <h2 style="color:#bbf7d0;">⭐ 표준 프리셋: S4 장기 반등</h2>
+      <p style="color:#d1fae5;">
+        검증 결과 최고 성능. <b>장기 미출현을 강하게 반영</b>하는 전략.
+      </p>
+      <ul class="method-list" style="color:#d1fae5;">
+        <li><b>5등 8.7회</b> (랜덤 6.0 → +45%)</li>
+        <li><b>손익비 12.4%</b> (최고)</li>
+        <li><b>4등 0.3회</b> (이론 근접)</li>
+        <li>주간 비용: 5,000원</li>
       </ul>
     </div>
 
+    <div class="card" style="margin-top:16px;">
+      <h2>🎯 프리셋 선택 가이드</h2>
+      <table>
+        <thead>
+          <tr><th>목표</th><th>프리셋</th><th>비용</th><th>특징</th></tr>
+        </thead>
+        <tbody>
+          <tr style="background:#052e16;">
+            <td>⭐ <b>표준</b></td>
+            <td><b>S4 장기 반등</b></td>
+            <td>5,000원</td>
+            <td>검증 최고 성능</td>
+          </tr>
+          <tr>
+            <td>5등 반복</td>
+            <td>S1 안전 분산</td>
+            <td>5,000원</td>
+            <td>안정적</td>
+          </tr>
+          <tr>
+            <td>균형</td>
+            <td>S2 균형 표준</td>
+            <td>5,000원</td>
+            <td>무난</td>
+          </tr>
+          <tr>
+            <td>장기 극대</td>
+            <td>S9 장기 극대</td>
+            <td>5,000원</td>
+            <td>신규</td>
+          </tr>
+          <tr>
+            <td>분배 극대</td>
+            <td>S8 분배 극대</td>
+            <td>5,000원</td>
+            <td>당첨자 최소화</td>
+          </tr>
+          <tr style="opacity:0.6;">
+            <td>4등 특화</td>
+            <td>S6 4등 최적화</td>
+            <td>10,000원</td>
+            <td>재설계됨</td>
+          </tr>
+          <tr style="opacity:0.6;">
+            <td>3등 도전</td>
+            <td>S7 3등 도전</td>
+            <td>15,000원</td>
+            <td>재설계됨</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="card alt" style="margin-top:16px;">
-      <h2>🔧 축 기반 전략 선택</h2>
-      <div class="grid grid-2">
-        <div class="tech-card">
-          <h4>S1 안전 분산</h4>
-          <p>5등 반복. 최근 약, 장기 중, 겹침 1~2, 균형, 다양성 높음.</p>
-        </div>
-        <div class="tech-card">
-          <h4>S2 균형 표준</h4>
-          <p>5·4등. 모든 축 중간값. 표준 전략.</p>
-        </div>
-        <div class="tech-card">
-          <h4>S3 최근 편향</h4>
-          <p>최근 패턴. 최근 강, 장기 약, 겹침 2~3, 자유.</p>
-        </div>
-        <div class="tech-card">
-          <h4>S4 장기 반등</h4>
-          <p>장기 미출현. 최근 약, 장기 강, 겹침 1~2, 균형.</p>
-        </div>
-        <div class="tech-card" style="border-color:#f59e0b;">
-          <h4>S6 4등 최적화 ⭐</h4>
-          <p>후보 20개, 조합 10개. 4등 적중률 극대화.</p>
-        </div>
-        <div class="tech-card" style="border-color:#ef4444;">
-          <h4>S7 3등 도전 ⭐</h4>
-          <p>후보 25개, 조합 15개. 3등 도전.</p>
-        </div>
-        <div class="tech-card">
-          <h4>S8 분배 극대</h4>
-          <p>당첨자 최소화. 겹침 0~1, 장기 강, 다양성 높음.</p>
-        </div>
-        <div class="tech-card">
-          <h4>S5 완전 무작위</h4>
-          <p>랜덤 대조군. 모든 축 없음.</p>
-        </div>
-      </div>
+      <h2>🔍 검증 결과 해석</h2>
+      <ul class="method-list">
+        <li><b>S4 (장기 반등)</b>: 최고 성능. 표준 채택</li>
+        <li><b>S6/S7 (4등/3등 특화)</b>: 실패. 후보 15개로 재설계</li>
+        <li><b>4등·3등 확률의 한계</b>: 100회로는 노이즈. 500회 이상 필요</li>
+        <li><b>장기 미출현 효과</b>: 통계적으로 유효</li>
+      </ul>
     </div>
 
     <div class="card" style="margin-top:16px;">
       <h2>⚠️ 주의사항</h2>
       <ul class="method-list">
-        <li>이 대시보드는 <b>참고용</b>이며 당첨을 보장하지 않습니다.</li>
+        <li>이 대시보드는 <b>참고용</b>입니다.</li>
         <li>로또는 <b>독립시행</b>에 가깝습니다.</li>
         <li><b>장기 미출현이 더 잘 나오지 않습니다</b> (확률 동일).</li>
-        <li>장기 미출현을 고르는 이유는 <b>분배금 효과</b>입니다.</li>
-        <li>S6/S7은 <b>주간 비용이 10,000~15,000원</b>입니다.</li>
+        <li>장기 미출현 선택 이유: <b>분배금 효과</b>.</li>
+        <li><b>4등·3등은 500회 이상 검증 필요</b>.</li>
         <li><b>과도한 구매는 금물</b>입니다.</li>
       </ul>
     </div>
@@ -668,8 +634,8 @@
         <span class="yt-text">youtube.com/@surisuriai</span>
       </a>
       <div class="footer-meta">
-        <span><b>Ai365Lab</b> · Lotto Pattern Lab · v3 Axis</span>
-        <span>축 기반 로또 전략 대시보드 · 참고용</span>
+        <span><b>Ai365Lab</b> · Lotto Pattern Lab · v3.1</span>
+        <span>S4 표준 · 참고용</span>
       </div>
     </div>
   </footer>
@@ -685,23 +651,6 @@ document.querySelectorAll('.tab').forEach(tab=>{
     document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
   });
 });
-
-function goToTab(tabName){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-  const tab = document.querySelector(`.tab[data-tab="${tabName}"]`);
-  const content = document.getElementById(`tab-${tabName}`);
-  if(tab) tab.classList.add('active');
-  if(content) content.classList.add('active');
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-document.addEventListener('click', (e)=>{
-  const link = e.target.closest('.tab-link');
-  if(link && link.dataset.goto) goToTab(link.dataset.goto);
-});
-
-/* ===== 서브탭 전환 ===== */
 document.querySelectorAll('.subtab').forEach(subtab=>{
   subtab.addEventListener('click', ()=>{
     document.querySelectorAll('.subtab').forEach(t=>t.classList.remove('active'));
@@ -795,113 +744,125 @@ async function loadData(){
   }
 }
 
-/* ===== 프리셋 8종 (축 기반) ===== */
-let currentPreset = "S2";
-let customAxis = null; // 커스텀 축 (null이면 프리셋 사용)
+/* ===== 프리셋 (v3.1: S4 표준 승격, S6/S7 재설계, S9 추가) ===== */
+let currentPreset = "S4"; // S4를 기본값으로
 
 const PRESETS = {
   S1: {
     name: "S1 안전 분산",
-    desc: "5등 반복. 최근 약, 장기 중, 겹침 1~2, 균형, 다양성 높음.",
+    desc: "5등 반복. 안정적.",
     target: "5등",
+    verification: "7.7회 / 8.0%",
     axes: {A:"약", B:"중", C:"1~2", D:"균형", E:"높음"},
     params: {
       W5:0.3, W10:0.7, W30:1.5, W100:2,
       longCold:20, midCold:15, shortCold:10,
       maxOverlap:2, candidateK:15, coldTarget:2, zeroOverlapCount:1,
-      diversityFilter:3, zoneBalance:true,
-      comboCount:5
+      diversityFilter:3, zoneBalance:true, comboCount:5
     }
   },
   S2: {
     name: "S2 균형 표준",
-    desc: "5·4등. 모든 축 중간값. 표준 전략.",
+    desc: "5·4등. 무난.",
     target: "5·4등",
+    verification: "7.0회 / 10.7%",
     axes: {A:"중", B:"중", C:"1~2", D:"균형", E:"중간"},
     params: {
       W5:0.5, W10:1, W30:1.5, W100:2,
       longCold:20, midCold:15, shortCold:10,
       maxOverlap:2, candidateK:15, coldTarget:2, zeroOverlapCount:1,
-      diversityFilter:4, zoneBalance:true,
-      comboCount:5
+      diversityFilter:4, zoneBalance:true, comboCount:5
     }
   },
   S3: {
     name: "S3 최근 편향",
-    desc: "최근 패턴. 최근 강, 장기 약, 겹침 2~3, 자유.",
+    desc: "최근 패턴. 하위.",
     target: "최근 패턴",
+    verification: "7.0회 / 7.6%",
     axes: {A:"강", B:"약", C:"2~3", D:"자유", E:"중간"},
     params: {
       W5:2, W10:2, W30:1.5, W100:0.5,
       longCold:10, midCold:8, shortCold:5,
       maxOverlap:3, candidateK:12, coldTarget:1, zeroOverlapCount:1,
-      diversityFilter:4, zoneBalance:false,
-      comboCount:5
+      diversityFilter:4, zoneBalance:false, comboCount:5
     }
   },
   S4: {
     name: "S4 장기 반등",
-    desc: "장기 미출현. 최근 약, 장기 강, 겹침 1~2, 균형.",
-    target: "장기 미출현",
+    desc: "⭐ 표준. 장기 미출현 강조. 검증 최고.",
+    target: "표준",
+    verification: "8.7회 / 12.4% ⭐",
     axes: {A:"약", B:"강", C:"1~2", D:"균형", E:"중간"},
     params: {
       W5:0.2, W10:0.5, W30:1.0, W100:2.5,
       longCold:30, midCold:22, shortCold:15,
       maxOverlap:2, candidateK:15, coldTarget:3, zeroOverlapCount:1,
-      diversityFilter:4, zoneBalance:true,
-      comboCount:5
+      diversityFilter:4, zoneBalance:true, comboCount:5
     }
   },
   S5: {
     name: "S5 완전 무작위",
-    desc: "랜덤 대조군. 모든 축 없음.",
+    desc: "랜덤 대조군.",
     target: "대조군",
+    verification: "6.0회 / 6.1%",
     axes: {A:"없음", B:"없음", C:"자유", D:"자유", E:"낮음"},
     params: {
       W5:1, W10:1, W30:1, W100:1,
       longCold:0, midCold:0, shortCold:0,
       maxOverlap:6, candidateK:45, coldTarget:0, zeroOverlapCount:0,
-      diversityFilter:6, zoneBalance:false,
-      comboCount:5
+      diversityFilter:6, zoneBalance:false, comboCount:5
     }
   },
   S6: {
-    name: "S6 4등 최적화 ⭐",
-    desc: "4등 집중. 후보 20개 + 조합 10개. 4등 적중률 극대화.",
-    target: "4등 집중",
-    axes: {A:"중", B:"중", C:"1~2", D:"강제", E:"높음"},
+    name: "S6 4등 최적화 (v2)",
+    desc: "재설계. 후보 15 유지, 조합만 10개로 확대.",
+    target: "4등 보조",
+    verification: "재설계됨",
+    axes: {A:"중", B:"중", C:"1~2", D:"강제", E:"중간"},
     params: {
       W5:0.5, W10:1, W30:1.5, W100:2,
       longCold:20, midCold:15, shortCold:10,
-      maxOverlap:2, candidateK:20, coldTarget:2, zeroOverlapCount:1,
-      diversityFilter:3, zoneBalance:true,
-      comboCount:10
+      maxOverlap:3, candidateK:15, coldTarget:2, zeroOverlapCount:1,
+      diversityFilter:5, zoneBalance:true, comboCount:10
     }
   },
   S7: {
-    name: "S7 3등 도전 ⭐",
-    desc: "3등 도전. 후보 25개 + 조합 15개. 최고 위험.",
-    target: "3등 도전",
-    axes: {A:"중", B:"중", C:"1~2", D:"강제", E:"높음"},
+    name: "S7 3등 도전 (v2)",
+    desc: "재설계. 후보 15 유지, 조합만 15개로 확대.",
+    target: "3등 보조",
+    verification: "재설계됨",
+    axes: {A:"중", B:"중", C:"자유", D:"강제", E:"중간"},
     params: {
       W5:0.5, W10:1, W30:1.5, W100:2,
       longCold:20, midCold:15, shortCold:10,
-      maxOverlap:2, candidateK:25, coldTarget:2, zeroOverlapCount:1,
-      diversityFilter:3, zoneBalance:true,
-      comboCount:15
+      maxOverlap:6, candidateK:15, coldTarget:1, zeroOverlapCount:1,
+      diversityFilter:6, zoneBalance:true, comboCount:15
     }
   },
   S8: {
     name: "S8 분배 극대",
-    desc: "당첨자 최소화. 겹침 0~1, 장기 강, 다양성 높음.",
+    desc: "당첨자 최소화. 준수.",
     target: "분배 극대",
+    verification: "11.0회 / 11.2%",
     axes: {A:"약", B:"강", C:"0~1", D:"자유", E:"높음"},
     params: {
       W5:0.3, W10:0.6, W30:1.2, W100:2.2,
       longCold:25, midCold:18, shortCold:12,
       maxOverlap:1, candidateK:15, coldTarget:3, zeroOverlapCount:2,
-      diversityFilter:3, zoneBalance:false,
-      comboCount:5
+      diversityFilter:3, zoneBalance:false, comboCount:5
+    }
+  },
+  S9: {
+    name: "S9 장기 극대 🆕",
+    desc: "S4 강화. 장기 미출현 극대화.",
+    target: "장기 극대",
+    verification: "신규",
+    axes: {A:"약", B:"극강", C:"1~2", D:"균형", E:"중간"},
+    params: {
+      W5:0.1, W10:0.3, W30:0.8, W100:3.0,
+      longCold:40, midCold:30, shortCold:20,
+      maxOverlap:2, candidateK:15, coldTarget:4, zeroOverlapCount:1,
+      diversityFilter:4, zoneBalance:true, comboCount:5
     }
   }
 };
@@ -909,56 +870,11 @@ const PRESETS = {
 const COLD_THRESHOLD = 20;
 const LONG_COLD_THRESHOLD = 40;
 
-/* ===== 축 → 파라미터 변환 ===== */
-function axisToParams(axes){
-  // A: 최근 출현 (약/중/강)
-  let W5, W10;
-  if(axes.A === "약"){ W5=0.3; W10=0.7; }
-  else if(axes.A === "강"){ W5=2.0; W10=2.0; }
-  else { W5=0.5; W10=1.0; }
-
-  // B: 장기 미출현 (약/중/강)
-  let longCold, midCold, shortCold;
-  if(axes.B === "약"){ longCold=10; midCold=8; shortCold=5; }
-  else if(axes.B === "강"){ longCold=30; midCold=22; shortCold=15; }
-  else { longCold=20; midCold=15; shortCold=10; }
-
-  // C: 직전 겹침
-  let maxOverlap;
-  if(axes.C === "0") maxOverlap=0;
-  else if(axes.C === "1~2") maxOverlap=2;
-  else if(axes.C === "2~3") maxOverlap=3;
-  else maxOverlap=6;
-
-  // D: 번호대 균형
-  let zoneBalance = axes.D === "균형" || axes.D === "강제";
-
-  // E: 다양성
-  let diversityFilter;
-  if(axes.E === "높음") diversityFilter=3;
-  else if(axes.E === "낮음") diversityFilter=6;
-  else diversityFilter=4;
-
-  return {
-    W5, W10, W30:1.5, W100:2,
-    longCold, midCold, shortCold,
-    maxOverlap, candidateK:15, coldTarget:2, zeroOverlapCount:1,
-    diversityFilter, zoneBalance,
-    comboCount:5
-  };
-}
-
-function getActivePreset(){
-  if(customAxis) return { name:"커스텀 축", desc:"사용자 지정", target:"커스텀", axes:customAxis, params:axisToParams(customAxis) };
-  return PRESETS[currentPreset];
-}
-
-/* ===== 알고리즘 ===== */
 let baseScore = {};
 
+/* ===== 점수 계산 ===== */
 function scoreNumbers(history){
-  const preset = getActivePreset();
-  const cfg = preset.params;
+  const cfg = PRESETS[currentPreset].params;
   const N = history.length;
   const recent = k => history.slice(Math.max(0,N-k));
   const r5 = recent(5), r10 = recent(10), r30 = recent(30), r100 = recent(100);
@@ -1018,17 +934,10 @@ function scoreNumbers(history){
   return {scores, co};
 }
 
-function pickCandidates(scored, k=8){
-  const cfg = getActivePreset().params;
-  const useK = cfg.candidateK || k;
-
-  const stages = [];
-  stages.push({label:"전체 번호", count:45, color:"#475569"});
-  const top15 = scored.slice(0,15).map(x=>x.num);
-  stages.push({label:"상위 15개", count:top15.length, color:"#64748b"});
-
+function pickCandidates(scored){
+  const cfg = PRESETS[currentPreset].params;
+  const useK = cfg.candidateK;
   let cand = scored.slice(0,useK).map(x=>x.num);
-  stages.push({label:`상위 ${useK}개`, count:cand.length, color:"#22c55e"});
 
   const longCold = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
   const midCold = scored.filter(s => s.lastSeen >= COLD_THRESHOLD && s.lastSeen < LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
@@ -1045,15 +954,11 @@ function pickCandidates(scored, k=8){
     if(best10) cand.push(best10.num);
   }
 
-  const unique = [...new Set(cand)].slice(0, useK + 4).sort((a,b)=>a-b);
-  stages.push({label:"보정 후 후보", count:unique.length, color:"#f59e0b"});
-
-  return { candidates: unique, stages };
+  return [...new Set(cand)].slice(0, useK + 4).sort((a,b)=>a-b);
 }
 
-function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
-  const preset = getActivePreset();
-  const cfg = preset.params;
+function generateCombos(candidates, co, count, lastDrawNums, scored){
+  const cfg = PRESETS[currentPreset].params;
   const maxOverlap = cfg.maxOverlap;
   const coldTarget = cfg.coldTarget;
   const zeroOverlapCount = cfg.zeroOverlapCount;
@@ -1081,7 +986,6 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
     const high40 = combo.filter(n=>n>=40).length;
     if(high40<=1) f += 2;
 
-    // ★ 축 D: 번호대 균형
     if(zoneBalance){
       const zones = [0,0,0,0,0];
       combo.forEach(n=>{
@@ -1109,7 +1013,6 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
 
     const coldInCombo = combo.filter(n => allColdNums.includes(n)).length;
     f += coldInCombo * 3;
-
     return f;
   }
 
@@ -1238,15 +1141,13 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
     ).length;
 
     if(currentZeroCount < zeroOverlapCount && zeroOverlapCombos.length > 0){
-      let targetIdx = -1;
-      let maxLastOv = -1;
+      let targetIdx = -1, maxLastOv = -1;
       for(let i=0; i<selected.length; i++){
         const ov = selected[i].filter(n => lastDrawNums.includes(n)).length;
         if(ov > maxLastOv){ maxLastOv = ov; targetIdx = i; }
       }
       if(targetIdx >= 0){
-        let bestReplacement = null;
-        let bestScore = -Infinity;
+        let bestReplacement = null, bestScore = -Infinity;
         for(const zc of zeroOverlapCombos.slice(0, 20)){
           let minOv = Infinity;
           for(let i=0; i<selected.length; i++){
@@ -1293,7 +1194,7 @@ function renderLatest(history){
   b.className = "ball bonus"; b.textContent = last.bonus; box.appendChild(b);
 
   document.getElementById("predictTitle").innerHTML =
-    `📊 이번 주 예측 <span class="tag axis">축 기반 v3</span> <span class="muted" style="font-size:13px;">[${next}회, ${nextDate}]</span>`;
+    `📊 이번 주 예측 <span class="tag axis">v3.1</span> <span class="tag star">S4 표준</span> <span class="muted" style="font-size:13px;">[${next}회]</span>`;
   document.getElementById("picksTitle").innerHTML =
     `🎲 추천 조합 <span class="muted" style="font-size:13px;">[${next}회]</span>`;
 }
@@ -1319,10 +1220,6 @@ function renderPicks(combos, lastDrawNums, scored){
   const allColdNums = scored.filter(s => s.lastSeen >= COLD_THRESHOLD).map(s => s.num);
   const longColdNums = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).map(s => s.num);
 
-  const preset = getActivePreset();
-  const is4th = preset.name.includes("4등");
-  const is3rd = preset.name.includes("3등");
-
   combos.forEach((c, idx)=>{
     const sorted = [...c].sort((a,b)=>a-b);
     const div = document.createElement("div");
@@ -1330,10 +1227,7 @@ function renderPicks(combos, lastDrawNums, scored){
     div.style.marginBottom = "10px";
     div.style.background = idx<3 ? "#0b1220" : "#1a2a44";
 
-    let label = "안정형 (3·4등 목표)";
-    if(idx >= combos.length - 3 && is4th) label = "4등 집중형";
-    if(idx >= combos.length - 5 && is3rd) label = "3등 도전형";
-
+    const label = idx<3 ? "안정형 (3·4등 목표)" : "2등 기대형";
     const sum = sorted.reduce((a,b)=>a+b,0);
     const odd = sorted.filter(n=>n%2).length;
 
@@ -1343,8 +1237,8 @@ function renderPicks(combos, lastDrawNums, scored){
       if(lastOverlap === 0){
         lastBadge = `<span class="tag zero" style="font-size:11px;">✨ 직전 0개</span>`;
       } else {
-        const lastColor = lastOverlap <= 1 ? "#22c55e" : lastOverlap <= 2 ? "#eab308" : "#ef4444";
-        lastBadge = `<span style="color:${lastColor}; font-weight:700;">📌 직전 ${lastOverlap}개</span>`;
+        const lc = lastOverlap <= 1 ? "#22c55e" : lastOverlap <= 2 ? "#eab308" : "#ef4444";
+        lastBadge = `<span style="color:${lc}; font-weight:700;">📌 직전 ${lastOverlap}개</span>`;
       }
     }
 
@@ -1377,39 +1271,14 @@ function renderPicks(combos, lastDrawNums, scored){
     });
     wrap.appendChild(div);
   });
-
-  // 요약
-  const avgLast = lastDrawNums.length > 0
-    ? (combos.reduce((a,c)=>a + c.filter(n=>lastDrawNums.includes(n)).length, 0) / combos.length).toFixed(1)
-    : null;
-  const coldComboCount = combos.filter(c => c.some(n => allColdNums.includes(n))).length;
-  const zeroOverlapCount = lastDrawNums.length > 0
-    ? combos.filter(c => c.filter(n => lastDrawNums.includes(n)).length === 0).length
-    : 0;
-
-  const summary = document.createElement("p");
-  summary.className = "muted";
-  summary.style.marginTop = "10px";
-  summary.style.paddingTop = "10px";
-  summary.style.borderTop = "1px solid #334155";
-  let html = `📊 조합 ${combos.length}개`;
-  if(avgLast !== null) html += ` · 직전 회차 평균 겹침 <b>${avgLast}개</b>`;
-  html += `<br>✨ 직전 회차 겹침 0개 조합: <b>${zeroOverlapCount}개</b>`;
-  html += `<br>❄️ 장기 미출현 포함 조합: <b>${coldComboCount}개</b>`;
-  summary.innerHTML = html;
-  wrap.appendChild(summary);
-
-  renderPicksProgress();
 }
 
 function renderPicksProgress(){
   const wrap = document.getElementById("picksProgress");
-  const preset = getActivePreset();
-  const params = preset.params;
-
+  const p = PRESETS[currentPreset];
   wrap.innerHTML = `
     <div class="muted" style="background:#0b1220; padding:10px; border-radius:8px; font-size:12px;">
-      <b>${preset.name}</b> · 후보 ${params.candidateK}개 · 조합 ${params.comboCount}개 · 다양성 필터 ${params.diversityFilter}개
+      <b>${p.name}</b> · 후보 ${p.params.candidateK}개 · 조합 ${p.params.comboCount}개 · 다양성 필터 ${p.params.diversityFilter}개
     </div>
   `;
 }
@@ -1424,8 +1293,7 @@ function renderScores(scored){
     const isLong = s.lastSeen >= LONG_COLD_THRESHOLD;
     const isMid = !isLong && s.lastSeen >= COLD_THRESHOLD;
     const tag = isLong ? '<span class="tag cold" style="font-size:10px;">❄️ 초장기</span>' 
-              : isMid ? '<span class="tag midcold" style="font-size:10px;">🌡️ 장기</span>' 
-              : '';
+              : isMid ? '<span class="tag midcold" style="font-size:10px;">🌡️ 장기</span>' : '';
     const barColor = isLong ? '#ef4444' : isMid ? '#f59e0b' : 'var(--accent)';
     row.innerHTML = `
       <div class="row" style="justify-content:space-between;">
@@ -1456,7 +1324,7 @@ function renderColdNumbers(scored){
         : '<span class="muted">없음</span>'}
     </div>
     <p class="muted" style="margin-top:10px; font-size:12px;">
-      ※ <b>정직한 안내</b>: 장기 미출현 번호의 출현 확률은 다른 번호와 <b>동일(13.3%)</b>합니다.<br>
+      ※ <b>정직한 안내</b>: 장기 미출현 번호의 출현 확률은 다른 번호와 동일(13.3%)합니다.<br>
       다만 당첨 시 <b>분배금이 높을 가능성</b>이 있어 전략적으로 선택합니다.
     </p>
   `;
@@ -1469,98 +1337,50 @@ function renderPresetGrid(){
   Object.keys(PRESETS).forEach(key=>{
     const p = PRESETS[key];
     const card = document.createElement("div");
-    card.className = "preset-card" + (key === currentPreset && !customAxis ? " active" : "");
+    card.className = "preset-card" + (key === currentPreset ? " active" : "");
     card.dataset.preset = key;
+    const isStar = key === "S4";
     card.innerHTML = `
+      ${isStar ? '<span class="star">⭐ 표준</span>' : ''}
       <h4>${p.name}</h4>
       <p>${p.desc}</p>
       <div style="margin-top:6px; font-size:10px; color:var(--accent);">
         ${p.target} · 후보${p.params.candidateK} · 조합${p.params.comboCount}
       </div>
+      <div style="margin-top:4px; font-size:10px; color:var(--muted);">
+        검증: ${p.verification}
+      </div>
     `;
-    card.addEventListener("click", ()=>{
-      currentPreset = key;
-      customAxis = null;
-      document.querySelectorAll(".preset-card").forEach(c=>c.classList.remove("active"));
-      card.classList.add("active");
-      updatePresetInfo();
-      rerenderAll(window._history);
-    });
+    card.addEventListener("click", ()=> selectPreset(key));
     grid.appendChild(card);
   });
 }
 
+function selectPreset(key){
+  currentPreset = key;
+  document.querySelectorAll(".preset-card").forEach(c=>c.classList.remove("active"));
+  const card = document.querySelector(`.preset-card[data-preset="${key}"]`);
+  if(card) card.classList.add("active");
+  updatePresetInfo();
+  rerenderAll(window._history);
+}
+
 function updatePresetInfo(){
   const info = document.getElementById("presetInfo");
-  const p = getActivePreset();
+  const p = PRESETS[currentPreset];
   info.innerHTML = `
-    <b>${p.name}</b><br>
+    <b>${p.name}</b> ${currentPreset === "S4" ? '<span class="tag star">⭐ 표준</span>' : ''}<br>
     <span class="muted">${p.desc}</span><br>
     <span class="tag">축 A: ${p.axes.A}</span>
     <span class="tag">축 B: ${p.axes.B}</span>
     <span class="tag">축 C: ${p.axes.C}</span>
     <span class="tag">축 D: ${p.axes.D}</span>
     <span class="tag">축 E: ${p.axes.E}</span>
+    <div style="margin-top:6px; font-size:12px; color:var(--accent);">
+      검증 결과: <b>${p.verification}</b>
+    </div>
   `;
 }
-
-/* ===== 축 슬라이더 ===== */
-const AXIS_CONFIG = {
-  A: { name:"축 A: 최근 출현", levels:["약","중","강"], desc:"최근 5/10회 출현 우대 정도" },
-  B: { name:"축 B: 장기 미출현", levels:["약","중","강"], desc:"40회+/20~39회 미출현 우대 정도" },
-  C: { name:"축 C: 직전 겹침", levels:["0","1~2","2~3","자유"], desc:"직전 회차와 겹침 허용 범위" },
-  D: { name:"축 D: 번호대 균형", levels:["자유","균형"], desc:"10/20/30/40번대 균형 강제" },
-  E: { name:"축 E: 다양성", levels:["낮음","중간","높음"], desc:"조합 간 겹침 제한 (높음=다양)" }
-};
-
-function renderAxisSliders(){
-  const wrap = document.getElementById("axisSliders");
-  wrap.innerHTML = "";
-  Object.keys(AXIS_CONFIG).forEach(key=>{
-    const cfg = AXIS_CONFIG[key];
-    const current = (customAxis || getActivePreset().axes)[key];
-    const idx = cfg.levels.indexOf(current);
-    const row = document.createElement("div");
-    row.className = "axis-row";
-    row.innerHTML = `
-      <div class="axis-label">${cfg.name}</div>
-      <input type="range" class="axis-slider" min="0" max="${cfg.levels.length-1}" value="${idx}" data-axis="${key}">
-      <div class="axis-value" id="axisVal_${key}">${current}</div>
-    `;
-    wrap.appendChild(row);
-    const desc = document.createElement("div");
-    desc.className = "axis-desc";
-    desc.textContent = cfg.desc;
-    wrap.appendChild(desc);
-
-    const slider = row.querySelector(".axis-slider");
-    slider.addEventListener("input", (e)=>{
-      const val = cfg.levels[parseInt(e.target.value)];
-      document.getElementById(`axisVal_${key}`).textContent = val;
-    });
-  });
-}
-
-document.getElementById("applyAxisBtn").addEventListener("click", ()=>{
-  const axes = {};
-  Object.keys(AXIS_CONFIG).forEach(key=>{
-    const slider = document.querySelector(`.axis-slider[data-axis="${key}"]`);
-    const cfg = AXIS_CONFIG[key];
-    axes[key] = cfg.levels[parseInt(slider.value)];
-  });
-  customAxis = axes;
-  document.querySelectorAll(".preset-card").forEach(c=>c.classList.remove("active"));
-  updatePresetInfo();
-  rerenderAll(window._history);
-  alert("커스텀 축이 적용되었습니다.");
-});
-
-document.getElementById("resetAxisBtn").addEventListener("click", ()=>{
-  customAxis = null;
-  renderAxisSliders();
-  updatePresetInfo();
-  rerenderAll(window._history);
-});
 
 /* ===== 프리셋 비교 ===== */
 function renderCompareTable(){
@@ -1568,7 +1388,9 @@ function renderCompareTable(){
   tbody.innerHTML = "";
   Object.keys(PRESETS).forEach(key=>{
     const p = PRESETS[key];
+    const isStar = key === "S4";
     const tr = document.createElement("tr");
+    if(isStar) tr.style.background = "#052e16";
     tr.innerHTML = `
       <td style="font-weight:700;">${p.name}</td>
       <td>${p.axes.A}</td>
@@ -1579,6 +1401,7 @@ function renderCompareTable(){
       <td>${p.params.candidateK}</td>
       <td>${p.params.comboCount}</td>
       <td style="color:var(--accent);">${p.target}</td>
+      <td class="muted" style="font-size:11px;">${p.verification}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -1617,8 +1440,8 @@ async function runABTest(history){
 
   let presetKeys;
   if(presetSel === "all") presetKeys = Object.keys(PRESETS);
-  else if(presetSel === "4th") presetKeys = ["S6"];
-  else if(presetSel === "3rd") presetKeys = ["S7"];
+  else if(presetSel === "standard") presetKeys = ["S2", "S4", "S9"];
+  else if(presetSel === "special") presetKeys = ["S6", "S7"];
   else presetKeys = Object.keys(PRESETS);
 
   const start = Math.max(0, history.length - range - 1);
@@ -1637,7 +1460,6 @@ async function runABTest(history){
     for(const presetKey of presetKeys){
       if(abAborted) break;
       currentPreset = presetKey;
-      customAxis = null;
 
       const comboCount = PRESETS[presetKey].params.comboCount;
 
@@ -1650,7 +1472,7 @@ async function runABTest(history){
         const {scores, co} = scoreNumbers(predictHistory);
         baseScore = {};
         scores.forEach(s => baseScore[s.num] = s.score);
-        const {candidates} = pickCandidates(scores, 8);
+        const candidates = pickCandidates(scores);
         const combos = generateCombos(candidates, co, comboCount, lastDraw, scores);
 
         for(const c of combos){
@@ -1696,167 +1518,157 @@ function renderABResults(results, range, repeatCount, presetKeys){
     <thead><tr><th>프리셋</th><th>5등</th><th>4등</th><th>3등</th><th>회수</th><th>손익비</th><th>투자</th></tr></thead>
     <tbody>`;
 
-  presetKeys.forEach(key => {
+  const sorted = [...presetKeys].sort((a,b) => {
+    const roiA = results[a].payout / results[a].invest;
+    const roiB = results[b].payout / results[b].invest;
+    return roiB - roiA;
+  });
+
+  sorted.forEach(key => {
     const r = results[key];
     const p = PRESETS[key];
     const avg5 = (r["5등"] / repeatCount).toFixed(1);
     const avg4 = (r["4등"] / repeatCount).toFixed(1);
     const avg3 = (r["3등"] / repeatCount).toFixed(1);
     const avgPay = Math.round(r.payout / repeatCount);
-    const avgInv = Math.round(r.invest / repeatCount);
     const roi = ((r.payout / r.invest) * 100).toFixed(1);
     const roiColor = roi > 100 ? "#22c55e" : roi > 50 ? "#eab308" : "#ef4444";
-    const is4th = key === "S6";
-    const is3rd = key === "S7";
+    const isStar = key === "S4";
 
     html += `
-      <tr ${is4th ? 'style="background:#78350f33;"' : is3rd ? 'style="background:#7f1d1d33;"' : ''}>
-        <td style="font-weight:700;">${p.name}</td>
+      <tr ${isStar ? 'style="background:#052e16;"' : ''}>
+        <td style="font-weight:700;">${p.name} ${isStar ? '⭐' : ''}</td>
         <td>${avg5}</td>
-        <td style="color:${parseFloat(avg4) > 0.5 ? '#f59e0b' : 'inherit'}; font-weight:${is4th?'700':'400'};">${avg4}</td>
-        <td style="color:${parseFloat(avg3) > 0 ? '#ef4444' : 'inherit'}; font-weight:${is3rd?'700':'400'};">${avg3}</td>
+        <td>${avg4}</td>
+        <td>${avg3}</td>
         <td>${avgPay.toLocaleString()}원</td>
         <td style="color:${roiColor}; font-weight:700;">${roi}%</td>
-        <td class="muted">${avgInv.toLocaleString()}원</td>
+        <td class="muted">${r.invest.toLocaleString()}원</td>
       </tr>
     `;
   });
 
   html += `</tbody></table>`;
   resultBox.innerHTML = html;
-
-  // 4등/3등 결과 강조
-  const s6 = results["S6"];
-  const s7 = results["S7"];
-  if(s6 || s7){
-    let highlight = "";
-    if(s6 && s6["4등"] > 0){
-      highlight += `<div class="highlight-4th">
-        <h3 style="color:#fde68a;">🥇 4등 최적화 (S6) 결과</h3>
-        <p>4등 ${(s6["4등"]/repeatCount).toFixed(1)}회 적중 · 회수 ${Math.round(s6.payout/repeatCount).toLocaleString()}원</p>
-      </div>`;
-    }
-    if(s7 && s7["3등"] > 0){
-      highlight += `<div class="highlight-3rd">
-        <h3 style="color:#fecaca;">🥈 3등 도전 (S7) 결과</h3>
-        <p>3등 ${(s7["3등"]/repeatCount).toFixed(1)}회 적중!</p>
-      </div>`;
-    }
-    resultBox.innerHTML += highlight;
-  }
 }
 
-/* ===== 축별 기여도 분석 ===== */
-let axisTestAborted = false;
+/* ===== 장기 검증 ===== */
+let longAborted = false;
 
-async function runAxisTest(history){
-  const resultBox = document.getElementById("axisTestResult");
-  const progress = document.getElementById("axisTestProgress");
-  const progressBar = document.getElementById("axisTestProgressBar");
-  const runBtn = document.getElementById("axisTestBtn");
+async function runLongTest(history){
+  const resultBox = document.getElementById("longResult");
+  const progress = document.getElementById("longProgress");
+  const progressBar = document.getElementById("longProgressBar");
+  const runBtn = document.getElementById("longRunBtn");
+  const stopBtn = document.getElementById("longStopBtn");
 
-  axisTestAborted = false;
+  longAborted = false;
   runBtn.disabled = true;
+  stopBtn.style.display = "inline-block";
   progressBar.style.display = "block";
   resultBox.innerHTML = "";
 
-  const range = Number(document.getElementById("axisTestRange").value);
-  const axisKey = document.getElementById("axisTestAxis").value;
+  const range = Number(document.getElementById("longRange").value);
+  const presetKey = document.getElementById("longPreset").value;
+  currentPreset = presetKey;
 
   const start = Math.max(0, history.length - range - 1);
+  const total = history.length - 1 - start;
 
-  // 해당 축의 3레벨 (또는 2레벨)로 테스트
-  const cfg = AXIS_CONFIG[axisKey];
-  const levels = cfg.levels;
-
-  const results = {};
-  levels.forEach(lv => results[lv] = { "5등":0, "4등":0, "3등":0, payout:0, invest:0 });
-
-  const baseAxes = { A:"중", B:"중", C:"1~2", D:"균형", E:"중간" };
+  const comboCount = PRESETS[presetKey].params.comboCount;
+  const result = { "5등":0, "4등":0, "3등":0, "2등":0, "1등":0, payout:0, invest:0 };
 
   let done = 0;
-  const total = levels.length * (history.length - 1 - start);
 
-  for(const lv of levels){
-    if(axisTestAborted) break;
-    const testAxes = { ...baseAxes, [axisKey]: lv };
-    customAxis = testAxes;
+  for(let i=start; i<history.length-1; i++){
+    if(longAborted) break;
+    const predictHistory = history.slice(0, i+1);
+    const actual = history[i+1];
+    const lastDraw = history[i].nums;
 
-    for(let i=start; i<history.length-1; i++){
-      if(axisTestAborted) break;
-      const predictHistory = history.slice(0, i+1);
-      const actual = history[i+1];
-      const lastDraw = history[i].nums;
+    const {scores, co} = scoreNumbers(predictHistory);
+    baseScore = {};
+    scores.forEach(s => baseScore[s.num] = s.score);
+    const candidates = pickCandidates(scores);
+    const combos = generateCombos(candidates, co, comboCount, lastDraw, scores);
 
-      const {scores, co} = scoreNumbers(predictHistory);
-      baseScore = {};
-      scores.forEach(s => baseScore[s.num] = s.score);
-      const {candidates} = pickCandidates(scores, 8);
-      const combos = generateCombos(candidates, co, 5, lastDraw, scores);
+    for(const c of combos){
+      const hit = c.filter(n => actual.nums.includes(n)).length;
+      const bonusHit = c.includes(actual.bonus);
+      const rank = calcRank(hit, bonusHit);
+      result.invest += 1000;
+      if(rank === "1등") result["1등"]++;
+      if(rank === "2등") result["2등"]++;
+      if(rank === "3등") result["3등"]++;
+      if(rank === "4등") result["4등"]++;
+      if(rank === "5등") result["5등"]++;
+      result.payout += PRIZE[rank] || 0;
+    }
 
-      for(const c of combos){
-        const hit = c.filter(n => actual.nums.includes(n)).length;
-        const bonusHit = c.includes(actual.bonus);
-        const rank = calcRank(hit, bonusHit);
-        results[lv].invest += 1000;
-        if(rank === "5등") results[lv]["5등"]++;
-        if(rank === "4등") results[lv]["4등"]++;
-        if(rank === "3등") results[lv]["3등"]++;
-        results[lv].payout += PRIZE[rank] || 0;
-      }
-
-      done++;
-      if(done % 5 === 0 || done === total){
-        progress.innerHTML = `⏳ 축 ${axisKey} 분석 중... (${lv}, ${done}/${total})`;
-        progressBar.querySelector("i").style.width = ((done/total)*100).toFixed(1) + "%";
-        await new Promise(r => setTimeout(r, 0));
-      }
+    done++;
+    if(done % 5 === 0 || done === total){
+      progress.innerHTML = `⏳ 장기 검증 중... (${done}/${total})`;
+      progressBar.querySelector("i").style.width = ((done/total)*100).toFixed(1) + "%";
+      await new Promise(r => setTimeout(r, 0));
     }
   }
 
   runBtn.disabled = false;
-  progress.innerHTML = `✅ 축 ${axisKey} 분석 완료`;
+  stopBtn.style.display = "none";
+
+  if(longAborted){
+    progress.innerHTML = `⏹️ 중단됨`;
+    return;
+  }
+
+  progress.innerHTML = `✅ 장기 검증 완료 (${range}회)`;
   progressBar.querySelector("i").style.width = "100%";
 
-  renderAxisTestResults(axisKey, results, levels, range);
+  renderLongResult(result, range, presetKey);
 }
 
-function renderAxisTestResults(axisKey, results, levels, range){
-  const resultBox = document.getElementById("axisTestResult");
-  const cfg = AXIS_CONFIG[axisKey];
+function renderLongResult(r, range, presetKey){
+  const resultBox = document.getElementById("longResult");
+  const p = PRESETS[presetKey];
+  const roi = ((r.payout / r.invest) * 100).toFixed(1);
+  const roiColor = roi > 100 ? "#22c55e" : roi > 20 ? "#eab308" : "#ef4444";
 
-  let html = `<h3 style="color:var(--accent);">축 ${axisKey}: ${cfg.name} 기여도</h3>
-    <p class="muted">기본 축: A중 B중 C1~2 D균형 E중간 · 나머지 축 고정, ${axisKey}축만 변경</p>
-    <table style="width:100%; font-size:13px; margin-top:12px;">
-    <thead><tr><th>${axisKey}축 값</th><th>5등</th><th>4등</th><th>3등</th><th>회수</th><th>손익비</th></tr></thead>
-    <tbody>`;
-
-  let bestLv = null, best5 = -1;
-  levels.forEach(lv=>{
-    const r = results[lv];
-    const avg5 = r["5등"] / range * 100;
-    const avg4 = r["4등"];
-    const avg3 = r["3등"];
-    const roi = ((r.payout / r.invest) * 100).toFixed(1);
-    if(avg5 > best5){ best5 = avg5; bestLv = lv; }
-
-    html += `
-      <tr ${lv === bestLv ? 'style="background:#14532d33; font-weight:700;"' : ''}>
-        <td>${lv}</td>
-        <td>${avg5.toFixed(1)}%</td>
-        <td>${avg4}</td>
-        <td>${avg3}</td>
-        <td>${r.payout.toLocaleString()}원</td>
-        <td style="color:${roi > 20 ? '#22c55e' : roi > 10 ? '#eab308' : '#ef4444'};">${roi}%</td>
-      </tr>
-    `;
-  });
-
-  html += `</tbody></table>
-    <div style="background:#0b1220; border:1px solid #22c55e; border-radius:10px; padding:14px; margin-top:12px;">
-      <h4 style="color:#22c55e;">🏆 최적 ${axisKey}축 값: <b>${bestLv}</b></h4>
-      <p class="muted" style="margin:0;">5등 적중률 ${best5.toFixed(1)}%</p>
+  let html = `<h3 style="color:var(--accent);">${p.name} 장기 검증 (${range}회)</h3>
+    <div class="grid grid-3" style="margin-top:12px;">
+      <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
+        <div class="muted">5등</div>
+        <b style="font-size:22px; color:var(--accent);">${r["5등"]}회</b>
+        <div class="muted">${(r["5등"]/range*100).toFixed(1)}%</div>
+      </div>
+      <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
+        <div class="muted">4등</div>
+        <b style="font-size:22px; color:#eab308;">${r["4등"]}회</b>
+        <div class="muted">${(r["4등"]/range*100).toFixed(2)}%</div>
+      </div>
+      <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
+        <div class="muted">3등</div>
+        <b style="font-size:22px; color:#ef4444;">${r["3등"]}회</b>
+        <div class="muted">${(r["3등"]/range*100).toFixed(3)}%</div>
+      </div>
     </div>
+    <div class="grid grid-3" style="margin-top:12px;">
+      <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
+        <div class="muted">2등</div>
+        <b style="font-size:22px;">${r["2등"]}회</b>
+      </div>
+      <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
+        <div class="muted">1등</div>
+        <b style="font-size:22px;">${r["1등"]}회</b>
+      </div>
+      <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
+        <div class="muted">손익비</div>
+        <b style="font-size:22px; color:${roiColor};">${roi}%</b>
+        <div class="muted">${r.payout.toLocaleString()}원 / ${r.invest.toLocaleString()}원</div>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:12px;">
+      ※ ${range}회 검증 · 조합 ${p.params.comboCount}개/회 · 총 ${(range * p.params.comboCount).toLocaleString()}조합
+    </p>
   `;
 
   resultBox.innerHTML = html;
@@ -1868,11 +1680,12 @@ function rerenderAll(history){
   const {scores, co} = scoreNumbers(history);
   baseScore = {};
   scores.forEach(s => baseScore[s.num] = s.score);
-  const {candidates} = pickCandidates(scores, 8);
-  const preset = getActivePreset();
-  const combos = generateCombos(candidates, co, preset.params.comboCount, lastDraw.nums, scores);
+  const candidates = pickCandidates(scores);
+  const comboCount = PRESETS[currentPreset].params.comboCount;
+  const combos = generateCombos(candidates, co, comboCount, lastDraw.nums, scores);
 
   renderPicks(combos, lastDraw.nums, scores);
+  renderPicksProgress();
   renderScores(scores);
   renderColdNumbers(scores);
 }
@@ -1884,24 +1697,18 @@ function rerenderAll(history){
   renderLatest(history);
   renderPresetGrid();
   updatePresetInfo();
-  renderAxisSliders();
   renderCompareTable();
   rerenderAll(history);
 
-  document.getElementById("abRunBtn").addEventListener("click", ()=>{
-    runABTest(history);
-  });
-  document.getElementById("abStopBtn").addEventListener("click", ()=>{
-    abAborted = true;
-  });
-  document.getElementById("axisTestBtn").addEventListener("click", ()=>{
-    runAxisTest(history);
-  });
+  document.getElementById("abRunBtn").addEventListener("click", ()=> runABTest(history));
+  document.getElementById("abStopBtn").addEventListener("click", ()=> abAborted = true);
+  document.getElementById("longRunBtn").addEventListener("click", ()=> runLongTest(history));
+  document.getElementById("longStopBtn").addEventListener("click", ()=> longAborted = true);
 
   setupCollapsibles();
   setTimeout(setupCollapsibles, 500);
 
-  console.log("축 기반 v3 로드 완료");
+  console.log("v3.1 로드 완료 · 표준 프리셋: S4");
 })();
 </script>
 </body>
