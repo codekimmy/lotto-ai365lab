@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>로또 3·4등 전략 대시보드 v3.2</title>
+<title>로또 3·4등 전략 대시보드 v3.3</title>
 <style>
   :root{
     --bg:#0f172a; --card:#1e293b; --card2:#273449; --text:#e2e8f0;
@@ -283,13 +283,21 @@
     color:#a78bfa; margin:0 0 12px;
     font-size:15px;
   }
+  .weight-group{
+    margin-top:12px; padding-top:12px;
+    border-top:1px dashed #7c3aed;
+  }
+  .weight-group-title{
+    color:#a78bfa; font-size:12px; font-weight:700;
+    margin-bottom:8px;
+  }
   .weight-row{
     display:flex; align-items:center; gap:10px;
     padding:8px 0; border-bottom:1px solid #334155;
   }
   .weight-row:last-child{ border-bottom:none; }
   .weight-label{
-    width:110px; font-size:12px; font-weight:700;
+    width:130px; font-size:12px; font-weight:700;
     color:var(--text);
   }
   .weight-slider{
@@ -396,7 +404,7 @@
     .preset-btn .preset-tooltip{
       width:220px; font-size:11px;
     }
-    .weight-label{ width:80px; font-size:11px; }
+    .weight-label{ width:90px; font-size:11px; }
     .weight-value{ width:50px; font-size:11px; }
   }
 </style>
@@ -417,7 +425,7 @@
 
   <!-- ===== TAB 1: 전략 소개 ===== -->
   <div class="tab-content active" id="tab-strategy">
-    <h1>🎯 전략 소개 <span class="tag" style="background:#7c3aed;color:#ddd6fe;">v3.2</span></h1>
+    <h1>🎯 전략 소개 <span class="tag" style="background:#7c3aed;color:#ddd6fe;">v3.3</span></h1>
     <p class="muted">목표: <b>1등을 노리는 것이 아니라, 3·4등을 꾸준히 맞추면서 간혹 2등을 노리는 것</b>.</p>
 
     <div class="grid grid-2">
@@ -426,7 +434,7 @@
         <ul class="method-list">
           <li><b>3·4등 목표</b>: 매주 5개 조합 중 3개는 안정형</li>
           <li><b>2등 기대형</b>: 2개는 고위험·고수익 조합</li>
-          <li><b>가중치 조정</b>: 매주 5단위로 가중치 미세 조정</li>
+          <li><b>가중치 조정</b>: 매주 21개 슬라이더로 미세 조정</li>
           <li><b>꾸준함</b>: 매주 같은 방식, 감정적 구매 금지</li>
           <li><b>예산 관리</b>: 주 5조합(5,000원) 이하</li>
           <li><b>기록</b>: 결과를 Google Sheets에 기록</li>
@@ -451,36 +459,32 @@
     </div>
 
     <div class="card" style="margin-top:16px;">
-      <h2>🆕 v3.2 새로운 기능</h2>
-      <div class="grid grid-2">
+      <h2>🆕 v3.3 새로운 기능 (가중치 21개)</h2>
+      <div class="grid grid-3">
         <div class="tech-card" style="border-color:#a78bfa;">
-          <h4>🎛️ 가중치 조정 모드</h4>
-          <p>W5/W10/W30/W100, 냉각 보너스를 <b>5단위로 증감</b> 가능. 매주 미세 조정.</p>
+          <h4>🎛️ 점수 가중치 (7)</h4>
+          <p>W5/W10/W30/W100 + 40/30/20회 냉각</p>
         </div>
         <div class="tech-card" style="border-color:#a78bfa;">
-          <h4>💾 LocalStorage 저장</h4>
-          <p>조정한 가중치를 저장 → 다음 주에도 유지.</p>
+          <h4>📌 직전/보조 (4) 🆕</h4>
+          <p>직전 앞뒤, 거울/보색, 보너스 회귀, 네트워크 상한</p>
+        </div>
+        <div class="tech-card" style="border-color:#a78bfa;">
+          <h4>🎯 GA 적합도 (6) 🆕</h4>
+          <p>홀짝, 저고, 합계, 연속, 40번대, 동시출현 상한</p>
+        </div>
+        <div class="tech-card" style="border-color:#a78bfa;">
+          <h4>⚙️ 조합 조건 (4) 🆕</h4>
+          <p>다양성 필터, 직전 겹침, 후보 수, 장기 조합 수</p>
+        </div>
+        <div class="tech-card" style="border-color:#a78bfa;">
+          <h4>💾 LocalStorage</h4>
+          <p>21개 값 모두 저장/불러오기</p>
         </div>
         <div class="tech-card" style="border-color:#a78bfa;">
           <h4>⚡ 즉시 재계산</h4>
-          <p>슬라이더 조정 후 즉시 적용 → 추천 조합 갱신.</p>
+          <p>슬라이더 조정 후 즉시 적용</p>
         </div>
-        <div class="tech-card" style="border-color:#a78bfa;">
-          <h4>↺ 프리셋 기본값 복원</h4>
-          <p>조정값 초기화 → 프리셋 기본값으로 복원.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px;">
-      <h2>💰 구매 수칙</h2>
-      <div class="grid grid-3">
-        <div><h3>1. 주간 예산</h3><p class="muted">월 4만원 이하 권장. 잃어도 생활에 지장 없는 금액만.</p></div>
-        <div><h3>2. 조합 선택</h3><p class="muted">안정형 3 + 2등 기대형 2 = 5조합(5,000원).</p></div>
-        <div><h3>3. 가중치 조정</h3><p class="muted">매주 이번 주 예측 탭에서 가중치 슬라이더 조정.</p></div>
-        <div><h3>4. 기록</h3><p class="muted">결과를 Google Sheets에 기록, 다음 주 반영.</p></div>
-        <div><h3>5. 금지</h3><p class="muted">충동 구매, 대출 구매, 감정적 추가 구매 금지.</p></div>
-        <div><h3>6. 장기 관점</h3><p class="muted">3·4등은 확률 게임. 6개월~1년 단위 평가.</p></div>
       </div>
     </div>
   </div>
@@ -575,50 +579,135 @@
       </div>
     </div>
 
-    <!-- ★ 가중치 조정 패널 -->
+    <!-- ★ 가중치 조정 패널 (v3.3 확장) -->
     <div class="weight-panel" id="weightPanel">
-      <h3>🎛️ 이번 주 가중치 조정 <span class="muted" style="font-size:12px;">(5단위 증감)</span></h3>
+      <h3>🎛️ 이번 주 가중치 조정 <span class="muted" style="font-size:12px;">(총 21개 슬라이더)</span></h3>
+      
+      <!-- 그룹 1: 점수 가중치 -->
+      <div class="weight-group-title">① 점수 가중치</div>
       
       <div class="weight-row">
         <div class="weight-label">W5 (최근 5회)</div>
-        <input type="range" class="weight-slider" id="wW5" min="0" max="5" step="0.5" value="0.5">
-        <div class="weight-value" id="wW5Val">0.5</div>
+        <input type="range" class="weight-slider" id="wW5" min="0" max="5" step="0.5" value="2">
+        <div class="weight-value" id="wW5Val">2.0</div>
       </div>
-      
       <div class="weight-row">
         <div class="weight-label">W10 (최근 10회)</div>
-        <input type="range" class="weight-slider" id="wW10" min="0" max="5" step="0.5" value="1">
-        <div class="weight-value" id="wW10Val">1.0</div>
+        <input type="range" class="weight-slider" id="wW10" min="0" max="5" step="0.5" value="2">
+        <div class="weight-value" id="wW10Val">2.0</div>
       </div>
-      
       <div class="weight-row">
         <div class="weight-label">W30 (최근 30회)</div>
-        <input type="range" class="weight-slider" id="wW30" min="0" max="5" step="0.5" value="1.5">
-        <div class="weight-value" id="wW30Val">1.5</div>
+        <input type="range" class="weight-slider" id="wW30" min="0" max="5" step="0.5" value="2">
+        <div class="weight-value" id="wW30Val">2.0</div>
       </div>
-      
       <div class="weight-row">
         <div class="weight-label">W100 (최근 100회)</div>
-        <input type="range" class="weight-slider" id="wW100" min="0" max="5" step="0.5" value="2">
-        <div class="weight-value" id="wW100Val">2.0</div>
+        <input type="range" class="weight-slider" id="wW100" min="0" max="5" step="0.5" value="1">
+        <div class="weight-value" id="wW100Val">1.0</div>
       </div>
-      
       <div class="weight-row">
         <div class="weight-label">40회+ 냉각</div>
-        <input type="range" class="weight-slider" id="wCold40" min="0" max="50" step="5" value="20">
-        <div class="weight-value" id="wCold40Val">+20</div>
+        <input type="range" class="weight-slider" id="wCold40" min="0" max="50" step="5" value="12">
+        <div class="weight-value" id="wCold40Val">+12</div>
       </div>
-      
       <div class="weight-row">
         <div class="weight-label">30회 냉각</div>
-        <input type="range" class="weight-slider" id="wCold30" min="0" max="40" step="5" value="15">
-        <div class="weight-value" id="wCold30Val">+15</div>
+        <input type="range" class="weight-slider" id="wCold30" min="0" max="40" step="5" value="8">
+        <div class="weight-value" id="wCold30Val">+8</div>
       </div>
-      
       <div class="weight-row">
         <div class="weight-label">20회 냉각</div>
-        <input type="range" class="weight-slider" id="wCold20" min="0" max="30" step="5" value="10">
-        <div class="weight-value" id="wCold20Val">+10</div>
+        <input type="range" class="weight-slider" id="wCold20" min="0" max="30" step="5" value="4">
+        <div class="weight-value" id="wCold20Val">+4</div>
+      </div>
+
+      <!-- 그룹 2: 직전/보조 가중치 -->
+      <div class="weight-group">
+        <div class="weight-group-title">② 직전/보조 가중치</div>
+        
+        <div class="weight-row">
+          <div class="weight-label">직전 앞뒤</div>
+          <input type="range" class="weight-slider" id="wNeighbor" min="0" max="20" step="1" value="6">
+          <div class="weight-value" id="wNeighborVal">+6</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">거울/보색 배수</div>
+          <input type="range" class="weight-slider" id="wMirror" min="0" max="5" step="0.5" value="1.5">
+          <div class="weight-value" id="wMirrorVal">×1.5</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">보너스 회귀 배수</div>
+          <input type="range" class="weight-slider" id="wBonus" min="0" max="10" step="1" value="2">
+          <div class="weight-value" id="wBonusVal">×2</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">네트워크 상한</div>
+          <input type="range" class="weight-slider" id="wCentrality" min="0" max="10" step="1" value="4">
+          <div class="weight-value" id="wCentralityVal">+4</div>
+        </div>
+      </div>
+
+      <!-- 그룹 3: GA 적합도 가중치 -->
+      <div class="weight-group">
+        <div class="weight-group-title">③ GA 적합도 가중치</div>
+        
+        <div class="weight-row">
+          <div class="weight-label">홀짝 보너스</div>
+          <input type="range" class="weight-slider" id="wOddEven" min="0" max="20" step="1" value="5">
+          <div class="weight-value" id="wOddEvenVal">+5</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">저고 보너스</div>
+          <input type="range" class="weight-slider" id="wLowHigh" min="0" max="20" step="1" value="5">
+          <div class="weight-value" id="wLowHighVal">+5</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">합계 보너스</div>
+          <input type="range" class="weight-slider" id="wSum" min="0" max="20" step="1" value="4">
+          <div class="weight-value" id="wSumVal">+4</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">연속번호 보너스</div>
+          <input type="range" class="weight-slider" id="wSeq" min="0" max="20" step="1" value="3">
+          <div class="weight-value" id="wSeqVal">+3</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">40번대 보너스</div>
+          <input type="range" class="weight-slider" id="wHigh40" min="0" max="20" step="1" value="2">
+          <div class="weight-value" id="wHigh40Val">+2</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">동시출현 상한</div>
+          <input type="range" class="weight-slider" id="wCoOccur" min="0" max="15" step="1" value="6">
+          <div class="weight-value" id="wCoOccurVal">+6</div>
+        </div>
+      </div>
+
+      <!-- 그룹 4: 조합 생성 조건 -->
+      <div class="weight-group">
+        <div class="weight-group-title">④ 조합 생성 조건</div>
+        
+        <div class="weight-row">
+          <div class="weight-label">다양성 필터</div>
+          <input type="range" class="weight-slider" id="wDiversity" min="3" max="6" step="1" value="5">
+          <div class="weight-value" id="wDiversityVal">5개</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">직전 겹침 상한</div>
+          <input type="range" class="weight-slider" id="wMaxOverlap" min="0" max="6" step="1" value="2">
+          <div class="weight-value" id="wMaxOverlapVal">2개</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">후보 수</div>
+          <input type="range" class="weight-slider" id="wCandidateK" min="6" max="20" step="1" value="10">
+          <div class="weight-value" id="wCandidateKVal">10개</div>
+        </div>
+        <div class="weight-row">
+          <div class="weight-label">장기 조합 수</div>
+          <input type="range" class="weight-slider" id="wColdTarget" min="0" max="5" step="1" value="2">
+          <div class="weight-value" id="wColdTargetVal">2조합</div>
+        </div>
       </div>
       
       <div class="weight-actions">
@@ -630,26 +719,6 @@
       
       <div class="weight-status" id="weightStatus">
         현재: <b>🟡 균형</b> 기본값 · 저장된 값 없음
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px;">
-      <div class="collapsible-header">
-        <span>📐 추천 조합 산출 규정</span>
-        <span class="arrow">▶</span>
-      </div>
-      <div class="collapsible-body">
-        <ol class="method-list">
-          <li><b>점수 계산</b>: 최근 5/10/30/100회 출현 × 가중치 (프리셋별 + 커스텀 조정)</li>
-          <li><b>직전 앞뒤 번호</b>: 직전 회차 번호 ±1에 <b>+6점</b> 가중치</li>
-          <li><b>장기 냉각 보너스</b>: <b>40회 이상(초장기) +12점</b> / 30회 +8점 / 20회 +4점 / 15회 +2점 (커스텀 조정 가능)</li>
-          <li><b>장기 미출현 반영</b>: <b>40회 이상(초장기) / 20~39회(장기)</b> 미출현 번호는 후보에 포함</li>
-          <li><b>직전 회차 겹침 0개 조합</b>: 프리셋별 0~1개 포함</li>
-          <li><b>후보 추출</b>: 45 → 15 → 12 → 10 → 상위 K (프리셋별 8~12개) → 보정</li>
-          <li><b>조합 생성</b>: GA (개체군 300, 세대 40, 엘리트 20%)</li>
-          <li><b>적합도</b>: 점수 + 홀짝/저고/합계/연속/40번대 + 동시 출현</li>
-          <li><b>다양성 필터</b>: 조합 간 5개 이상 겹침 제외</li>
-        </ol>
       </div>
     </div>
 
@@ -680,24 +749,6 @@
       <div class="collapsible-body open">
         <p class="muted">초장기(40회+) / 장기(20~39회) 미출현 번호는 후보에 포함되며, 프리셋별 목표 개수만큼 반영됩니다.</p>
         <div id="coldNumbers"></div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px;">
-      <div class="collapsible-header">
-        <span>🧪 백테스트 요약</span>
-        <span class="arrow">▶</span>
-      </div>
-      <div class="collapsible-body">
-        <div class="kpi" id="kpi"></div>
-        <div style="margin-top:12px;">
-          <table id="btTable">
-            <thead>
-              <tr><th>단계</th><th>범위</th><th>방법</th><th>3개</th><th>4개</th><th>5개</th><th>6개</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
       </div>
     </div>
   </div>
@@ -828,25 +879,6 @@
         <div id="cover5"></div>
       </div>
     </div>
-
-    <div class="card" style="margin-top:16px;">
-      <div class="collapsible-header">
-        <span>📐 커버링 디자인 이론값</span>
-        <span class="arrow">▶</span>
-      </div>
-      <div class="collapsible-body">
-        <table>
-          <thead>
-            <tr><th>후보 수</th><th>3-cover</th><th>4-cover</th><th>5-cover</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>10개</td><td>약 4조합</td><td>약 14조합</td><td>약 50조합</td></tr>
-            <tr><td>12개</td><td>약 6조합</td><td>약 30조합</td><td>약 130조합</td></tr>
-            <tr><td>15개</td><td>약 10조합</td><td>약 70조합</td><td>약 400조합</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
 
   <!-- ===== TAB 5: 전략 검증 ===== -->
@@ -946,75 +978,20 @@
           </div>
         </div>
       </div>
-
-      <div class="card" style="margin-top:16px;">
-        <div class="collapsible-header">
-          <span>📖 검증 결과 해석 가이드</span>
-          <span class="arrow">▶</span>
-        </div>
-        <div class="collapsible-body">
-          <div id="verifyGuide">
-            <h3 style="color:var(--accent);">🔍 결과 해석 방법</h3>
-            <ol class="method-list">
-              <li><b>5등 적중률</b>: “최소 1조합에서 3개 이상 맞춘 비율” → 랜덤(약 10~11%)보다 높으면 유효</li>
-              <li><b>4등 적중률</b>: “최소 1조합에서 4개 이상 맞춘 비율” → 50회 검증에서는 0~4%가 정상</li>
-              <li><b>손익비</b>: 회수 ÷ 투자 → 100% 이상이어야 수익, 로또는 원래 20% 내외</li>
-              <li><b>랜덤 대조군</b>: 우리 전략이 랜덤보다 유의미하게 높아야 진짜 효과</li>
-              <li><b>표본 크기</b>: 50회는 노이즈가 큼 → 200회 이상이 신뢰 가능</li>
-              <li><b>반복 검증</b>: 5회 이상 반복 시 평균값이 안정됨</li>
-            </ol>
-
-            <h3 style="color:var(--accent); margin-top:16px;">⚠️ 주의사항</h3>
-            <ul class="method-list">
-              <li>4등 이상이 우연히 1~2회 나오면 <b>손익비가 크게 튐</b></li>
-              <li>50회 표본은 <b>재현성이 낮음</b></li>
-              <li>여러 번 반복해서 <b>평균값을 봐야</b> 진짜 성능 확인 가능</li>
-              <li>신뢰구간이 겹치면 <b>유의미한 차이 없음</b></li>
-              <li>로또는 <b>기대값 마이너스 게임</b>이므로 어떤 전략도 장기 수익은 어려움</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:16px;">
-        <div class="collapsible-header">
-          <span>🎯 그룹별 분석 (장기 미출현 / 겹침 0개)</span>
-          <span class="arrow">▶</span>
-        </div>
-        <div class="collapsible-body">
-          <div id="verifyGroup"></div>
-        </div>
-      </div>
     </div>
 
     <div class="subtab-content" id="subtab-detail">
       <div class="card" style="margin-top:16px;">
         <h2>📋 회차별 상세 백테스트</h2>
         <p class="muted">
-          과거 데이터를 사용한 롤링 백테스트 결과입니다. 
-          각 단계는 “N회차까지의 데이터만 사용해서 N+1회차를 예측”하는 방식으로 검증되었습니다.
+          과거 데이터를 사용한 롤링 백테스트 결과입니다.
         </p>
-
-        <div class="collapsible-header open">
-          <span>📖 실험 방식</span>
-          <span class="arrow">▶</span>
-        </div>
-        <div class="collapsible-body open">
-          <ul class="method-list">
-            <li><b>롤링 백테스트</b>: N회차 예측 시 N-1회차까지의 데이터만 사용 (미래 정보 차단)</li>
-            <li><b>후보 추출</b>: 점수 기반 상위 N개 후보 선정</li>
-            <li><b>조합 생성</b>: GA + MLP + RL 스타일 스코어링으로 5조합 생성</li>
-            <li><b>채점</b>: 실제 당첨번호와 비교해 최고 적중 조합 기록</li>
-            <li><b>등수 판정</b>: 3개=5등, 4개=4등, 5개=3등, 5개+보너스=2등, 6개=1등</li>
-          </ul>
-        </div>
 
         <h3 style="color:var(--accent); margin-top:16px;">🔽 실험 범위 선택</h3>
         <div class="budget-btns" id="expRangeBtns">
           <button class="budget-btn active" data-range="quick">⚡ 빠른 검증 (각 단계 20회)</button>
           <button class="budget-btn" data-range="normal">⏱️ 보통 (50회)</button>
           <button class="budget-btn" data-range="detail">🔍 정밀 (100회)</button>
-          <button class="budget-btn" data-range="full">⏳ 전체 (원래 범위)</button>
         </div>
         <p class="muted" id="expRangeInfo">빠른 검증: 각 단계 20회 (약 30초)</p>
 
@@ -1037,8 +1014,6 @@
     <div class="subtab-content" id="subtab-cover">
       <div class="card" style="margin-top:16px;">
         <h2>🛡️ 커버링 디자인 자동 백테스트</h2>
-        <p class="muted">과거 회차를 대상으로 커버링 디자인이 실제로 몇 개 적중을 보장했는지 검증합니다.</p>
-
         <div class="grid grid-3" style="margin-top:12px;">
           <div>
             <h3>커버 종류</h3>
@@ -1117,10 +1092,10 @@
     <p class="muted">매주 대시보드 활용법.</p>
 
     <div class="card">
-      <h2>🗓️ 매주 사용 흐름 (v3.2)</h2>
+      <h2>🗓️ 매주 사용 흐름 (v3.3)</h2>
       <div class="grid grid-3">
-        <div><h3>1. 대시보드 열기</h3><p class="muted">저장된 가중치 자동 로드됨.</p></div>
-        <div><h3>2. 가중치 조정</h3><p class="muted">이번 주 예측 탭에서 슬라이더 조정.</p></div>
+        <div><h3>1. 대시보드 열기</h3><p class="muted">저장된 21개 가중치 자동 로드.</p></div>
+        <div><h3>2. 가중치 조정</h3><p class="muted">이번 주 예측 탭에서 21개 슬라이더 조정.</p></div>
         <div><h3>3. 즉시 적용</h3><p class="muted">⚡ 즉시 적용 → 추천 조합 갱신.</p></div>
         <div><h3>4. 저장</h3><p class="muted">💾 저장 → 다음 주에도 유지.</p></div>
         <div><h3>5. 구매</h3><p class="muted">추천 조합 5개 (5,000원).</p></div>
@@ -1129,31 +1104,31 @@
     </div>
 
     <div class="card alt" style="margin-top:16px;">
-      <h2>🎛️ 가중치 조정 가이드</h2>
+      <h2>🎛️ 가중치 21개 그룹별 가이드</h2>
       <div class="grid grid-2">
         <div class="tech-card">
-          <h4>W5 / W10 (최근 출현)</h4>
-          <p>최근 5회/10회 출현 번호 우대.<br>
-          <b>올리면</b>: 최근 핫한 번호 집중<br>
+          <h4>① 점수 가중치 (7개)</h4>
+          <p>W5/W10/W30/W100 + 40/30/20회 냉각.<br>
+          <b>올리면</b>: 해당 요소 강조<br>
           <b>내리면</b>: 다양성 ↑</p>
         </div>
         <div class="tech-card">
-          <h4>W30 / W100 (중장기)</h4>
-          <p>최근 30회/100회 출현 번호 우대.<br>
-          <b>올리면</b>: 안정적 패턴 반영<br>
-          <b>내리면</b>: 최근 편향</p>
+          <h4>② 직전/보조 (4개)</h4>
+          <p>직전 앞뒤, 거울/보색, 보너스 회귀, 네트워크 상한.<br>
+          <b>올리면</b>: 연관 번호 집중<br>
+          <b>내리면</b>: 독립적 번호</p>
         </div>
         <div class="tech-card">
-          <h4>40회+ 냉각 (초장기)</h4>
-          <p>40회 이상 미출현 번호 우대.<br>
-          <b>올리면</b>: 분배금 극대화<br>
-          <b>내리면</b>: 최근 흐름 반영</p>
+          <h4>③ GA 적합도 (6개)</h4>
+          <p>홀짝, 저고, 합계, 연속, 40번대, 동시출현.<br>
+          <b>올리면</b>: 균형 잡힌 조합<br>
+          <b>내리면</b>: 자유로운 조합</p>
         </div>
         <div class="tech-card">
-          <h4>30회 / 20회 냉각</h4>
-          <p>중기 미출현 번호 우대.<br>
-          <b>올리면</b>: 냉각 반등 노림<br>
-          <b>내리면</b>: 최근 강세</p>
+          <h4>④ 조합 조건 (4개)</h4>
+          <p>다양성 필터, 직전 겹침, 후보 수, 장기 조합.<br>
+          <b>다양성↑</b>: 조합 간 겹침 최소<br>
+          <b>후보↓</b>: 압축된 조합</p>
         </div>
       </div>
     </div>
@@ -1162,10 +1137,10 @@
       <h2>❓ FAQ</h2>
       <div class="grid grid-2">
         <div><h3>Q1. 가중치 저장되나?</h3><p class="muted">💾 저장 버튼 → LocalStorage. 다음 주 자동 로드.</p></div>
-        <div><h3>Q2. 프리셋 바꾸면?</h3><p class="muted">프리셋 기본값으로 슬라이더 자동 리셋.</p></div>
+        <div><h3>Q2. 프리셋 바꾸면?</h3><p class="muted">프리셋 기본값으로 21개 슬라이더 자동 리셋.</p></div>
         <div><h3>Q3. 저장값 초기화?</h3><p class="muted">↺ 프리셋 기본값 클릭.</p></div>
         <div><h3>Q4. 즉시 적용 vs 저장?</h3><p class="muted">즉시 적용 = 재계산만. 저장 = 다음 주까지 유지.</p></div>
-        <div><h3>Q5. 슬라이더 단위?</h3><p class="muted">W 가중치 0.5단위, 냉각 5단위.</p></div>
+        <div><h3>Q5. 슬라이더 단위?</h3><p class="muted">W 가중치 0.5단위, 냉각·보너스 5단위 또는 1단위.</p></div>
         <div><h3>Q6. 언제 조정?</h3><p class="muted">결과 부진 시 또는 시장 트렌드 반영 시.</p></div>
       </div>
     </div>
@@ -1191,8 +1166,8 @@
         <span class="yt-text">youtube.com/@surisuriai</span>
       </a>
       <div class="footer-meta">
-        <span><b>Ai365Lab</b> · Lotto Pattern Lab · v3.2</span>
-        <span>로또 3·4등 전략 대시보드 · 가중치 조정 모드 · 참고용</span>
+        <span><b>Ai365Lab</b> · Lotto Pattern Lab · v3.3</span>
+        <span>로또 3·4등 전략 대시보드 · 21개 가중치 조정 · 참고용</span>
       </div>
     </div>
   </footer>
@@ -1226,7 +1201,6 @@ document.addEventListener('click', (e)=>{
   }
 });
 
-/* ===== 서브탭 전환 ===== */
 document.querySelectorAll('.subtab').forEach(subtab=>{
   subtab.addEventListener('click', ()=>{
     document.querySelectorAll('.subtab').forEach(t=>t.classList.remove('active'));
@@ -1236,7 +1210,6 @@ document.querySelectorAll('.subtab').forEach(subtab=>{
   });
 });
 
-/* ===== 접기/펼치기 ===== */
 function toggleCollapse(headerEl){
   const body = headerEl.nextElementSibling;
   if(!body) return;
@@ -1315,14 +1288,14 @@ async function loadData(){
     return rows;
   }catch(e){
     status.className = "status err";
-    status.textContent = "⚠️ Google Sheets 연동 실패 → 내장 샘플 데이터로 실행 중 (" + e.message + ")";
+    status.textContent = "⚠️ Google Sheets 연동 실패 → 내장 샘플 데이터로 실행 중";
     return parseCSV(FALLBACK_CSV);
   }
 }
 
 /* ===== 프리셋 5분류 ===== */
 let currentPreset = "balanced";
-let customWeights = null; // null이면 프리셋 기본값
+let customWeights = null;
 
 const PRESETS = {
   ultra_safe: {
@@ -1372,14 +1345,13 @@ const PRESETS = {
   }
 };
 
-/* ===== 장기/초장기 기준 ===== */
 const COLD_THRESHOLD = 20;
 const LONG_COLD_THRESHOLD = 40;
 
-/* ===== 알고리즘 ===== */
 let baseScore = {};
 let currentScores = [];
 
+/* ===== 점수 계산 ===== */
 function scoreNumbers(history){
   const presetCfg = PRESETS[currentPreset];
   const cfg = customWeights 
@@ -1416,6 +1388,11 @@ function scoreNumbers(history){
     lastSeen[n] = idx===-1 ? 999 : idx;
   }
 
+  const neighborBonus = (cfg.neighbor !== undefined) ? cfg.neighbor : 6;
+  const mirrorMul = (cfg.mirror !== undefined) ? cfg.mirror : 1.5;
+  const bonusMul = (cfg.bonus !== undefined) ? cfg.bonus : 2;
+  const centralityCap = (cfg.centrality !== undefined) ? cfg.centrality : 4;
+
   const scores = [];
   for(let n=1;n<=45;n++){
     let s = 0;
@@ -1425,10 +1402,10 @@ function scoreNumbers(history){
     s += countIn(r100,n)*cfg.W100;
 
     const mirror = 45-n;
-    if(mirror>=1 && mirror<=45) s += countIn(r30,mirror)*1.5;
-    s += r30.filter(h=>h.bonus===n).length*2;
+    if(mirror>=1 && mirror<=45) s += countIn(r30,mirror)*mirrorMul;
+    s += r30.filter(h=>h.bonus===n).length*bonusMul;
 
-    if(lastNeighbors.has(n)) s += 6;
+    if(lastNeighbors.has(n)) s += neighborBonus;
 
     if(lastSeen[n] >= 40) s += cfg.longCold;
     else if(lastSeen[n] >= 30) s += cfg.midCold;
@@ -1437,7 +1414,7 @@ function scoreNumbers(history){
 
     let centrality = 0;
     for(let m=1;m<=45;m++) centrality += co[n][m];
-    s += Math.min(centrality/50, 4);
+    s += Math.min(centrality/50, centralityCap);
 
     scores.push({num:n, score:Math.round(s*100)/100, lastSeen:lastSeen[n]});
   }
@@ -1447,7 +1424,8 @@ function scoreNumbers(history){
 
 function pickCandidates(scored, k=8){
   const cfg = PRESETS[currentPreset];
-  const useK = cfg.candidateK || k;
+  const custom = customWeights || {};
+  const useK = (custom.candidateK !== undefined) ? custom.candidateK : (cfg.candidateK || k);
 
   const stages = [];
   stages.push({label:"전체 번호", count:45, color:"#475569"});
@@ -1455,8 +1433,6 @@ function pickCandidates(scored, k=8){
   stages.push({label:"상위 15개", count:top15.length, color:"#64748b"});
   const top12 = scored.slice(0,12).map(x=>x.num);
   stages.push({label:"상위 12개", count:top12.length, color:"#0ea5e9"});
-  const top10 = scored.slice(0,10).map(x=>x.num);
-  stages.push({label:"상위 10개", count:top10.length, color:"#38bdf8"});
 
   let cand = scored.slice(0,useK).map(x=>x.num);
   stages.push({label:`상위 ${useK}개`, count:cand.length, color:"#22c55e"});
@@ -1489,9 +1465,19 @@ function pickCandidates(scored, k=8){
 
 function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
   const cfg = PRESETS[currentPreset];
-  const maxOverlap = cfg.maxOverlap;
-  const coldTarget = cfg.coldTarget;
+  const custom = customWeights || {};
+  
+  const maxOverlap = (custom.maxOverlap !== undefined) ? custom.maxOverlap : cfg.maxOverlap;
+  const coldTarget = (custom.coldTarget !== undefined) ? custom.coldTarget : cfg.coldTarget;
   const zeroOverlapCount = cfg.zeroOverlapCount;
+  const diversityFilter = (custom.diversity !== undefined) ? custom.diversity : 5;
+
+  const oddEvenBonus = (custom.oddEven !== undefined) ? custom.oddEven : 5;
+  const lowHighBonus = (custom.lowHigh !== undefined) ? custom.lowHigh : 5;
+  const sumBonus = (custom.sum !== undefined) ? custom.sum : 4;
+  const seqBonus = (custom.seq !== undefined) ? custom.seq : 3;
+  const high40Bonus = (custom.high40 !== undefined) ? custom.high40 : 2;
+  const coOccurCap = (custom.coOccur !== undefined) ? custom.coOccur : 6;
 
   const longColdNums = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).map(s => s.num);
   const midColdNums = scored.filter(s => s.lastSeen >= COLD_THRESHOLD && s.lastSeen < LONG_COLD_THRESHOLD).map(s => s.num);
@@ -1503,21 +1489,21 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
     let f = 0;
     combo.forEach(n=> f += baseScore[n]||0);
     const odd = combo.filter(n=>n%2===1).length;
-    if(odd===3) f += 5; else if(odd===2||odd===4) f += 2;
+    if(odd===3) f += oddEvenBonus; else if(odd===2||odd===4) f += Math.round(oddEvenBonus*0.4);
     const low = combo.filter(n=>n<=22).length;
-    if(low===3) f += 5; else if(low===2||low===4) f += 2;
+    if(low===3) f += lowHighBonus; else if(low===2||low===4) f += Math.round(lowHighBonus*0.4);
     const sum = combo.reduce((a,b)=>a+b,0);
-    if(sum>=120 && sum<=160) f += 4; else if(sum>=110 && sum<=170) f += 2;
+    if(sum>=120 && sum<=160) f += sumBonus; else if(sum>=110 && sum<=170) f += Math.round(sumBonus*0.5);
     let seq = 0;
     for(let i=1;i<combo.length;i++) if(combo[i]-combo[i-1]===1) seq++;
-    if(seq<=1) f += 3;
+    if(seq<=1) f += seqBonus;
     const high40 = combo.filter(n=>n>=40).length;
-    if(high40<=1) f += 2;
+    if(high40<=1) f += high40Bonus;
     let coScore = 0;
     for(let i=0;i<combo.length;i++)
       for(let j=i+1;j<combo.length;j++)
         coScore += co[combo[i]][combo[j]];
-    f += Math.min(coScore/10, 6);
+    f += Math.min(coScore/10, coOccurCap);
 
     if(lastDrawNums.length > 0){
       const overlapWithLast = combo.filter(n=>lastDrawNums.includes(n)).length;
@@ -1605,13 +1591,13 @@ function generateCombos(candidates, co, count=5, lastDrawNums=[], scored=[]){
   }
 
   let pop = runGA(popSize, generations);
-  let selected = selectCombos(pop, count, maxOverlap, 5);
+  let selected = selectCombos(pop, count, maxOverlap, diversityFilter);
 
-  if(selected.length < count) selected = selectCombos(pop, count, maxOverlap, 4);
-  if(selected.length < count) selected = selectCombos(pop, count, maxOverlap + 1, 4);
+  if(selected.length < count) selected = selectCombos(pop, count, maxOverlap, diversityFilter - 1);
+  if(selected.length < count) selected = selectCombos(pop, count, maxOverlap + 1, diversityFilter - 1);
   if(selected.length < count){
     pop = runGA(500, 60);
-    selected = selectCombos(pop, count, maxOverlap + 2, 3);
+    selected = selectCombos(pop, count, maxOverlap + 2, Math.max(3, diversityFilter - 2));
   }
   if(selected.length < count){
     for(const c of pop){
@@ -1840,14 +1826,14 @@ function renderLatest(history){
   const b = document.createElement("div");
   b.className = "ball bonus"; b.textContent = last.bonus; box.appendChild(b);
 
-  document.getElementById("predictTitle").innerHTML =
-    `🎯 이번 주 예측 <span class="muted" style="font-size:14px;">[${next}회, ${formatKDateLong(nextDate)} 추첨 예정]</span>`;
-  document.getElementById("nextTitle").innerHTML =
-    `🔮 다음 회차 상세 분석 <span class="muted" style="font-size:14px;">[${next}회, ${formatKDateLong(nextDate)}]</span>`;
-  document.getElementById("picksTitle").innerHTML =
-    `🎲 이번 주 추천 조합 <span class="muted" style="font-size:13px;">[${next}회, ${formatKDateLong(nextDate)} 기준]</span>`;
-  document.getElementById("nextPicksTitle").innerHTML =
-    `🎲 6단계 알고리즘 추천 조합 <span class="muted" style="font-size:13px;">[${next}회, ${formatKDateLong(nextDate)}]</span>`;
+  const pt = document.getElementById("predictTitle");
+  if(pt) pt.innerHTML = `🎯 이번 주 예측 <span class="muted" style="font-size:14px;">[${next}회, ${formatKDateLong(nextDate)} 추첨 예정]</span>`;
+  const nt = document.getElementById("nextTitle");
+  if(nt) nt.innerHTML = `🔮 다음 회차 상세 분석 <span class="muted" style="font-size:14px;">[${next}회]</span>`;
+  const pkt = document.getElementById("picksTitle");
+  if(pkt) pkt.innerHTML = `🎲 이번 주 추천 조합 <span class="muted" style="font-size:13px;">[${next}회]</span>`;
+  const npt = document.getElementById("nextPicksTitle");
+  if(npt) npt.innerHTML = `🎲 6단계 알고리즘 추천 조합 <span class="muted" style="font-size:13px;">[${next}회]</span>`;
 
   document.getElementById("lastDrawNums").textContent = `${last.draw}회 (${last.nums.join(", ")})`;
   document.getElementById("lastBonus").textContent = last.bonus;
@@ -1859,7 +1845,7 @@ function renderPicksProgress(targetId, stages){
 
   const max = stages[0].count || 1;
   wrap.innerHTML = `
-    <div class="muted" style="margin-bottom:6px;">🔽 후보 압축 단계 (실제 알고리즘 기준)</div>
+    <div class="muted" style="margin-bottom:6px;">🔽 후보 압축 단계</div>
     <div style="display:flex; flex-direction:column; gap:6px;">
       ${stages.map(s=>`
         <div style="display:flex; align-items:center; gap:10px;">
@@ -1871,12 +1857,12 @@ function renderPicksProgress(targetId, stages){
         </div>
       `).join("")}
     </div>
-    <p class="muted" style="margin-top:6px;">실제 후보 수: ${stages.map(s=>s.count).join(" → ")}</p>
   `;
 }
 
 function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
   const wrap = document.getElementById(targetId);
+  if(!wrap) return;
   wrap.innerHTML = "";
 
   const allColdNums = scored.filter(s => s.lastSeen >= COLD_THRESHOLD).map(s => s.num);
@@ -1896,12 +1882,11 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
 
   combos.forEach((c, idx)=>{
     const sorted = [...c].sort((a,b)=>a-b);
-
     const div = document.createElement("div");
     div.className = "card";
     div.style.marginBottom = "10px";
     div.style.background = idx<3 ? "#0b1220" : "#1a2a44";
-    const label = idx<3 ? "안정형 (3·4등 목표)" : "2등 기대형";
+    const label = idx<3 ? "안정형" : "2등 기대형";
     const tagClass = idx<3 ? "good" : "warn";
     const sum = sorted.reduce((a,b)=>a+b,0);
     const odd = sorted.filter(n=>n%2).length;
@@ -1930,13 +1915,6 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
       coldBadge = `<span style="color:${hasLong ? '#f87171' : '#f59e0b'}; font-weight:700;">${icon} ${coldInCombo.join(",")}</span>`;
     }
 
-    const tooltipLines = combos.map((other, j)=>{
-      if(j === idx) return null;
-      const common = c.filter(n=>other.includes(n));
-      return `#${j+1}: ${common.length}개 (${common.join(",") || "없음"})`;
-    }).filter(Boolean).join("\n");
-    div.title = `다른 조합과의 겹침\n${tooltipLines}`;
-
     div.innerHTML = `<div class="row" style="justify-content:space-between;">
         <span class="tag ${tagClass}">${label}</span>
         <span class="muted" style="font-size:12px;">합계 ${sum} · 홀${odd}:짝${6-odd} · ${ovBadge} ${lastBadge} ${coldBadge}</span>
@@ -1946,12 +1924,11 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
       const d = document.createElement("div");
       const isLongCold = longColdNums.includes(n);
       const isMidCold = !isLongCold && allColdNums.includes(n);
-      const isLast = lastDrawNums.includes(n);
       const isZeroCombo = lastDrawNums.length > 0 && c.filter(x=>lastDrawNums.includes(x)).length === 0;
       let cls = "ball small ";
       if(isLongCold) cls += "cold";
       else if(isMidCold) cls += "midcold";
-      else if(isZeroCombo && !isLast) cls += "zero";
+      else if(isZeroCombo) cls += "zero";
       else cls += "pick";
       d.className = cls;
       d.textContent = n;
@@ -1959,37 +1936,11 @@ function renderPicks(combos, targetId, lastDrawNums=[], scored=[]){
     });
     wrap.appendChild(div);
   });
-
-  if(overlapStats.length > 0){
-    const avgMax = (overlapStats.reduce((a,b)=>a+b.max, 0) / overlapStats.length).toFixed(1);
-    const avgLast = lastDrawNums.length > 0
-      ? (combos.reduce((a,c)=>a + c.filter(n=>lastDrawNums.includes(n)).length, 0) / combos.length).toFixed(1)
-      : null;
-    const coldComboCount = combos.filter(c => c.some(n => allColdNums.includes(n))).length;
-    const longColdComboCount = combos.filter(c => c.some(n => longColdNums.includes(n))).length;
-    const zeroOverlapComboCount = lastDrawNums.length > 0
-      ? combos.filter(c => c.filter(n => lastDrawNums.includes(n)).length === 0).length
-      : 0;
-
-    const summary = document.createElement("p");
-    summary.className = "muted";
-    summary.style.marginTop = "10px";
-    summary.style.paddingTop = "10px";
-    summary.style.borderTop = "1px solid #334155";
-    let html = `🔀 조합 간 평균 최대 겹침: <b>${avgMax}/6</b> ${avgMax <= 2 ? '🟢' : avgMax <= 3.5 ? '🟡' : '🔴'}`;
-    if(avgLast !== null){
-      html += `<br>📌 직전 회차 평균 겹침: <b>${avgLast}/6</b> ${avgLast <= 1 ? '🟢' : avgLast <= 2 ? '🟡' : '🔴'}`;
-    }
-    html += `<br>✨ 직전 회차 겹침 0개 조합: <b>${zeroOverlapComboCount}개 / ${combos.length}개</b>`;
-    html += `<br>❄️ 초장기(40회+) 포함 조합: <b>${longColdComboCount}개 / ${combos.length}개</b>`;
-    html += `<br>🌡️ 장기(20~39회) 포함 조합: <b>${coldComboCount - longColdComboCount}개 / ${combos.length}개</b>`;
-    summary.innerHTML = html;
-    wrap.appendChild(summary);
-  }
 }
 
 function renderScores(scored, targetId, limit){
   const wrap = document.getElementById(targetId);
+  if(!wrap) return;
   wrap.innerHTML = "";
   const max = scored[0].score || 1;
   scored.slice(0,limit).forEach(s=>{
@@ -1997,9 +1948,8 @@ function renderScores(scored, targetId, limit){
     row.style.marginBottom = "8px";
     const isLong = s.lastSeen >= LONG_COLD_THRESHOLD;
     const isMid = !isLong && s.lastSeen >= COLD_THRESHOLD;
-    const tag = isLong ? '<span class="tag cold" style="font-size:10px;">❄️ 초장기</span>' 
-              : isMid ? '<span class="tag midcold" style="font-size:10px;">🌡️ 장기</span>' 
-              : '';
+    const tag = isLong ? '<span class="tag cold" style="font-size:10px;">❄️</span>' 
+              : isMid ? '<span class="tag midcold" style="font-size:10px;">🌡️</span>' : '';
     const barColor = isLong ? '#ef4444' : isMid ? '#f59e0b' : 'var(--accent)';
     row.innerHTML = `
       <div class="row" style="justify-content:space-between;">
@@ -2031,33 +1981,7 @@ function renderColdNumbers(targetId, scored){
         ? midCold.slice(0,8).map(s=>`<span class="ball tiny midcold" style="margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ")
         : '<span class="muted">없음</span>'}
     </div>
-    <p class="muted" style="margin-top:10px; font-size:12px;">
-      ※ 초장기(40회+) / 장기(20~39회) 미출현 번호는 프리셋별 목표 개수만큼 반영됩니다.
-    </p>
   `;
-}
-
-function renderBacktest(){
-  const data = [
-    ["1단계","20회","창의적 기법","75% [15/20]","25% [5/20]","0% [0/20]","0% [0/20]"],
-    ["2단계","50회","후보 압축","80% [40/50]","20% [10/50]","0% [0/50]","0% [0/50]"],
-    ["3단계","100회","8~10개 압축","71% [71/100]","24% [24/100]","2% [2/100]","0% [0/100]"],
-    ["4단계","200회","6~8개+상관관계","59% [118/200]","34% [68/200]","6% [12/200]","0% [0/200]"],
-    ["5단계","500회","네트워크+군집+베이지안","54.2% [271/500]","35.8% [179/500]","8.4% [42/500]","0% [0/500]"],
-    ["6단계","500회","GA+MLP+RL","49.6% [248/500]","38.6% [193/500]","10.8% [54/500]","0% [0/500]"],
-  ];
-  const tbody = document.querySelector("#btTable tbody");
-  if(tbody){
-    tbody.innerHTML = data.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("");
-  }
-  const kpi = document.getElementById("kpi");
-  if(kpi){
-    kpi.innerHTML = `
-      <div><span class="muted">3개 적중</span><b>49.6%</b></div>
-      <div><span class="muted">4개 적중</span><b>38.6%</b></div>
-      <div><span class="muted">5개 적중</span><b>10.8%</b></div>
-      <div><span class="muted">6개 적중</span><b>0%</b></div>`;
-  }
 }
 
 function renderTierGoals(targetId){
@@ -2065,15 +1989,14 @@ function renderTierGoals(targetId){
   if(!wrap) return;
 
   const tiers = [
-    {name:"5등 (3개 적중)", need:3, candidates:15, note:'<span class="tab-link" data-goto="cover">3-cover</span>로 보장 가능', color:"#22c55e"},
-    {name:"4등 (4개 적중)", need:4, candidates:10, note:'<span class="tab-link" data-goto="cover">4-cover</span>로 보장 가능', color:"#84cc16"},
-    {name:"3등 (5개 적중)", need:5, candidates:8,  note:'<span class="tab-link" data-goto="cover">5-cover</span>로 보장 가능', color:"#eab308"},
-    {name:"2등 (5개+보너스)", need:5, candidates:6, note:'<span class="tab-link" data-goto="techniques">보너스 회귀</span> 참고', color:"#f97316"},
-    {name:"1등 (6개 적중)", need:6, candidates:5,  note:"6개 적중 (사실상 불가)", color:"#ef4444"},
+    {name:"5등 (3개 적중)", need:3, candidates:15, note:'3-cover로 보장', color:"#22c55e"},
+    {name:"4등 (4개 적중)", need:4, candidates:10, note:'4-cover로 보장', color:"#84cc16"},
+    {name:"3등 (5개 적중)", need:5, candidates:8,  note:'5-cover로 보장', color:"#eab308"},
+    {name:"2등 (5개+보너스)", need:5, candidates:6, note:'보너스 회귀 참고', color:"#f97316"},
+    {name:"1등 (6개 적중)", need:6, candidates:5,  note:"사실상 불가", color:"#ef4444"},
   ];
 
   wrap.innerHTML = `
-    <div class="muted" style="margin-bottom:6px;">🔽 단계별 적중 목표와 필요 후보 수</div>
     <table style="width:100%; font-size:13px;">
       <thead><tr><th>등수</th><th>필요 적중</th><th>필요 후보</th><th>기대</th></tr></thead>
       <tbody>
@@ -2145,7 +2068,7 @@ function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballCl
   const wrap = document.getElementById(targetId);
   if(!wrap) return;
 
-  wrap.innerHTML = `<p class="muted">⏳ 커버링 디자인 생성 중...</p>`;
+  wrap.innerHTML = `<p class="muted">⏳ 생성 중...</p>`;
 
   setTimeout(()=>{
     const combos = generateCoveringDesign(candidates, coverSize, maxCombos);
@@ -2153,8 +2076,7 @@ function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballCl
 
     wrap.innerHTML = `
       <div class="muted" style="margin-bottom:8px;">
-        후보 <b>${candidates.length}개</b> 기준 · 
-        전체 6번호 조합 <b>${totalCombos.toLocaleString()}개</b> 중 
+        후보 <b>${candidates.length}개</b> · 전체 <b>${totalCombos.toLocaleString()}개</b> 중 
         <b>${combos.length}개</b>로 ${coverSize}개 적중 보장
       </div>
       <table style="width:100%; font-size:13px;">
@@ -2175,10 +2097,6 @@ function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballCl
           }).join("")}
         </tbody>
       </table>
-      <p class="muted" style="margin-top:8px;">
-        ※ 후보 ${candidates.length}개 안에 실제 당첨번호 6개 중 ${coverSize}개 이상이 들어있다면, 
-        위 ${combos.length}개 조합 중 최소 1개에서 ${coverSize}개 적중이 보장됩니다.
-      </p>
     `;
     setupCollapsibles();
   }, 50);
@@ -2204,35 +2122,6 @@ function renderNextTab(history, scores){
   const mirror = last.nums.map(n=>45-n).filter(n=>n>=1&&n<=45).sort((a,b)=>a-b);
   const el3 = document.getElementById("mirrorNums");
   if(el3) el3.textContent = [...new Set(mirror)].join(", ");
-
-  const reasons = [
-    ["최근 10회 다출현", strong],
-    ["10번대 과열 조정", "10번대 3개 → 1~2개로 조정 가능"],
-    ["20번대 회귀", "20번대 1개 → 2개 내외 회귀"],
-    ["30번대 유지", "30번대 1개 → 1~2개 유지"],
-    ["40번대 보완", "40번대 1개 → 0~1개"],
-    ["직전 앞뒤 번호", "직전 회차 번호 ±1에 +6점 가중치"],
-    ["초장기 미출현", "40회 이상 미출현 +12점, 후보 포함"],
-    ["장기 미출현", "20~39회 미출현 +4~8점, 후보 포함"],
-    ["직전 회차 겹침 0개", "프리셋별 0~1개 포함"],
-    ["가중치 조정", "v3.2에서 5단위로 조정 가능"],
-    ["냉각 반등", cold],
-    ["보너스 회귀", `${last.bonus-1}, ${last.bonus}, ${last.bonus+1}`],
-    ["연속번호 회귀", "18, 21, 29, 30"],
-    ["3의 배수 보완", "3의 배수 0개 → 1~2개"],
-    ["소수 조정", "소수 4개 → 2~3개"],
-    ["합계 조정", "합계 138 → 125~155"],
-    ["홀짝 균형", "홀 3~4, 짝 2~3"],
-    ["동시 출현 네트워크", "13→18,34,38 / 20→30,40 / 44→1,14,34,45"],
-    ["네트워크 중심성", "연결 많은 번호"],
-    ["날짜/회차 숫자", `${next} → ${String(next).split('').join(', ')}`],
-  ];
-  const box = document.getElementById("reasonBox");
-  if(box){
-    box.innerHTML = reasons.map(([t,d])=>`
-      <div class="tech-card"><h4>${t}</h4><p>${d}</p></div>
-    `).join("");
-  }
 }
 
 /* ===== 예산 프리셋 ===== */
@@ -2251,13 +2140,13 @@ function setupBudgetPresets(){
       if(count <= 5){
         html += `→ <span class="tab-link" data-goto="predict">추천 조합 5개</span>로 충분`;
       } else if(count <= 10){
-        html += `→ <span class="tab-link" data-goto="predict">추천 5개</span> + <span class="tab-link" data-goto="cover">참고 5개</span> = 10조합`;
+        html += `→ <span class="tab-link" data-goto="predict">추천 5개</span> + <span class="tab-link" data-goto="cover">참고 5개</span>`;
       } else if(count <= 20){
-        html += `→ <span class="tab-link" data-goto="predict">추천 5개</span> + <span class="tab-link" data-goto="cover">참고 15개</span> = 20조합`;
+        html += `→ 추천 5개 + 참고 15개 = 20조합`;
       } else if(count <= 60){
-        html += `→ <span class="tab-link" data-goto="cover">4-cover 40조합</span> 권장 (4등 목표)`;
+        html += `→ 4-cover 40조합 권장`;
       } else {
-        html += `→ <span class="tab-link" data-goto="cover">5-cover 50조합</span> 권장 (3등 목표)`;
+        html += `→ 5-cover 50조합 권장`;
       }
       info.innerHTML = html;
     });
@@ -2267,17 +2156,18 @@ function setupBudgetPresets(){
 function initBudget(){
   const info = document.getElementById("budgetInfo");
   if(!info) return;
-  info.innerHTML = `<b>5,000원</b> 예산 · 최대 <b>5조합</b><br>→ <span class="tab-link" data-goto="predict">추천 조합 5개</span>로 충분`;
+  info.innerHTML = `<b>5,000원</b> 예산 · 최대 <b>5조합</b>`;
 }
 
 /* ===== 커버링 백테스트 ===== */
 async function runCoveringBacktest(history){
   const resultBox = document.getElementById("btResult");
+  if(!resultBox) return;
   const coverSize = Number(document.getElementById("btCoverSize").value);
   const candidateCount = Number(document.getElementById("btCandidateCount").value);
   const range = Number(document.getElementById("btRange").value);
 
-  resultBox.innerHTML = `<p class="muted">⏳ 백테스트 실행 중... (${range}회차, ${coverSize}-cover, 후보 ${candidateCount}개)</p>`;
+  resultBox.innerHTML = `<p class="muted">⏳ 백테스트 실행 중...</p>`;
 
   setTimeout(()=>{
     const start = Math.max(0, history.length - range - 1);
@@ -2287,8 +2177,7 @@ async function runCoveringBacktest(history){
     }
 
     let hit3 = 0, hit4 = 0, hit5 = 0, hit6 = 0;
-    let guaranteed = 0;
-    let coverSuccess = 0;
+    let guaranteed = 0, coverSuccess = 0;
 
     for(const tc of testCases){
       const pastHistory = history.slice(0, tc.predictIdx + 1);
@@ -2319,16 +2208,16 @@ async function runCoveringBacktest(history){
 
     resultBox.innerHTML = `
       <div class="bt-cover-result">
-        <p class="muted">검증 회차: ${total}회 · ${coverSize}-cover · 후보 ${candidateCount}개</p>
+        <p class="muted">검증: ${total}회 · ${coverSize}-cover · 후보 ${candidateCount}개</p>
         <div class="grid grid-3" style="margin-top:12px;">
-          <div><div class="muted">3개 이상 적중</div><div class="big">${pct(hit3)}%</div><div class="muted">${hit3}/${total}</div></div>
-          <div><div class="muted">4개 이상 적중</div><div class="big" style="color:#84cc16;">${pct(hit4)}%</div><div class="muted">${hit4}/${total}</div></div>
-          <div><div class="muted">5개 이상 적중</div><div class="big" style="color:#eab308;">${pct(hit5)}%</div><div class="muted">${hit5}/${total}</div></div>
+          <div><div class="muted">3개 이상</div><div class="big">${pct(hit3)}%</div></div>
+          <div><div class="muted">4개 이상</div><div class="big" style="color:#84cc16;">${pct(hit4)}%</div></div>
+          <div><div class="muted">5개 이상</div><div class="big" style="color:#eab308;">${pct(hit5)}%</div></div>
         </div>
         <div class="grid grid-3" style="margin-top:12px;">
-          <div><div class="muted">6개 적중</div><div class="big" style="color:#f97316;">${pct(hit6)}%</div><div class="muted">${hit6}/${total}</div></div>
-          <div><div class="muted">후보에 ${coverSize}개 이상 포함</div><div class="big">${pct(guaranteed)}%</div><div class="muted">${guaranteed}/${total}</div></div>
-          <div><div class="muted">보장 성공률</div><div class="big" style="color:#22c55e;">${guaranteed ? (coverSuccess/guaranteed*100).toFixed(1) : 0}%</div><div class="muted">${coverSuccess}/${guaranteed}</div></div>
+          <div><div class="muted">6개</div><div class="big" style="color:#f97316;">${pct(hit6)}%</div></div>
+          <div><div class="muted">후보에 ${coverSize}개+</div><div class="big">${pct(guaranteed)}%</div></div>
+          <div><div class="muted">보장 성공률</div><div class="big" style="color:#22c55e;">${guaranteed ? (coverSuccess/guaranteed*100).toFixed(1) : 0}%</div></div>
         </div>
       </div>
     `;
@@ -2344,44 +2233,47 @@ function setupPresetButtons(history){
       document.querySelectorAll(".preset-btn").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
       currentPreset = btn.dataset.preset;
-      customWeights = null; // 프리셋 변경 시 커스텀 초기화
+      customWeights = null;
 
       const p = PRESETS[currentPreset];
-      info.innerHTML = `현재: <b>${p.label}</b> — ${p.desc} (타겟: <b>${p.targetRank}</b>)`;
+      if(info) info.innerHTML = `현재: <b>${p.label}</b> — ${p.desc} (타겟: <b>${p.targetRank}</b>)`;
 
       // 가중치 슬라이더를 프리셋 기본값으로 리셋
       resetWeightSlidersToPreset();
 
       clearCoverCache();
-
-      const lastDraw = history[history.length-1];
-      const {scores, co} = scoreNumbers(history);
-      currentScores = scores;
-      baseScore = {};
-      scores.forEach(s=> baseScore[s.num] = s.score);
-
-      const {candidates, stages} = pickCandidates(scores, 8);
-      const combos = generateCombos(candidates, co, 5, lastDraw.nums, scores);
-
-      renderPicksProgress("picksProgress", stages);
-      renderPicks(combos, "picks", lastDraw.nums, scores);
-      renderScores(scores, "scores", 15);
-      renderColdNumbers("coldNumbers", scores);
-
-      renderTierGoals("tierGoals");
-      renderCandidateScores("candidateScores", scores, 15);
-      renderPicks(combos, "nextPicks", lastDraw.nums, scores);
-      renderExtraPicks("extraPicks", candidates, co, 10);
-      renderScores(scores, "nextScores", 20);
-      renderNextTab(history, scores);
-
-      const top15 = scores.slice(0, 15).map(s=>s.num).sort((a,b)=>a-b);
-      const top10 = scores.slice(0, 10).map(s=>s.num).sort((a,b)=>a-b);
-      renderCoveringDesign("cover3", top15, 3, 25, "c3");
-      renderCoveringDesign("cover4", top15, 4, 40, "c4");
-      renderCoveringDesign("cover5", top10, 5, 50, "c5");
+      rerenderAll(history);
     });
   });
+}
+
+function rerenderAll(history){
+  const lastDraw = history[history.length-1];
+  const {scores, co} = scoreNumbers(history);
+  currentScores = scores;
+  baseScore = {};
+  scores.forEach(s=> baseScore[s.num] = s.score);
+
+  const {candidates, stages} = pickCandidates(scores, 8);
+  const combos = generateCombos(candidates, co, 5, lastDraw.nums, scores);
+
+  renderPicksProgress("picksProgress", stages);
+  renderPicks(combos, "picks", lastDraw.nums, scores);
+  renderScores(scores, "scores", 15);
+  renderColdNumbers("coldNumbers", scores);
+
+  renderTierGoals("tierGoals");
+  renderCandidateScores("candidateScores", scores, 15);
+  renderPicks(combos, "nextPicks", lastDraw.nums, scores);
+  renderExtraPicks("extraPicks", candidates, co, 10);
+  renderScores(scores, "nextScores", 20);
+  renderNextTab(history, scores);
+
+  const top15 = scores.slice(0, 15).map(s=>s.num).sort((a,b)=>a-b);
+  const top10 = scores.slice(0, 10).map(s=>s.num).sort((a,b)=>a-b);
+  renderCoveringDesign("cover3", top15, 3, 25, "c3");
+  renderCoveringDesign("cover4", top15, 4, 40, "c4");
+  renderCoveringDesign("cover5", top10, 5, 50, "c5");
 }
 
 /* ===== 회차별 상세 백테스트 ===== */
@@ -2396,7 +2288,7 @@ function getStageConfig(rangeMode){
       {stage:2, range:20,  method:"후보 압축", candidates:15},
       {stage:3, range:20,  method:"8~10개 압축", candidates:10},
       {stage:4, range:20,  method:"6~8개+상관관계", candidates:8},
-      {stage:5, range:20,  method:"네트워크+군집+베이지안", candidates:8},
+      {stage:5, range:20,  method:"네트워크+군집", candidates:8},
       {stage:6, range:20,  method:"GA+MLP+RL", candidates:8},
     ];
   } else if(rangeMode === "normal"){
@@ -2405,26 +2297,17 @@ function getStageConfig(rangeMode){
       {stage:2, range:50,  method:"후보 압축", candidates:15},
       {stage:3, range:50,  method:"8~10개 압축", candidates:10},
       {stage:4, range:50,  method:"6~8개+상관관계", candidates:8},
-      {stage:5, range:50,  method:"네트워크+군집+베이지안", candidates:8},
+      {stage:5, range:50,  method:"네트워크+군집", candidates:8},
       {stage:6, range:50,  method:"GA+MLP+RL", candidates:8},
     ];
-  } else if(rangeMode === "detail"){
+  } else {
     return [
       {stage:1, range:100, method:"창의적 기법", candidates:15},
       {stage:2, range:100, method:"후보 압축", candidates:15},
       {stage:3, range:100, method:"8~10개 압축", candidates:10},
       {stage:4, range:100, method:"6~8개+상관관계", candidates:8},
-      {stage:5, range:100, method:"네트워크+군집+베이지안", candidates:8},
+      {stage:5, range:100, method:"네트워크+군집", candidates:8},
       {stage:6, range:100, method:"GA+MLP+RL", candidates:8},
-    ];
-  } else {
-    return [
-      {stage:1, range:20,  method:"창의적 기법", candidates:15},
-      {stage:2, range:50,  method:"후보 압축", candidates:15},
-      {stage:3, range:100, method:"8~10개 압축", candidates:10},
-      {stage:4, range:200, method:"6~8개+상관관계", candidates:8},
-      {stage:5, range:500, method:"네트워크+군집+베이지안", candidates:8},
-      {stage:6, range:500, method:"GA+MLP+RL", candidates:8},
     ];
   }
 }
@@ -2458,7 +2341,7 @@ async function renderExperiment(history){
     const start = Math.max(0, history.length - st.range - 1);
     const total = history.length - 1 - start;
 
-    progress.innerHTML = `⏳ ${st.stage}단계 (${st.method}) 계산 중... (0/${total})`;
+    progress.innerHTML = `⏳ ${st.stage}단계 계산 중... (0/${total})`;
 
     const rows = [];
     const results = [];
@@ -2506,14 +2389,13 @@ async function renderExperiment(history){
       doneAll++;
       const done = i - start + 1;
       if(done % 5 === 0 || done === total){
-        progress.innerHTML = `⏳ ${st.stage}단계 (${st.method}) 계산 중... (${done}/${total})`;
+        progress.innerHTML = `⏳ ${st.stage}단계 계산 중... (${done}/${total})`;
         progressBar.querySelector("i").style.width = ((doneAll/totalAll)*100).toFixed(1) + "%";
         await new Promise(r=>setTimeout(r, 0));
       }
     }
 
     if(expAborted) break;
-
     allResults[st.stage] = results;
 
     const h3 = results.filter(r=>r.hit >= 3).length;
@@ -2542,7 +2424,7 @@ async function renderExperiment(history){
           <thead>
             <tr>
               <th>회차</th><th>날짜</th><th>실제 당첨번호</th>
-              <th>예측 조합 (최고 적중)</th><th>적중</th><th>등수</th>
+              <th>예측 조합</th><th>적중</th><th>등수</th>
             </tr>
           </thead>
           <tbody>${rows.join("")}</tbody>
@@ -2555,11 +2437,7 @@ async function renderExperiment(history){
   }
 
   expResultsData = allResults;
-  if(expAborted){
-    progress.innerHTML = `⏹️ 사용자에 의해 중단됨 (완료: ${doneAll}/${totalAll})`;
-  } else {
-    progress.innerHTML = `✅ 전체 단계 회차별 상세 결과 생성 완료 (${doneAll}회)`;
-  }
+  progress.innerHTML = expAborted ? `⏹️ 중단됨` : `✅ 완료 (${doneAll}회)`;
   progressBar.querySelector("i").style.width = ((doneAll/totalAll)*100).toFixed(1) + "%";
   runBtn.disabled = false;
   stopBtn.style.display = "none";
@@ -2586,10 +2464,9 @@ function downloadExperimentCSV(){
 function setupExperimentRange(){
   const info = document.getElementById("expRangeInfo");
   const labels = {
-    quick: "⚡ 빠른 검증: 각 단계 20회 (약 30초)",
-    normal: "⏱️ 보통: 각 단계 50회 (약 2분)",
-    detail: "🔍 정밀: 각 단계 100회 (약 5분)",
-    full: "⏳ 전체: 1~6단계 원래 범위 (약 10분 이상)"
+    quick: "⚡ 빠른 검증: 각 단계 20회",
+    normal: "⏱️ 보통: 각 단계 50회",
+    detail: "🔍 정밀: 각 단계 100회"
   };
   document.querySelectorAll(".budget-btn[data-range]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
@@ -2606,7 +2483,6 @@ let verifyAborted = false;
 
 async function runVerify(history){
   const resultBox = document.getElementById("verifyResult");
-  const groupBox = document.getElementById("verifyGroup");
   const repeatBox = document.getElementById("verifyRepeatResult");
   const progress = document.getElementById("verifyProgress");
   const progressBar = document.getElementById("verifyProgressBar");
@@ -2618,7 +2494,6 @@ async function runVerify(history){
   stopBtn.style.display = "inline-block";
   progressBar.style.display = "block";
   resultBox.innerHTML = "";
-  groupBox.innerHTML = "";
   repeatBox.innerHTML = "";
 
   const range = Number(document.getElementById("verifyRange").value);
@@ -2639,9 +2514,7 @@ async function runVerify(history){
 
   let done = 0;
   const total = totalCases * (presetKeys.length + 1) * repeatCount;
-
-  let firstResults = null;
-  let firstRandomResult = null;
+  let firstResults = null, firstRandomResult = null;
 
   for(let r=0; r<repeatCount; r++){
     if(verifyAborted) break;
@@ -2651,30 +2524,21 @@ async function runVerify(history){
       results[k] = {
         comboCount: 0,
         ranks: { "1등":0, "2등":0, "3등":0, "4등":0, "5등":0, "낙첨":0 },
-        payout: 0,
-        invest: 0,
-        groups: {
-          cold: { count: 0, hit3: 0, hit4: 0, hit5: 0 },
-          nonCold: { count: 0, hit3: 0, hit4: 0, hit5: 0 },
-          zeroOverlap: { count: 0, hit3: 0, hit4: 0, hit5: 0 },
-          lowOverlap: { count: 0, hit3: 0, hit4: 0, hit5: 0 },
-          highOverlap: { count: 0, hit3: 0, hit4: 0, hit5: 0 }
-        }
+        payout: 0, invest: 0
       };
     });
 
     const randomResult = {
       comboCount: 0,
       ranks: { "1등":0, "2등":0, "3등":0, "4등":0, "5등":0, "낙첨":0 },
-      payout: 0,
-      invest: 0
+      payout: 0, invest: 0
     };
 
     for(let pIdx=0; pIdx<presetKeys.length; pIdx++){
       if(verifyAborted) break;
       const presetKey = presetKeys[pIdx];
       currentPreset = presetKey;
-      customWeights = null; // 검증 시 프리셋 기본값 사용
+      customWeights = null;
 
       for(let i=start; i<history.length-1; i++){
         if(verifyAborted) break;
@@ -2690,7 +2554,6 @@ async function runVerify(history){
         const combos = generateCombos(candidates, co, comboCount, lastDraw, scores);
 
         const rr = results[presetKey];
-        const allColdNums = scores.filter(s => s.lastSeen >= COLD_THRESHOLD).map(s => s.num);
 
         for(const c of combos){
           const hit = c.filter(n => actual.nums.includes(n)).length;
@@ -2701,38 +2564,6 @@ async function runVerify(history){
           rr.invest += 1000;
           rr.ranks[rank]++;
           rr.payout += PRIZE[rank] || 0;
-
-          const hasCold = c.some(n => allColdNums.includes(n));
-          const lastOverlap = c.filter(n => lastDraw.includes(n)).length;
-
-          if(hasCold){
-            rr.groups.cold.count++;
-            if(hit >= 3) rr.groups.cold.hit3++;
-            if(hit >= 4) rr.groups.cold.hit4++;
-            if(hit >= 5) rr.groups.cold.hit5++;
-          } else {
-            rr.groups.nonCold.count++;
-            if(hit >= 3) rr.groups.nonCold.hit3++;
-            if(hit >= 4) rr.groups.nonCold.hit4++;
-            if(hit >= 5) rr.groups.nonCold.hit5++;
-          }
-
-          if(lastOverlap === 0){
-            rr.groups.zeroOverlap.count++;
-            if(hit >= 3) rr.groups.zeroOverlap.hit3++;
-            if(hit >= 4) rr.groups.zeroOverlap.hit4++;
-            if(hit >= 5) rr.groups.zeroOverlap.hit5++;
-          } else if(lastOverlap <= 2){
-            rr.groups.lowOverlap.count++;
-            if(hit >= 3) rr.groups.lowOverlap.hit3++;
-            if(hit >= 4) rr.groups.lowOverlap.hit4++;
-            if(hit >= 5) rr.groups.lowOverlap.hit5++;
-          } else {
-            rr.groups.highOverlap.count++;
-            if(hit >= 3) rr.groups.highOverlap.hit3++;
-            if(hit >= 4) rr.groups.highOverlap.hit4++;
-            if(hit >= 5) rr.groups.highOverlap.hit5++;
-          }
         }
 
         if(pIdx === 0){
@@ -2763,93 +2594,44 @@ async function runVerify(history){
     }
 
     if(verifyAborted) break;
-
-    if(r === 0){
-      firstResults = results;
-      firstRandomResult = randomResult;
-    }
+    if(r === 0){ firstResults = results; firstRandomResult = randomResult; }
 
     presetKeys.forEach(k => {
       const rr = results[k];
       repeatResults[k].push({
-        "5등": rr.ranks["5등"],
-        "4등": rr.ranks["4등"],
-        "3등": rr.ranks["3등"],
-        "2등": rr.ranks["2등"],
-        "1등": rr.ranks["1등"],
-        payout: rr.payout,
-        roi: (rr.payout / rr.invest * 100)
+        "5등": rr.ranks["5등"], "4등": rr.ranks["4등"], "3등": rr.ranks["3등"],
+        payout: rr.payout, roi: (rr.payout / rr.invest * 100)
       });
     });
     randomRepeatResults.push({
-      "5등": randomResult.ranks["5등"],
-      "4등": randomResult.ranks["4등"],
-      "3등": randomResult.ranks["3등"],
-      payout: randomResult.payout,
-      roi: (randomResult.payout / randomResult.invest * 100)
+      "5등": randomResult.ranks["5등"], "4등": randomResult.ranks["4등"], "3등": randomResult.ranks["3등"],
+      payout: randomResult.payout, roi: (randomResult.payout / randomResult.invest * 100)
     });
   }
 
   runBtn.disabled = false;
   stopBtn.style.display = "none";
 
-  if(verifyAborted){
-    progress.innerHTML = `⏹️ 사용자에 의해 중단됨`;
-    return;
-  }
+  if(verifyAborted){ progress.innerHTML = `⏹️ 중단됨`; return; }
 
-  progress.innerHTML = `✅ 검증 완료 (${repeatCount}회 반복, ${total}건)`;
+  progress.innerHTML = `✅ 검증 완료 (${repeatCount}회 반복)`;
   progressBar.querySelector("i").style.width = "100%";
 
-  renderVerifyResults(firstResults, firstRandomResult, range, comboCount, presetKeys, repeatCount);
+  renderVerifyResults(firstResults, firstRandomResult, range, presetKeys);
   if(repeatCount > 1){
-    renderRepeatResults(repeatResults, randomRepeatResults, range, repeatCount);
-  } else {
-    const el = document.getElementById("verifyRepeatResult");
-    if(el) el.innerHTML = 
-      `<p class="muted">반복 횟수를 2회 이상으로 설정하면 평균 ± 표준편차와 신뢰구간이 표시됩니다.</p>`;
+    renderRepeatResults(repeatResults, randomRepeatResults, repeatCount);
   }
 }
 
-function renderVerifyResults(results, randomResult, range, comboCount, presetKeys, repeatCount=1){
+function renderVerifyResults(results, randomResult, range, presetKeys){
   const resultBox = document.getElementById("verifyResult");
-  const groupBox = document.getElementById("verifyGroup");
-
-  const totalInvest = range * comboCount * 1000;
   const randomROI = (randomResult.payout / randomResult.invest * 100).toFixed(1);
 
   let html = `
-    <div class="grid grid-3" style="margin-bottom:16px;">
-      <div style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
-        <div class="muted">검증 기간</div>
-        <b style="font-size:22px; color:var(--accent);">${range}회</b>
-        <div class="muted">1회당 ${comboCount}조합</div>
-      </div>
-      <div style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
-        <div class="muted">총 투자</div>
-        <b style="font-size:22px; color:var(--warn);">${totalInvest.toLocaleString()}원</b>
-        <div class="muted">${range}회 × ${comboCount}조합 × 1,000원</div>
-      </div>
-      <div style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
-        <div class="muted">랜덤 대조군 회수</div>
-        <b style="font-size:22px; color:${randomResult.payout > totalInvest ? '#22c55e' : '#ef4444'};">${randomResult.payout.toLocaleString()}원</b>
-        <div class="muted">손익비 ${randomROI}%</div>
-      </div>
-    </div>
-  `;
-
-  html += `
     <table style="width:100%; font-size:13px;">
       <thead>
         <tr>
-          <th>프리셋</th>
-          <th>5등<br>(3개)</th>
-          <th>4등<br>(4개)</th>
-          <th>3등<br>(5개)</th>
-          <th>2등</th>
-          <th>1등</th>
-          <th>회수</th>
-          <th>손익비</th>
+          <th>프리셋</th><th>5등</th><th>4등</th><th>3등</th><th>회수</th><th>손익비</th>
         </tr>
       </thead>
       <tbody>
@@ -2864,12 +2646,10 @@ function renderVerifyResults(results, randomResult, range, comboCount, presetKey
     html += `
       <tr>
         <td style="font-weight:700;">${p.label}</td>
-        <td>${r.ranks["5등"]}회<br><span class="muted" style="font-size:11px;">${(r.ranks["5등"]/range*100).toFixed(1)}%</span></td>
-        <td>${r.ranks["4등"]}회<br><span class="muted" style="font-size:11px;">${(r.ranks["4등"]/range*100).toFixed(1)}%</span></td>
-        <td>${r.ranks["3등"]}회<br><span class="muted" style="font-size:11px;">${(r.ranks["3등"]/range*100).toFixed(1)}%</span></td>
-        <td>${r.ranks["2등"]}회</td>
-        <td>${r.ranks["1등"]}회</td>
-        <td style="font-weight:700;">${r.payout.toLocaleString()}원</td>
+        <td>${r.ranks["5등"]}회 (${(r.ranks["5등"]/range*100).toFixed(1)}%)</td>
+        <td>${r.ranks["4등"]}회 (${(r.ranks["4등"]/range*100).toFixed(1)}%)</td>
+        <td>${r.ranks["3등"]}회</td>
+        <td>${r.payout.toLocaleString()}원</td>
         <td style="font-weight:700; color:${roiColor};">${roi}%</td>
       </tr>
     `;
@@ -2877,91 +2657,21 @@ function renderVerifyResults(results, randomResult, range, comboCount, presetKey
 
   html += `
       <tr style="background:#1a2a44; border-top:2px solid #334155;">
-        <td style="font-weight:700;">🎲 랜덤 대조군</td>
-        <td>${randomResult.ranks["5등"]}회<br><span class="muted" style="font-size:11px;">${(randomResult.ranks["5등"]/range*100).toFixed(1)}%</span></td>
-        <td>${randomResult.ranks["4등"]}회<br><span class="muted" style="font-size:11px;">${(randomResult.ranks["4등"]/range*100).toFixed(1)}%</span></td>
+        <td style="font-weight:700;">🎲 랜덤</td>
+        <td>${randomResult.ranks["5등"]}회</td>
+        <td>${randomResult.ranks["4등"]}회</td>
         <td>${randomResult.ranks["3등"]}회</td>
-        <td>${randomResult.ranks["2등"]}회</td>
-        <td>${randomResult.ranks["1등"]}회</td>
-        <td style="font-weight:700;">${randomResult.payout.toLocaleString()}원</td>
+        <td>${randomResult.payout.toLocaleString()}원</td>
         <td style="font-weight:700; color:${randomROI > 100 ? '#22c55e' : '#ef4444'};">${randomROI}%</td>
       </tr>
     </tbody>
   </table>
-  <p class="muted" style="margin-top:12px;">
-    ※ <b>5등/4등/3등</b>은 “최소 1조합에서 해당 등수 이상 적중한 횟수”입니다.<br>
-    ※ 회수는 평균 상금 기준 (5등 5,000원 / 4등 5만원 / 3등 150만원 / 2등 5천만원 / 1등 20억원).
-  </p>
   `;
 
   resultBox.innerHTML = html;
-
-  const groupAggregate = {
-    cold: { count: 0, hit3: 0, hit4: 0 },
-    nonCold: { count: 0, hit3: 0, hit4: 0 },
-    zeroOverlap: { count: 0, hit3: 0, hit4: 0 },
-    lowOverlap: { count: 0, hit3: 0, hit4: 0 },
-    highOverlap: { count: 0, hit3: 0, hit4: 0 }
-  };
-
-  presetKeys.forEach(key => {
-    const g = results[key].groups;
-    Object.keys(groupAggregate).forEach(k => {
-      groupAggregate[k].count += g[k].count;
-      groupAggregate[k].hit3 += g[k].hit3;
-      groupAggregate[k].hit4 += g[k].hit4;
-    });
-  });
-
-  let groupHtml = `<h3 style="color:var(--accent); margin-bottom:10px;">🎯 그룹별 3·4개 적중률</h3>`;
-  groupHtml += `
-    <table style="width:100%; font-size:13px;">
-      <thead>
-        <tr><th>그룹</th><th>조합 수</th><th>3개 적중</th><th>4개 적중</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="color:#ef4444;">❄️ 장기 미출현 포함</td>
-          <td>${groupAggregate.cold.count}</td>
-          <td>${groupAggregate.cold.hit3}회 <span class="muted">(${groupAggregate.cold.count > 0 ? (groupAggregate.cold.hit3/groupAggregate.cold.count*100).toFixed(1) : 0}%)</span></td>
-          <td>${groupAggregate.cold.hit4}회 <span class="muted">(${groupAggregate.cold.count > 0 ? (groupAggregate.cold.hit4/groupAggregate.cold.count*100).toFixed(1) : 0}%)</span></td>
-        </tr>
-        <tr>
-          <td style="color:var(--accent);">일반 조합</td>
-          <td>${groupAggregate.nonCold.count}</td>
-          <td>${groupAggregate.nonCold.hit3}회 <span class="muted">(${groupAggregate.nonCold.count > 0 ? (groupAggregate.nonCold.hit3/groupAggregate.nonCold.count*100).toFixed(1) : 0}%)</span></td>
-          <td>${groupAggregate.nonCold.hit4}회 <span class="muted">(${groupAggregate.nonCold.count > 0 ? (groupAggregate.nonCold.hit4/groupAggregate.nonCold.count*100).toFixed(1) : 0}%)</span></td>
-        </tr>
-        <tr style="background:#0b1220;">
-          <td style="color:#22c55e;">✨ 직전 회차 겹침 0개</td>
-          <td>${groupAggregate.zeroOverlap.count}</td>
-          <td>${groupAggregate.zeroOverlap.hit3}회 <span class="muted">(${groupAggregate.zeroOverlap.count > 0 ? (groupAggregate.zeroOverlap.hit3/groupAggregate.zeroOverlap.count*100).toFixed(1) : 0}%)</span></td>
-          <td>${groupAggregate.zeroOverlap.hit4}회 <span class="muted">(${groupAggregate.zeroOverlap.count > 0 ? (groupAggregate.zeroOverlap.hit4/groupAggregate.zeroOverlap.count*100).toFixed(1) : 0}%)</span></td>
-        </tr>
-        <tr>
-          <td style="color:#eab308;">📌 겹침 1~2개</td>
-          <td>${groupAggregate.lowOverlap.count}</td>
-          <td>${groupAggregate.lowOverlap.hit3}회 <span class="muted">(${groupAggregate.lowOverlap.count > 0 ? (groupAggregate.lowOverlap.hit3/groupAggregate.lowOverlap.count*100).toFixed(1) : 0}%)</span></td>
-          <td>${groupAggregate.lowOverlap.hit4}회 <span class="muted">(${groupAggregate.lowOverlap.count > 0 ? (groupAggregate.lowOverlap.hit4/groupAggregate.lowOverlap.count*100).toFixed(1) : 0}%)</span></td>
-        </tr>
-        <tr>
-          <td style="color:#ef4444;">📌 겹침 3개 이상</td>
-          <td>${groupAggregate.highOverlap.count}</td>
-          <td>${groupAggregate.highOverlap.hit3}회 <span class="muted">(${groupAggregate.highOverlap.count > 0 ? (groupAggregate.highOverlap.hit3/groupAggregate.highOverlap.count*100).toFixed(1) : 0}%)</span></td>
-          <td>${groupAggregate.highOverlap.hit4}회 <span class="muted">(${groupAggregate.highOverlap.count > 0 ? (groupAggregate.highOverlap.hit4/groupAggregate.highOverlap.count*100).toFixed(1) : 0}%)</span></td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="muted" style="margin-top:12px;">
-      ※ <b>장기 미출현 포함 조합</b>이 일반 조합보다 3·4개 적중률이 높으면 전략 유효.<br>
-      ※ <b>겹침 0개 조합</b>이 다른 그룹보다 적중률이 높으면 전략 유효.
-    </p>
-  `;
-
-  groupBox.innerHTML = groupHtml;
 }
 
-function renderRepeatResults(repeatResults, randomRepeatResults, range, repeatCount){
+function renderRepeatResults(repeatResults, randomRepeatResults, repeatCount){
   const box = document.getElementById("verifyRepeatResult");
 
   function calcStats(arr, key){
@@ -2972,31 +2682,10 @@ function renderRepeatResults(repeatResults, randomRepeatResults, range, repeatCo
     return { mean, std };
   }
 
-  function calcCI(arr, key){
-    const values = arr.map(r => r[key]);
-    const mean = values.reduce((a,b)=>a+b, 0) / values.length;
-    const variance = values.reduce((a,b)=>a + Math.pow(b-mean, 2), 0) / Math.max(values.length - 1, 1);
-    const std = Math.sqrt(variance);
-    const se = std / Math.sqrt(values.length);
-    const ci95 = 1.96 * se;
-    return { mean, std, ciLow: mean - ci95, ciHigh: mean + ci95 };
-  }
-
-  let html = `
-    <p class="muted">${repeatCount}회 반복 평균 ± 표준편차 (95% 신뢰구간)</p>
+  let html = `<p class="muted">${repeatCount}회 반복 평균 ± 표준편차</p>
     <table style="width:100%; font-size:13px;">
-      <thead>
-        <tr>
-          <th>프리셋</th>
-          <th>5등 평균</th>
-          <th>4등 평균</th>
-          <th>회수 평균</th>
-          <th>손익비 평균</th>
-          <th>손익비 95% CI</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
+    <thead><tr><th>프리셋</th><th>5등 평균</th><th>4등 평균</th><th>회수 평균</th></tr></thead>
+    <tbody>`;
 
   Object.keys(repeatResults).forEach(key => {
     const arr = repeatResults[key];
@@ -3004,18 +2693,12 @@ function renderRepeatResults(repeatResults, randomRepeatResults, range, repeatCo
     const hit5 = calcStats(arr, "5등");
     const hit4 = calcStats(arr, "4등");
     const payout = calcStats(arr, "payout");
-    const roi = calcCI(arr, "roi");
-
-    const roiColor = roi.mean > 100 ? "#22c55e" : roi.mean > 50 ? "#eab308" : "#ef4444";
-
     html += `
       <tr>
         <td style="font-weight:700;">${p.label}</td>
         <td>${hit5.mean.toFixed(2)} ± ${hit5.std.toFixed(2)}</td>
         <td>${hit4.mean.toFixed(2)} ± ${hit4.std.toFixed(2)}</td>
         <td>${Math.round(payout.mean).toLocaleString()}원</td>
-        <td style="color:${roiColor}; font-weight:700;">${roi.mean.toFixed(1)}%</td>
-        <td class="muted">${roi.ciLow.toFixed(1)}% ~ ${roi.ciHigh.toFixed(1)}%</td>
       </tr>
     `;
   });
@@ -3023,53 +2706,80 @@ function renderRepeatResults(repeatResults, randomRepeatResults, range, repeatCo
   const randHit5 = calcStats(randomRepeatResults, "5등");
   const randHit4 = calcStats(randomRepeatResults, "4등");
   const randPayout = calcStats(randomRepeatResults, "payout");
-  const randRoi = calcCI(randomRepeatResults, "roi");
 
   html += `
       <tr style="background:#1a2a44; border-top:2px solid #334155;">
-        <td style="font-weight:700;">🎲 랜덤 대조군</td>
+        <td style="font-weight:700;">🎲 랜덤</td>
         <td>${randHit5.mean.toFixed(2)} ± ${randHit5.std.toFixed(2)}</td>
         <td>${randHit4.mean.toFixed(2)} ± ${randHit4.std.toFixed(2)}</td>
         <td>${Math.round(randPayout.mean).toLocaleString()}원</td>
-        <td style="font-weight:700; color:${randRoi.mean > 100 ? '#22c55e' : '#ef4444'};">${randRoi.mean.toFixed(1)}%</td>
-        <td class="muted">${randRoi.ciLow.toFixed(1)}% ~ ${randRoi.ciHigh.toFixed(1)}%</td>
       </tr>
-    </tbody>
-  </table>
-  `;
+    </tbody></table>`;
 
   box.innerHTML = html;
 }
 
-/* ★ 가중치 조정 모드 */
-const WEIGHT_STORAGE_KEY = "lotto_custom_weights_v1";
+/* ★ 가중치 조정 (v3.3: 21개) */
+const WEIGHT_STORAGE_KEY = "lotto_custom_weights_v3_3";
 
 function loadPresetWeights(presetKey){
   const p = PRESETS[presetKey];
   if(!p) return null;
   return {
+    // ① 점수
     W5: p.W5, W10: p.W10, W30: p.W30, W100: p.W100,
     longCold: p.longCold || 12,
     midCold: p.midCold || 8,
-    shortCold: p.shortCold || 4
+    shortCold: p.shortCold || 4,
+    // ② 직전/보조
+    neighbor: 6,
+    mirror: 1.5,
+    bonus: 2,
+    centrality: 4,
+    // ③ GA 적합도
+    oddEven: 5,
+    lowHigh: 5,
+    sum: 4,
+    seq: 3,
+    high40: 2,
+    coOccur: 6,
+    // ④ 조합 조건
+    diversity: 5,
+    maxOverlap: p.maxOverlap || 2,
+    candidateK: p.candidateK || 10,
+    coldTarget: p.coldTarget || 2
   };
 }
 
-function updateWeightUI(weights){
-  if(!weights) return;
-  const setVal = (id, valId, v, format) => {
+function updateWeightUI(w){
+  if(!w) return;
+  const setVal = (id, valId, v, fmt) => {
     const el = document.getElementById(id);
     const valEl = document.getElementById(valId);
     if(el) el.value = v;
-    if(valEl) valEl.textContent = format(v);
+    if(valEl) valEl.textContent = fmt(v);
   };
-  setVal("wW5", "wW5Val", weights.W5, v=>v.toFixed(1));
-  setVal("wW10", "wW10Val", weights.W10, v=>v.toFixed(1));
-  setVal("wW30", "wW30Val", weights.W30, v=>v.toFixed(1));
-  setVal("wW100", "wW100Val", weights.W100, v=>v.toFixed(1));
-  setVal("wCold40", "wCold40Val", weights.longCold, v=>"+"+v);
-  setVal("wCold30", "wCold30Val", weights.midCold, v=>"+"+v);
-  setVal("wCold20", "wCold20Val", weights.shortCold, v=>"+"+v);
+  setVal("wW5", "wW5Val", w.W5, v=>v.toFixed(1));
+  setVal("wW10", "wW10Val", w.W10, v=>v.toFixed(1));
+  setVal("wW30", "wW30Val", w.W30, v=>v.toFixed(1));
+  setVal("wW100", "wW100Val", w.W100, v=>v.toFixed(1));
+  setVal("wCold40", "wCold40Val", w.longCold, v=>"+"+v);
+  setVal("wCold30", "wCold30Val", w.midCold, v=>"+"+v);
+  setVal("wCold20", "wCold20Val", w.shortCold, v=>"+"+v);
+  setVal("wNeighbor", "wNeighborVal", w.neighbor, v=>"+"+v);
+  setVal("wMirror", "wMirrorVal", w.mirror, v=>"×"+v);
+  setVal("wBonus", "wBonusVal", w.bonus, v=>"×"+v);
+  setVal("wCentrality", "wCentralityVal", w.centrality, v=>"+"+v);
+  setVal("wOddEven", "wOddEvenVal", w.oddEven, v=>"+"+v);
+  setVal("wLowHigh", "wLowHighVal", w.lowHigh, v=>"+"+v);
+  setVal("wSum", "wSumVal", w.sum, v=>"+"+v);
+  setVal("wSeq", "wSeqVal", w.seq, v=>"+"+v);
+  setVal("wHigh40", "wHigh40Val", w.high40, v=>"+"+v);
+  setVal("wCoOccur", "wCoOccurVal", w.coOccur, v=>"+"+v);
+  setVal("wDiversity", "wDiversityVal", w.diversity, v=>v+"개");
+  setVal("wMaxOverlap", "wMaxOverlapVal", w.maxOverlap, v=>v+"개");
+  setVal("wCandidateK", "wCandidateKVal", w.candidateK, v=>v+"개");
+  setVal("wColdTarget", "wColdTargetVal", w.coldTarget, v=>v+"조합");
 }
 
 function readWeightSliders(){
@@ -3080,7 +2790,21 @@ function readWeightSliders(){
     W100: parseFloat(document.getElementById("wW100").value),
     longCold: parseInt(document.getElementById("wCold40").value),
     midCold: parseInt(document.getElementById("wCold30").value),
-    shortCold: parseInt(document.getElementById("wCold20").value)
+    shortCold: parseInt(document.getElementById("wCold20").value),
+    neighbor: parseInt(document.getElementById("wNeighbor").value),
+    mirror: parseFloat(document.getElementById("wMirror").value),
+    bonus: parseInt(document.getElementById("wBonus").value),
+    centrality: parseInt(document.getElementById("wCentrality").value),
+    oddEven: parseInt(document.getElementById("wOddEven").value),
+    lowHigh: parseInt(document.getElementById("wLowHigh").value),
+    sum: parseInt(document.getElementById("wSum").value),
+    seq: parseInt(document.getElementById("wSeq").value),
+    high40: parseInt(document.getElementById("wHigh40").value),
+    coOccur: parseInt(document.getElementById("wCoOccur").value),
+    diversity: parseInt(document.getElementById("wDiversity").value),
+    maxOverlap: parseInt(document.getElementById("wMaxOverlap").value),
+    candidateK: parseInt(document.getElementById("wCandidateK").value),
+    coldTarget: parseInt(document.getElementById("wColdTarget").value)
   };
 }
 
@@ -3097,7 +2821,21 @@ function setupWeightSliders(){
     {id:"wW100", valId:"wW100Val", format:v=>v.toFixed(1)},
     {id:"wCold40", valId:"wCold40Val", format:v=>"+"+v},
     {id:"wCold30", valId:"wCold30Val", format:v=>"+"+v},
-    {id:"wCold20", valId:"wCold20Val", format:v=>"+"+v}
+    {id:"wCold20", valId:"wCold20Val", format:v=>"+"+v},
+    {id:"wNeighbor", valId:"wNeighborVal", format:v=>"+"+v},
+    {id:"wMirror", valId:"wMirrorVal", format:v=>"×"+v},
+    {id:"wBonus", valId:"wBonusVal", format:v=>"×"+v},
+    {id:"wCentrality", valId:"wCentralityVal", format:v=>"+"+v},
+    {id:"wOddEven", valId:"wOddEvenVal", format:v=>"+"+v},
+    {id:"wLowHigh", valId:"wLowHighVal", format:v=>"+"+v},
+    {id:"wSum", valId:"wSumVal", format:v=>"+"+v},
+    {id:"wSeq", valId:"wSeqVal", format:v=>"+"+v},
+    {id:"wHigh40", valId:"wHigh40Val", format:v=>"+"+v},
+    {id:"wCoOccur", valId:"wCoOccurVal", format:v=>"+"+v},
+    {id:"wDiversity", valId:"wDiversityVal", format:v=>v+"개"},
+    {id:"wMaxOverlap", valId:"wMaxOverlapVal", format:v=>v+"개"},
+    {id:"wCandidateK", valId:"wCandidateKVal", format:v=>v+"개"},
+    {id:"wColdTarget", valId:"wColdTargetVal", format:v=>v+"조합"}
   ];
   sliders.forEach(s=>{
     const el = document.getElementById(s.id);
@@ -3114,8 +2852,7 @@ function setupWeightSliders(){
       customWeights = readWeightSliders();
       applyCustomWeights();
       const statusEl = document.getElementById("weightStatus");
-      if(statusEl) statusEl.innerHTML =
-        `⚡ 커스텀 가중치 적용됨 · W5=${customWeights.W5} W10=${customWeights.W10} W30=${customWeights.W30} W100=${customWeights.W100}`;
+      if(statusEl) statusEl.innerHTML = `⚡ 21개 커스텀 가중치 적용됨`;
     });
   }
 
@@ -3125,8 +2862,7 @@ function setupWeightSliders(){
       const w = readWeightSliders();
       localStorage.setItem(WEIGHT_STORAGE_KEY, JSON.stringify(w));
       const statusEl = document.getElementById("weightStatus");
-      if(statusEl) statusEl.innerHTML =
-        `💾 저장됨 · W5=${w.W5} W10=${w.W10} W30=${w.W30} W100=${w.W100}`;
+      if(statusEl) statusEl.innerHTML = `💾 21개 가중치 저장됨`;
     });
   }
 
@@ -3135,16 +2871,12 @@ function setupWeightSliders(){
     loadBtn.addEventListener("click", ()=>{
       const saved = localStorage.getItem(WEIGHT_STORAGE_KEY);
       const statusEl = document.getElementById("weightStatus");
-      if(!saved){
-        if(statusEl) statusEl.innerHTML = "⚠️ 저장된 값이 없습니다.";
-        return;
-      }
+      if(!saved){ if(statusEl) statusEl.innerHTML = "⚠️ 저장된 값 없음"; return; }
       const w = JSON.parse(saved);
       updateWeightUI(w);
       customWeights = w;
       applyCustomWeights();
-      if(statusEl) statusEl.innerHTML =
-        `📂 불러옴 · W5=${w.W5} W10=${w.W10} W30=${w.W30} W100=${w.W100}`;
+      if(statusEl) statusEl.innerHTML = `📂 저장된 21개 가중치 불러옴`;
     });
   }
 
@@ -3157,12 +2889,11 @@ function setupWeightSliders(){
       customWeights = null;
       applyCustomWeights();
       const statusEl = document.getElementById("weightStatus");
-      if(statusEl) statusEl.innerHTML =
-        `↺ <b>${PRESETS[currentPreset].label}</b> 기본값으로 복원됨`;
+      if(statusEl) statusEl.innerHTML = `↺ <b>${PRESETS[currentPreset].label}</b> 기본값 복원`;
     });
   }
 
-  // 초기 상태
+  // 초기 로드
   const saved = localStorage.getItem(WEIGHT_STORAGE_KEY);
   const statusEl = document.getElementById("weightStatus");
   if(saved){
@@ -3170,8 +2901,7 @@ function setupWeightSliders(){
       const w = JSON.parse(saved);
       updateWeightUI(w);
       customWeights = w;
-      if(statusEl) statusEl.innerHTML =
-        `💾 저장된 값 자동 로드됨 · W5=${w.W5} W10=${w.W10} W30=${w.W30} W100=${w.W100}`;
+      if(statusEl) statusEl.innerHTML = `💾 저장된 21개 가중치 자동 로드`;
     }catch(e){}
   } else {
     const base = loadPresetWeights(currentPreset);
@@ -3182,24 +2912,7 @@ function setupWeightSliders(){
 function applyCustomWeights(){
   if(!window._history) return;
   clearCoverCache();
-  const history = window._history;
-  const lastDraw = history[history.length-1];
-  const {scores, co} = scoreNumbers(history);
-  currentScores = scores;
-  baseScore = {};
-  scores.forEach(s=> baseScore[s.num] = s.score);
-
-  const {candidates, stages} = pickCandidates(scores, 8);
-  const combos = generateCombos(candidates, co, 5, lastDraw.nums, scores);
-
-  renderPicksProgress("picksProgress", stages);
-  renderPicks(combos, "picks", lastDraw.nums, scores);
-  renderScores(scores, "scores", 15);
-  renderColdNumbers("coldNumbers", scores);
-
-  renderPicks(combos, "nextPicks", lastDraw.nums, scores);
-  renderScores(scores, "nextScores", 20);
-  renderNextTab(history, scores);
+  rerenderAll(window._history);
 }
 
 /* ===== 메인 ===== */
@@ -3222,13 +2935,11 @@ function applyCustomWeights(){
   renderPicks(combos, "picks", lastDraw.nums, scores);
   renderScores(scores, "scores", 15);
   renderColdNumbers("coldNumbers", scores);
-  renderBacktest();
 
   renderTierGoals("tierGoals");
   renderCandidateScores("candidateScores", scores, 15);
   renderPicks(combos, "nextPicks", lastDraw.nums, scores);
   renderExtraPicks("extraPicks", candidates, co, 10);
-
   renderScores(scores, "nextScores", 20);
   renderNextTab(history, scores);
 
@@ -3244,24 +2955,20 @@ function applyCustomWeights(){
   setupPresetButtons(history);
   setupWeightSliders();
 
-  document.getElementById("btRunBtn").addEventListener("click", ()=>{
-    runCoveringBacktest(history);
-  });
+  const btBtn = document.getElementById("btRunBtn");
+  if(btBtn) btBtn.addEventListener("click", ()=> runCoveringBacktest(history));
 
-  document.getElementById("expRunBtn").addEventListener("click", ()=>{
-    renderExperiment(history);
-  });
-  document.getElementById("expStopBtn").addEventListener("click", ()=>{
-    expAborted = true;
-  });
-  document.getElementById("expCsvBtn").addEventListener("click", downloadExperimentCSV);
+  const expBtn = document.getElementById("expRunBtn");
+  if(expBtn) expBtn.addEventListener("click", ()=> renderExperiment(history));
+  const expStop = document.getElementById("expStopBtn");
+  if(expStop) expStop.addEventListener("click", ()=> expAborted = true);
+  const expCsv = document.getElementById("expCsvBtn");
+  if(expCsv) expCsv.addEventListener("click", downloadExperimentCSV);
 
-  document.getElementById("verifyRunBtn").addEventListener("click", ()=>{
-    runVerify(history);
-  });
-  document.getElementById("verifyStopBtn").addEventListener("click", ()=>{
-    verifyAborted = true;
-  });
+  const vBtn = document.getElementById("verifyRunBtn");
+  if(vBtn) vBtn.addEventListener("click", ()=> runVerify(history));
+  const vStop = document.getElementById("verifyStopBtn");
+  if(vStop) vStop.addEventListener("click", ()=> verifyAborted = true);
 
   setupCollapsibles();
   setTimeout(setupCollapsibles, 500);
@@ -3269,7 +2976,7 @@ function applyCustomWeights(){
 
   goToTab('strategy');
 
-  console.log("v3.2 로드 완료 · 가중치 조정 모드 포함");
+  console.log("v3.3 로드 완료 · 21개 가중치 조정");
 })();
 </script>
 </body>
