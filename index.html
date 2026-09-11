@@ -653,32 +653,32 @@
         <div class="weight-group-title">③ GA 적합도 가중치</div>
         
         <div class="weight-row">
-          <div class="weight-label">홀짝 보너스</div>
+          <div class="weight-label">홀짝 가중치</div>
           <input type="range" class="weight-slider" id="wOddEven" min="0" max="20" step="1" value="5">
           <div class="weight-value" id="wOddEvenVal">+5</div>
         </div>
         <div class="weight-row">
-          <div class="weight-label">저고 보너스</div>
+          <div class="weight-label">저고 가중치</div>
           <input type="range" class="weight-slider" id="wLowHigh" min="0" max="20" step="1" value="5">
           <div class="weight-value" id="wLowHighVal">+5</div>
         </div>
         <div class="weight-row">
-          <div class="weight-label">합계 보너스</div>
+          <div class="weight-label">합계 가중치</div>
           <input type="range" class="weight-slider" id="wSum" min="0" max="20" step="1" value="4">
           <div class="weight-value" id="wSumVal">+4</div>
         </div>
         <div class="weight-row">
-          <div class="weight-label">연속번호 보너스</div>
+          <div class="weight-label">연속번호 가중치</div>
           <input type="range" class="weight-slider" id="wSeq" min="0" max="20" step="1" value="3">
           <div class="weight-value" id="wSeqVal">+3</div>
         </div>
         <div class="weight-row">
-          <div class="weight-label">40번대 보너스</div>
+          <div class="weight-label">40번대 가중치</div>
           <input type="range" class="weight-slider" id="wHigh40" min="0" max="20" step="1" value="2">
           <div class="weight-value" id="wHigh40Val">+2</div>
         </div>
         <div class="weight-row">
-          <div class="weight-label">동시출현 상한</div>
+          <div class="weight-label">동시출현 가중치</div>
           <input type="range" class="weight-slider" id="wCoOccur" min="0" max="15" step="1" value="6">
           <div class="weight-value" id="wCoOccurVal">+6</div>
         </div>
@@ -833,7 +833,7 @@
     <h1>🛡️ 커버링 디자인</h1>
     <p class="muted">
       후보 N개 안에 실제 당첨번호 M개 이상이 들어있으면, 
-      최소 1조합에서 M개 적중이 보장되는 조합 세트입니다.
+      최소 1조합에서 M개 적중이 가능한 조합 세트입니다.
     </p>
 
     <div class="card">
@@ -849,33 +849,33 @@
 
     <div class="pred-card">
       <div class="collapsible-header">
-        <span>🛡️ 3개 적중 보장 조합 (3-cover)</span>
+        <span>🛡️ 3개 적중 가능 조합 (3-cover)</span>
         <span class="arrow">▶</span>
       </div>
       <div class="collapsible-body">
-        <p class="muted">후보 15개 안에 실제 당첨번호 3개 이상이 들어있으면, 최소 1조합에서 3개 적중 보장. (5등 목표)</p>
+        <p class="muted">후보 15개 안에 실제 당첨번호 3개 이상이 들어있으면, 최소 1조합에서 3개 적중 가능. (5등 목표)</p>
         <div id="cover3"></div>
       </div>
     </div>
 
     <div class="pred-card">
       <div class="collapsible-header">
-        <span>🛡️ 4개 적중 보장 조합 (4-cover)</span>
+        <span>🛡️ 4개 적중 가능 조합 (4-cover)</span>
         <span class="arrow">▶</span>
       </div>
       <div class="collapsible-body">
-        <p class="muted">후보 15개 안에 실제 당첨번호 4개 이상이 들어있으면, 최소 1조합에서 4개 적중 보장. (4등 목표)</p>
+        <p class="muted">후보 15개 안에 실제 당첨번호 4개 이상이 들어있으면, 최소 1조합에서 4개 적중 가능. (4등 목표)</p>
         <div id="cover4"></div>
       </div>
     </div>
 
     <div class="pred-card">
       <div class="collapsible-header">
-        <span>🛡️ 5개 적중 보장 조합 (5-cover)</span>
+        <span>🛡️ 5개 적중 가능 조합 (5-cover)</span>
         <span class="arrow">▶</span>
       </div>
       <div class="collapsible-body">
-        <p class="muted">후보 10개 안에 실제 당첨번호 5개 이상이 들어있으면, 최소 1조합에서 5개 적중 보장. (3등 목표)</p>
+        <p class="muted">후보 10개 안에 실제 당첨번호 5개 이상이 들어있으면, 최소 1조합에서 5개 적중 가능. (3등 목표)</p>
         <div id="cover5"></div>
       </div>
     </div>
@@ -886,7 +886,7 @@
     <h1>📈 전략 검증</h1>
     <p class="muted">
       과거 데이터를 사용해 <b>우리 전략이 랜덤보다 나은지</b> 검증합니다.<br>
-      “N회차까지의 데이터로 N+1회차를 예측 → 실제 당첨번호와 비교”를 반복합니다.
+      "N회차까지의 데이터로 N+1회차를 예측 → 실제 당첨번호와 비교"를 반복합니다.
     </p>
 
     <div class="subtabs" id="verifySubtabs">
@@ -1989,9 +1989,9 @@ function renderTierGoals(targetId){
   if(!wrap) return;
 
   const tiers = [
-    {name:"5등 (3개 적중)", need:3, candidates:15, note:'3-cover로 보장', color:"#22c55e"},
-    {name:"4등 (4개 적중)", need:4, candidates:10, note:'4-cover로 보장', color:"#84cc16"},
-    {name:"3등 (5개 적중)", need:5, candidates:8,  note:'5-cover로 보장', color:"#eab308"},
+    {name:"5등 (3개 적중)", need:3, candidates:15, note:'3-cover로 가능', color:"#22c55e"},
+    {name:"4등 (4개 적중)", need:4, candidates:10, note:'4-cover로 가능', color:"#84cc16"},
+    {name:"3등 (5개 적중)", need:5, candidates:8,  note:'5-cover로 가능', color:"#eab308"},
     {name:"2등 (5개+보너스)", need:5, candidates:6, note:'보너스 회귀 참고', color:"#f97316"},
     {name:"1등 (6개 적중)", need:6, candidates:5,  note:"사실상 불가", color:"#ef4444"},
   ];
@@ -2077,7 +2077,7 @@ function renderCoveringDesign(targetId, candidates, coverSize, maxCombos, ballCl
     wrap.innerHTML = `
       <div class="muted" style="margin-bottom:8px;">
         후보 <b>${candidates.length}개</b> · 전체 <b>${totalCombos.toLocaleString()}개</b> 중 
-        <b>${combos.length}개</b>로 ${coverSize}개 적중 보장
+        <b>${combos.length}개</b>로 ${coverSize}개 적중 가능
       </div>
       <table style="width:100%; font-size:13px;">
         <thead><tr><th>#</th><th>조합</th><th>합계</th><th>홀:짝</th></tr></thead>
@@ -2238,7 +2238,6 @@ function setupPresetButtons(history){
       const p = PRESETS[currentPreset];
       if(info) info.innerHTML = `현재: <b>${p.label}</b> — ${p.desc} (타겟: <b>${p.targetRank}</b>)`;
 
-      // 가중치 슬라이더를 프리셋 기본값으로 리셋
       resetWeightSlidersToPreset();
 
       clearCoverCache();
@@ -2726,24 +2725,20 @@ function loadPresetWeights(presetKey){
   const p = PRESETS[presetKey];
   if(!p) return null;
   return {
-    // ① 점수
     W5: p.W5, W10: p.W10, W30: p.W30, W100: p.W100,
     longCold: p.longCold || 12,
     midCold: p.midCold || 8,
     shortCold: p.shortCold || 4,
-    // ② 직전/보조
     neighbor: 6,
     mirror: 1.5,
     bonus: 2,
     centrality: 4,
-    // ③ GA 적합도
     oddEven: 5,
     lowHigh: 5,
     sum: 4,
     seq: 3,
     high40: 2,
     coOccur: 6,
-    // ④ 조합 조건
     diversity: 5,
     maxOverlap: p.maxOverlap || 2,
     candidateK: p.candidateK || 10,
@@ -2893,7 +2888,6 @@ function setupWeightSliders(){
     });
   }
 
-  // 초기 로드
   const saved = localStorage.getItem(WEIGHT_STORAGE_KEY);
   const statusEl = document.getElementById("weightStatus");
   if(saved){
@@ -2981,3 +2975,23 @@ function applyCustomWeights(){
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
