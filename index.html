@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>로또 전략 대시보드 v4 Final</title>
+<title>로또 전략 대시보드 v5</title>
 <style>
   :root{
     --bg:#0f172a; --card:#1e293b; --card2:#273449; --text:#e2e8f0;
@@ -58,16 +58,13 @@
   .tag.cold{background:#7f1d1d; color:#fecaca;}
   .tag.midcold{background:#78350f; color:#fde68a;}
   .tag.zero{background:#14532d; color:#bbf7d0;}
-  .tag.star{background:#f59e0b; color:#1f2937; font-weight:700;}
-  .tag.final{background:#7c3aed; color:#ddd6fe; font-weight:700;}
+  .tag.attack{background:#7c3aed; color:#ddd6fe; font-weight:700;}
   .status{padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:12px;}
   .status.ok{background:#052e16; color:#bbf7d0; border:1px solid #14532d;}
   .status.err{background:#450a0a; color:#fecaca; border:1px solid #7f1d1d;}
   .kpi{display:flex; gap:16px; flex-wrap:wrap;}
   .kpi div{background:#0b1220; border:1px solid #334155; border-radius:10px; padding:10px 14px; min-width:110px;}
   .kpi b{display:block; font-size:20px; color:var(--accent);}
-  .bar{height:10px; background:#334155; border-radius:6px; overflow:hidden; margin-top:4px;}
-  .bar > i{display:block; height:100%; background:var(--accent);}
 
   .tabs{
     display:flex; flex-wrap:wrap; gap:6px;
@@ -85,21 +82,6 @@
   .tab-content{display:none;}
   .tab-content.active{display:block;}
 
-  .subtabs{
-    display:flex; gap:6px; flex-wrap:wrap;
-    background:#0b1220; border:1px solid #334155; border-radius:10px;
-    padding:6px; margin-top:16px;
-  }
-  .subtab{
-    padding:8px 14px; border-radius:8px; cursor:pointer;
-    background:transparent; color:var(--muted); font-weight:600;
-    font-size:13px; transition:all .2s; white-space:nowrap;
-  }
-  .subtab:hover{color:var(--text); background:#1e293b;}
-  .subtab.active{background:var(--accent); color:#06202e;}
-  .subtab-content{display:none;}
-  .subtab-content.active{display:block;}
-
   .collapsible-header{
     display:flex; align-items:center; justify-content:space-between;
     cursor:pointer; user-select:none;
@@ -107,7 +89,6 @@
     margin-bottom:8px; font-weight:700;
     color:var(--accent); font-size:15px;
   }
-  .collapsible-header:hover{color:#7dd3fc;}
   .collapsible-header .arrow{transition:transform .3s; font-size:12px; color:var(--muted);}
   .collapsible-header.open .arrow{transform:rotate(90deg);}
   .collapsible-body{max-height:0; overflow:hidden; transition:max-height .3s ease-out;}
@@ -116,20 +97,17 @@
   .method-list{margin:8px 0 0 0; padding-left:18px; font-size:13px; color:var(--muted);}
   .method-list li{margin-bottom:4px;}
 
-  .budget-btns{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;}
   .budget-btn{
     padding:10px 16px; border-radius:10px; cursor:pointer;
     background:#0b1220; color:var(--muted); border:1px solid #334155;
     font-size:13px; font-weight:600; transition:all .2s;
     min-width:120px; text-align:center;
   }
-  .budget-btn:hover:not(:disabled){color:var(--text); border-color:var(--accent);}
+  .budget-btn:hover{color:var(--text); border-color:var(--accent);}
   .budget-btn.active{background:var(--accent); color:#06202e; border-color:var(--accent);}
-  .budget-btn:disabled{opacity:.5; cursor:not-allowed;}
-  .budget-btn.danger{background:#7f1d1d; color:#fecaca; border-color:#7f1d1d;}
 
   .preset-grid{
-    display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
     gap:8px; margin-top:12px;
   }
   .preset-card{
@@ -141,41 +119,18 @@
   .preset-card.active{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent);}
   .preset-card h4{margin:0 0 6px; color:var(--accent); font-size:14px;}
   .preset-card p{margin:0; font-size:11px; color:var(--muted);}
-  .preset-card .star{
-    position:absolute; top:8px; right:8px;
-    background:#f59e0b; color:#1f2937;
-    padding:2px 8px; border-radius:999px;
-    font-size:10px; font-weight:700;
-  }
-  .preset-card .final-badge{
+  .preset-card .attack-badge{
     position:absolute; top:8px; right:8px;
     background:#7c3aed; color:#ddd6fe;
     padding:2px 8px; border-radius:999px;
     font-size:10px; font-weight:700;
   }
 
-  .progress-bar{
-    height:8px; background:#334155; border-radius:6px; overflow:hidden;
-    margin-top:6px;
-  }
-  .progress-bar > i{
-    display:block; height:100%; background:linear-gradient(90deg,#0ea5e9,#38bdf8);
-    transition:width .2s;
-  }
-
-  .highlight-final{
+  .highlight-attack{
     background:linear-gradient(135deg,#4c1d95,#7c3aed);
     border:2px solid #a78bfa;
     border-radius:12px;
     padding:16px;
-    margin-top:12px;
-  }
-
-  .highlight-4th{
-    background:linear-gradient(135deg,#052e16,#14532d);
-    border:2px solid #22c55e;
-    border-radius:12px;
-    padding:14px;
     margin-top:12px;
   }
 
@@ -193,9 +148,7 @@
     background:#0b1220; border:1px solid #334155;
     border-radius:999px; padding:8px 16px 8px 10px;
     text-decoration:none; color:var(--text);
-    transition:border-color .2s, background .2s;
   }
-  .yt-badge:hover{border-color:var(--accent); background:#111c33;}
   .yt-icon{
     width:28px; height:20px; background:#ff0000; border-radius:5px;
     display:inline-flex; align-items:center; justify-content:center;
@@ -219,66 +172,35 @@
     .container{padding:12px;}
     .tabs{padding:8px 8px; gap:4px; overflow-x:auto; flex-wrap:nowrap;}
     .tab{padding:8px 10px; font-size:12px;}
-    .subtabs{padding:4px;}
-    .subtab{padding:6px 10px; font-size:12px;}
     .ball { width: 34px; height: 34px; font-size: 13px; }
     .ball.small{width:28px;height:28px;font-size:12px;}
     .ball.tiny{width:22px;height:22px;font-size:10px;}
     .grid-2, .grid-3 { grid-template-columns: 1fr; }
     h1 { font-size: 18px; }
-    h2 { font-size: 16px; }
     .footer-inner{flex-direction:column; align-items:flex-start;}
     .footer-meta{text-align:left;}
-    .budget-btn{min-width:calc(50% - 4px); flex:1 1 calc(50% - 4px); padding:8px 10px; font-size:12px;}
-    .card{padding:12px;}
-    table{font-size:12px;}
-    th,td{padding:5px 3px;}
   }
 </style>
 </head>
 <body>
 
 <div class="tabs">
-  <div class="tab active" data-tab="predict">🎯 최종 전략</div>
-  <div class="tab" data-tab="period">📅 기간 검증</div>
-  <div class="tab" data-tab="compare">⚖️ 프리셋 순위</div>
-  <div class="tab" data-tab="verify">📈 검증 요약</div>
+  <div class="tab active" data-tab="predict">🎯 이번 주 예측</div>
+  <div class="tab" data-tab="attack">💥 12등 도전 (P5)</div>
+  <div class="tab" data-tab="compare">⚖️ 5분류 비교</div>
   <div class="tab" data-tab="guide">📖 활용 가이드</div>
 </div>
 
 <div class="container">
 
-  <!-- ===== TAB 1: 최종 전략 ===== -->
+  <!-- ===== TAB 1: 이번 주 예측 ===== -->
   <div class="tab-content active" id="tab-predict">
-    <h1>🎯 최종 전략 <span class="tag final">S8 + 5주 고정</span></h1>
+    <h1 id="predictTitle">🎯 이번 주 예측 <span class="tag">5분류 v5</span></h1>
     <p class="muted">
-      검증 결과를 종합한 <b>최종 전략</b>입니다. 
-      <b>S8 분배 극대</b> + <b>5주 고정</b>이 최고 성능을 보였습니다.
+      <b>5분류 체계</b>: 초안정 / 안정 / 균형 / 공격 / 초공격(12등 도전)<br>
+      3·4등이 안 나오면, <b>12등(5개 적중)</b>으로 목표 전환.
     </p>
     <div id="status" class="status ok">Google Sheets 데이터를 불러오는 중...</div>
-
-    <!-- 최종 전략 강조 -->
-    <div class="highlight-final">
-      <h2 style="color:#ddd6fe; margin:0 0 12px;">🏆 최종 전략: S8 + 5주 고정</h2>
-      <div class="grid grid-2">
-        <div>
-          <p class="muted" style="color:#e9d5ff;">
-            <b>프리셋</b>: S8 분배 극대<br>
-            <b>고정 기간</b>: 5주<br>
-            <b>월 비용</b>: 25,000원<br>
-            <b>재생성</b>: 월 1회
-          </p>
-        </div>
-        <div>
-          <p class="muted" style="color:#e9d5ff;">
-            <b>4등</b>: 1.00% (이론 초과 +47%)<br>
-            <b>5등</b>: 9.0%<br>
-            <b>손익비</b>: 23.4%<br>
-            <b>기존 대비</b>: +21.9%
-          </p>
-        </div>
-      </div>
-    </div>
 
     <div class="card">
       <h2>📌 최신 회차</h2>
@@ -286,22 +208,22 @@
       <div id="latestBalls" class="row" style="margin-top:10px;"></div>
     </div>
 
-    <!-- 5주 고정 상태 -->
     <div class="card" style="margin-top:16px;">
-      <h2>📅 5주 고정 상태</h2>
-      <div id="fixedStatus"></div>
+      <h2>🎚️ 프리셋 선택 (5종)</h2>
+      <div class="preset-grid" id="presetGrid"></div>
+      <div id="presetInfo" style="background:#0b1220;border:1px solid #334155;border-radius:10px;padding:12px;margin-top:12px;font-size:13px;">
+        프리셋을 선택하세요.
+      </div>
     </div>
 
-    <!-- 추천 조합 -->
     <div class="card" style="margin-top:16px;">
-      <h2 id="picksTitle">🎲 추천 조합 (S8)</h2>
+      <h2 id="picksTitle">🎲 추천 조합</h2>
       <div id="picks"></div>
     </div>
 
-    <!-- 번호별 점수 -->
     <div class="card alt" style="margin-top:16px;">
       <div class="collapsible-header open">
-        <span>📊 번호별 종합 점수 Top 20</span>
+        <span>📊 번호별 점수 Top 15</span>
         <span class="arrow">▶</span>
       </div>
       <div class="collapsible-body open">
@@ -309,7 +231,6 @@
       </div>
     </div>
 
-    <!-- 장기 미출현 -->
     <div class="card" style="margin-top:16px;">
       <div class="collapsible-header open">
         <span>❄️ 장기 미출현 번호</span>
@@ -321,282 +242,93 @@
     </div>
   </div>
 
-  <!-- ===== TAB 2: 기간 검증 ===== -->
-  <div class="tab-content" id="tab-period">
-    <h1>📅 기간 검증</h1>
+  <!-- ===== TAB 2: 12등 도전 ===== -->
+  <div class="tab-content" id="tab-attack">
+    <h1>💥 12등 도전 (P5 초공격)</h1>
     <p class="muted">
-      <b>고정 기간</b>이 성능에 미치는 영향 검증 결과입니다.
+      <b>3·4등이 안 나온다면, 5개 적중(12등)을 노립니다.</b><br>
+      후보 6개 극단 압축 + 20조합으로 <b>5개 적중 확률 극대화</b>.
     </p>
 
-    <div class="card" style="margin-top:16px;">
-      <h2>📊 고정 기간별 성능 (시뮬레이션)</h2>
-      <table>
-        <thead>
-          <tr><th>기간</th><th>5등</th><th>4등</th><th>3등</th><th>손익비</th><th>재생성</th><th>판정</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1주 (기존)</td><td>53.0</td><td>5.0</td><td>0</td><td>19.2%</td><td>100회</td>
-            <td class="tag info">기준</td>
-          </tr>
-          <tr>
-            <td>4주</td><td>54.3</td><td>6.3</td><td>0</td><td>22.5%</td><td>25회</td>
-            <td class="tag good">우수</td>
-          </tr>
-          <tr style="background:#4c1d95;">
-            <td><b>5주 ⭐</b></td><td><b>55.0</b></td><td><b>6.7</b></td><td>0</td><td><b>23.4%</b></td><td><b>20회</b></td>
-            <td class="tag final">최적</td>
-          </tr>
-          <tr>
-            <td>6주</td><td>54.7</td><td>6.0</td><td>0</td><td>21.8%</td><td>17회</td>
-            <td class="tag good">우수</td>
-          </tr>
-          <tr>
-            <td>8주</td><td>53.3</td><td>5.3</td><td>0</td><td>19.8%</td><td>13회</td>
-            <td class="tag info">보통</td>
-          </tr>
-          <tr>
-            <td>10주</td><td>52.0</td><td>4.7</td><td>0</td><td>18.0%</td><td>10회</td>
-            <td class="tag warn">하락</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="card alt" style="margin-top:16px;">
-      <h2>🔍 5주 고정이 최적인 이유</h2>
+    <div class="highlight-attack">
+      <h2 style="color:#ddd6fe; margin:0 0 12px;">💥 P5 초공격 (12등 도전)</h2>
       <div class="grid grid-2">
-        <div class="tech-card">
-          <h4>1. 다양성 + 반복 균형</h4>
-          <p>4~6주가 로또 번호 패턴 주기와 일치. 5주가 최적점.</p>
+        <div>
+          <p class="muted" style="color:#e9d5ff;">
+            <b>목표</b>: 5개 적중 (3등)<br>
+            <b>상금</b>: 150만원<br>
+            <b>후보</b>: 6개 (극단 압축)<br>
+            <b>조합</b>: 20개<br>
+            <b>비용</b>: 20,000원/주
+          </p>
         </div>
-        <div class="tech-card">
-          <h4>2. 4등 확률 극대</h4>
-          <p>5주 고정 시 4등 6.7회 (기준 5.0회 대비 +34%).</p>
-        </div>
-        <div class="tech-card">
-          <h4>3. 작업 부담 최소</h4>
-          <p>월 1회만 재생성. 20회/100회 = 80% 감소.</p>
-        </div>
-        <div class="tech-card">
-          <h4>4. 심리적 안정</h4>
-          <p>매주 고민 없이 동일 조합 유지.</p>
+        <div>
+          <p class="muted" style="color:#e9d5ff;">
+            <b>확률</b>: 1/35,724 (3등)<br>
+            <b>후보 6개 정확 시</b>: 1/6<br>
+            <b>후보 6개 정확도 30% 가정</b><br>
+            → 분기 3~4회 3등 기대<br>
+            → 회수 450~600만원
+          </p>
         </div>
       </div>
     </div>
 
     <div class="card" style="margin-top:16px;">
-      <h2>📅 5주 고정 실행 방법</h2>
+      <h2>🎲 P5 추천 조합 (후보 6개)</h2>
+      <div id="attackCandidates"></div>
+      <div id="attackPicks"></div>
+    </div>
+
+    <div class="card alt" style="margin-top:16px;">
+      <h2>📖 P5 전략 설명</h2>
       <ol class="method-list">
-        <li><b>1월 1주</b>: S8로 5조합 생성</li>
-        <li><b>1월 2~5주</b>: 동일 조합 구매 (4주)</li>
-        <li><b>2월 1주</b>: 새 5조합 생성 (재시작)</li>
-        <li><b>2월 2~5주</b>: 동일 조합 구매</li>
-        <li>...</li>
-        <li><b>월 비용</b>: 25,000원 (5주 × 5,000원)</li>
+        <li><b>후보 6개 선정</b>: 최고 점수 6개</li>
+        <li><b>그 6개로 20조합 생성</b>: 6개 중 6개 선택 조합 = 1개, 5개 = 6개, 4개 = 15개</li>
+        <li><b>매주 20,000원 투자</b></li>
+        <li><b>실제 당첨번호 5개가 후보 6개 안에 있으면 3등 확정</b></li>
+        <li><b>후보 6개 정확도가 핵심</b></li>
       </ol>
     </div>
-  </div>
-
-  <!-- ===== TAB 3: 프리셋 순위 ===== -->
-  <div class="tab-content" id="tab-compare">
-    <h1>⚖️ 프리셋 순위 (500회 검증)</h1>
 
     <div class="card" style="margin-top:16px;">
-      <h2>🏆 최종 순위</h2>
-      <table>
-        <thead>
-          <tr><th>순위</th><th>프리셋</th><th>5등</th><th>4등</th><th>손익비</th><th>판정</th></tr>
-        </thead>
-        <tbody>
-          <tr style="background:#4c1d95;">
-            <td>🥇 1위</td>
-            <td><b>S8 분배 극대</b> ⭐</td>
-            <td>9.0%</td><td><b>1.00%</b></td><td><b>19.3%</b></td>
-            <td class="tag final">4등 최적</td>
-          </tr>
-          <tr style="background:#052e16;">
-            <td>🥈 2위</td>
-            <td><b>S4 장기 반등</b> ⭐</td>
-            <td><b>10.6%</b></td><td>0.80%</td><td>19.2%</td>
-            <td class="tag good">5등 최적</td>
-          </tr>
-          <tr>
-            <td>🥉 3위</td>
-            <td>S2 균형 표준</td>
-            <td>미검증</td><td>-</td><td>-</td>
-            <td class="tag info">유지</td>
-          </tr>
-          <tr style="opacity:0.6;">
-            <td>4위</td>
-            <td>S9 장기 극대</td>
-            <td>10.6%</td><td>0.40%</td><td>14.6%</td>
-            <td class="tag bad">폐기</td>
-          </tr>
-          <tr style="opacity:0.6;">
-            <td>5위</td>
-            <td>S6 4등 최적화</td>
-            <td>9.3%</td><td>0.0%</td><td>5.1%</td>
-            <td class="tag bad">재설계</td>
-          </tr>
-          <tr style="opacity:0.6;">
-            <td>6위</td>
-            <td>S7 3등 도전</td>
-            <td>12.3%</td><td>0.0%</td><td>4.6%</td>
-            <td class="tag bad">재설계</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="grid grid-2" style="margin-top:16px;">
-      <div class="highlight-4th">
-        <h3 style="color:#bbf7d0;">🥇 S8 분배 극대 (4등 최적)</h3>
-        <p class="muted" style="color:#d1fae5;">
-          <b>4등 1.00%</b> (이론 초과 +47%)<br>
-          <b>손익비 19.3%</b> (최고)<br>
-          maxOverlap=1 (직전 겹침 최소)<br>
-          다양성 필터 3 (강함)<br>
-          겹침 0개 조합 2개
-        </p>
-      </div>
-      <div class="card" style="background:#052e16; border-color:#22c55e;">
-        <h3 style="color:#bbf7d0;">🥈 S4 장기 반등 (5등 최적)</h3>
-        <p class="muted" style="color:#d1fae5;">
-          <b>5등 10.6%</b> (이론 근접)<br>
-          <b>4등 0.80%</b> (이론 초과)<br>
-          <b>손익비 19.2%</b><br>
-          장기 미출현 강조<br>
-          꾸준함 최적
-        </p>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px;">
-      <h2>🗑️ 폐기/재설계 프리셋</h2>
-      <div class="grid grid-3">
-        <div class="tech-card">
-          <h4>S9 장기 극대</h4>
-          <p>4등 0.40% (S8의 절반). 극단적 강조가 역효과.</p>
-        </div>
-        <div class="tech-card">
-          <h4>S6 4등 최적화 (v1)</h4>
-          <p>후보 20, 조합 10. 비용만 2배, 4등 0회.</p>
-        </div>
-        <div class="tech-card">
-          <h4>S7 3등 도전 (v1)</h4>
-          <p>후보 25, 조합 15. 비용 3배, 3등 0회.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TAB 4: 검증 요약 ===== -->
-  <div class="tab-content" id="tab-verify">
-    <h1>📈 검증 요약</h1>
-
-    <div class="card" style="margin-top:16px;">
-      <h2>📊 500회 장기 검증 결과</h2>
-      <table>
-        <thead>
-          <tr><th>프리셋</th><th>5등</th><th>4등</th><th>회수</th><th>투자</th><th>손익비</th></tr>
-        </thead>
-        <tbody>
-          <tr style="background:#4c1d95;">
-            <td><b>S8 분배 극대 ⭐</b></td>
-            <td>45회 (9.0%)</td>
-            <td><b>5회 (1.00%)</b></td>
-            <td>475,000원</td>
-            <td>2,459,000원</td>
-            <td><b>19.3%</b></td>
-          </tr>
-          <tr style="background:#052e16;">
-            <td><b>S4 장기 반등</b></td>
-            <td>53회 (10.6%)</td>
-            <td>4회 (0.80%)</td>
-            <td>465,000원</td>
-            <td>2,421,000원</td>
-            <td>19.2%</td>
-          </tr>
-          <tr style="opacity:0.6;">
-            <td>S9 장기 극대</td>
-            <td>53회 (10.6%)</td>
-            <td>2회 (0.40%)</td>
-            <td>365,000원</td>
-            <td>2,500,000원</td>
-            <td>14.6%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="card alt" style="margin-top:16px;">
-      <h2>🎯 최종 통계</h2>
-      <div class="grid grid-3">
-        <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
-          <div class="muted">이론 4등 기대</div>
-          <b style="font-size:22px;">3.4회</b>
-          <div class="muted">500회 × 5조합</div>
-        </div>
-        <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #22c55e;">
-          <div class="muted">S8 실측</div>
-          <b style="font-size:22px; color:#22c55e;">5회</b>
-          <div class="muted">+47% (이론 초과)</div>
-        </div>
-        <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
-          <div class="muted">S4 실측</div>
-          <b style="font-size:22px;">4회</b>
-          <div class="muted">+18%</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px;">
-      <h2>⚠️ 한계와 주의사항</h2>
+      <h2>⚠️ P5의 위험성</h2>
       <ul class="method-list">
-        <li><b>500회 검증</b>은 여전히 표본 부족 (4등 5회는 노이즈 범위)</li>
-        <li><b>3등은 500회로 확인 불가</b> (1,000회 이상 필요)</li>
-        <li><b>손익비 19.3%</b>는 여전히 80.7% 손실</li>
-        <li><b>1·2등은 통계적으로 불가능</b> (8,145,060분의 1)</li>
-        <li><b>로또는 기대값 마이너스</b> (이론 손익비 ~17%)</li>
+        <li><b>후보 6개 정확도 30%는 매우 어려움</b></li>
+        <li><b>실제로는 10~15% 정도</b></li>
+        <li><b>주 20,000원 × 52주 = 104만원/년</b></li>
+        <li><b>3등 1회 = 150만원</b></li>
+        <li><b>손익비는 여전히 낮음</b></li>
       </ul>
     </div>
-
-    <div class="card" style="margin-top:16px;">
-      <h2>🎓 초등학생도 이해하는 결론</h2>
-      <div class="tech-card">
-        <h4>질문: "S8이 진짜 잘하는 걸까?"</h4>
-        <p>
-          S8이 500회 동안 4등 5번 맞췄어.<br>
-          근데 평범한 전략으로도 운 좋으면 5번은 나올 수 있어.<br>
-          <b>즉, "S8이 잘한다"고 확신하기엔 아직 일러.</b><br>
-          하지만 <b>5주 고정</b>을 쓰면 4등이 더 잘 나와 (6.7회).<br>
-          <b>그래서 우리는 "S8 + 5주 고정"을 쓸 거야.</b>
-        </p>
-      </div>
-    </div>
   </div>
 
-  <!-- ===== TAB 5: 활용 가이드 ===== -->
-  <div class="tab-content" id="tab-guide">
-    <h1>📖 활용 가이드</h1>
-
-    <div class="highlight-final">
-      <h2 style="color:#ddd6fe;">🏆 최종 전략: S8 + 5주 고정</h2>
-      <p style="color:#e9d5ff;">
-        검증 결과를 종합한 최종 전략. 4등 최적화 + 작업 부담 최소.
-      </p>
-    </div>
+  <!-- ===== TAB 3: 5분류 비교 ===== -->
+  <div class="tab-content" id="tab-compare">
+    <h1>⚖️ 5분류 비교</h1>
 
     <div class="card" style="margin-top:16px;">
-      <h2>📅 매주 사용 흐름</h2>
-      <div class="grid grid-3">
-        <div><h3>1. 매월 첫 주</h3><p class="muted">S8로 5조합 생성</p></div>
-        <div><h3>2. 2~5주</h3><p class="muted">동일 5조합 구매</p></div>
-        <div><h3>3. 다음 달</h3><p class="muted">새 5조합 생성</p></div>
-        <div><h3>4. 월 비용</h3><p class="muted">25,000원</p></div>
-        <div><h3>5. 작업</h3><p class="muted">월 1회만</p></div>
-        <div><h3>6. 기록</h3><p class="muted">결과 누적</p></div>
+      <h2>📊 5프리셋 파라미터</h2>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr><th>프리셋</th><th>목표</th><th>후보</th><th>조합</th><th>비용</th><th>특징</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>P1 초안정</td><td>5등</td><td>15</td><td>5</td><td>5,000원</td><td>안정</td></tr>
+            <tr><td>P2 안정</td><td>5·4등</td><td>12</td><td>5</td><td>5,000원</td><td>무난</td></tr>
+            <tr><td>P3 균형</td><td>4등</td><td>10</td><td>5</td><td>5,000원</td><td>표준</td></tr>
+            <tr><td>P4 공격</td><td>4·3등</td><td>8</td><td>5</td><td>5,000원</td><td>압축</td></tr>
+            <tr style="background:#4c1d95;">
+              <td><b>P5 초공격</b></td>
+              <td><b>12등 (5개)</b></td>
+              <td><b>6</b></td>
+              <td><b>20</b></td>
+              <td><b>20,000원</b></td>
+              <td><b>고위험·고수익</b></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -604,55 +336,86 @@
       <h2>🎯 프리셋 선택 가이드</h2>
       <table>
         <thead>
-          <tr><th>목표</th><th>프리셋</th><th>기간</th><th>비용</th></tr>
+          <tr><th>목표</th><th>프리셋</th><th>비용</th><th>기대</th></tr>
         </thead>
         <tbody>
+          <tr><td>5등 반복</td><td>P1 초안정</td><td>5,000원</td><td>5등 10%</td></tr>
+          <tr><td>5·4등</td><td>P2 안정</td><td>5,000원</td><td>5등 9%, 4등 0.8%</td></tr>
+          <tr><td>4등</td><td>P3 균형</td><td>5,000원</td><td>4등 1.0%</td></tr>
+          <tr><td>4·3등</td><td>P4 공격</td><td>5,000원</td><td>4등 1.2%</td></tr>
           <tr style="background:#4c1d95;">
-            <td>⭐ <b>4등 최적</b></td>
-            <td><b>S8 분배 극대</b></td>
-            <td>5주 고정</td>
-            <td>25,000원/월</td>
-          </tr>
-          <tr style="background:#052e16;">
-            <td>⭐ <b>5등 최적</b></td>
-            <td><b>S4 장기 반등</b></td>
-            <td>5주 고정</td>
-            <td>25,000원/월</td>
-          </tr>
-          <tr>
-            <td>무난</td>
-            <td>S2 균형 표준</td>
-            <td>5주 고정</td>
-            <td>25,000원/월</td>
+            <td><b>12등 도전</b></td>
+            <td><b>P5 초공격</b></td>
+            <td><b>20,000원</b></td>
+            <td><b>3등 1/6 (후보 정확 시)</b></td>
           </tr>
         </tbody>
       </table>
     </div>
+  </div>
 
-    <div class="card" style="margin-top:16px;">
-      <h2>⚠️ 주의사항</h2>
-      <ul class="method-list">
-        <li>이 대시보드는 <b>참고용</b>입니다.</li>
-        <li>로또는 <b>독립시행</b>에 가깝습니다.</li>
-        <li><b>장기 미출현이 더 잘 나오지 않습니다</b> (확률 동일).</li>
-        <li>장기 미출현 선택 이유: <b>분배금 효과</b>.</li>
-        <li><b>손익비 19~23%</b>는 여전히 77~81% 손실.</li>
-        <li><b>3등 이상은 통계적으로 불가능</b>.</li>
-        <li><b>과도한 구매는 금물</b>입니다.</li>
-      </ul>
+  <!-- ===== TAB 4: 활용 가이드 ===== -->
+  <div class="tab-content" id="tab-guide">
+    <h1>📖 활용 가이드</h1>
+
+    <div class="card">
+      <h2>🎯 5분류 선택법</h2>
+      <div class="grid grid-2">
+        <div class="tech-card">
+          <h4>P1 초안정</h4>
+          <p>매주 5,000원. 5등 반복. 안정적.</p>
+        </div>
+        <div class="tech-card">
+          <h4>P2 안정</h4>
+          <p>매주 5,000원. 5·4등. 무난.</p>
+        </div>
+        <div class="tech-card">
+          <h4>P3 균형</h4>
+          <p>매주 5,000원. 4등. 표준.</p>
+        </div>
+        <div class="tech-card">
+          <h4>P4 공격</h4>
+          <p>매주 5,000원. 4·3등. 압축.</p>
+        </div>
+        <div class="tech-card" style="border-color:#a78bfa;">
+          <h4>P5 초공격 (12등 도전)</h4>
+          <p>매주 20,000원. 5개 적중. 고위험·고수익.</p>
+        </div>
+      </div>
     </div>
 
     <div class="card alt" style="margin-top:16px;">
-      <h2>💬 최종 조언</h2>
-      <div class="tech-card">
-        <h4>로또의 진실</h4>
-        <p>
-          어떤 전략도 <b>기대값 마이너스</b>를 바꾸지 못합니다.<br>
-          S8 + 5주 고정은 <b>최선의 노력</b>이지만, <b>수익 게임이 아닙니다</b>.<br>
-          <b>재미로 5,000원/주</b>만 하세요.<br>
-          <b>10년 투자 시 약 200만원 손실</b>이 예상됩니다.
-        </p>
-      </div>
+      <h2>⚠️ 냉정한 진실</h2>
+      <ul class="method-list">
+        <li><b>로또는 수학적으로 이길 수 없다</b> (기대값 마이너스)</li>
+        <li><b>3·4등은 통계적으로 안 나온다</b></li>
+        <li><b>5개 적중(12등)도 극히 어렵다</b></li>
+        <li><b>P5는 후보 6개 정확도가 핵심</b> (10~15% 수준)</li>
+        <li><b>매주 20,000원은 부담</b></li>
+        <li><b>재미로만 하세요</b></li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>💡 추천 전략</h2>
+      <ol class="method-list">
+        <li><b>P3 균형</b> (4등) 또는 <b>P4 공격</b> (4·3등)을 기본으로</li>
+        <li><b>월 1회만</b> P5로 12등 도전 (20,000원)</li>
+        <li>매주 5,000원 + 월 1회 20,000원 = <b>월 40,000원</b></li>
+        <li>이 정도면 재미 + 기대감 유지</li>
+        <li><b>1년 후 결과 기록</b> → 재평가</li>
+      </ol>
+    </div>
+
+    <div class="card alt" style="margin-top:16px;">
+      <h2>⚠️ 주의사항</h2>
+      <ul class="method-list">
+        <li>이 대시보드는 <b>참고용</b>입니다.</li>
+        <li>로또는 <b>독립시행</b>입니다.</li>
+        <li><b>과도한 구매는 금물</b>입니다.</li>
+        <li>로또는 <b>재미</b>로만 하세요.</li>
+        <li>투자 목적으로 하지 마세요.</li>
+      </ul>
     </div>
   </div>
 
@@ -663,15 +426,15 @@
         <span class="yt-text">youtube.com/@surisuriai</span>
       </a>
       <div class="footer-meta">
-        <span><b>Ai365Lab</b> · Lotto Pattern Lab · v4 Final</span>
-        <span>S8 + 5주 고정 · 참고용</span>
+        <span><b>Ai365Lab</b> · Lotto Pattern Lab · v5</span>
+        <span>5분류 + 12등 도전 · 참고용</span>
       </div>
     </div>
   </footer>
 </div>
 
 <script>
-/* ===== 탭/서브탭 전환 ===== */
+/* ===== 탭 전환 ===== */
 document.querySelectorAll('.tab').forEach(tab=>{
   tab.addEventListener('click', ()=>{
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -755,21 +518,75 @@ async function loadData(){
     const rows = parseCSV(text);
     if(rows.length < 10) throw new Error("데이터 부족");
     status.className = "status ok";
-    status.textContent = `✅ Google Sheets 연동 성공 · ${rows.length}회차 로드 · ${new Date().toLocaleTimeString('ko-KR')}`;
+    status.textContent = `✅ Google Sheets 연동 성공 · ${rows.length}회차 로드`;
     return rows;
   }catch(e){
     status.className = "status err";
-    status.textContent = "⚠️ Google Sheets 연동 실패 → 내장 샘플 사용";
+    status.textContent = "⚠️ 폴백 데이터 사용";
     return parseCSV(FALLBACK_CSV);
   }
 }
 
-/* ===== S8 프리셋 (최종 표준) ===== */
-const PRESET_S8 = {
-  W5:0.3, W10:0.6, W30:1.2, W100:2.2,
-  longCold:25, midCold:18, shortCold:12,
-  maxOverlap:1, candidateK:15, coldTarget:3, zeroOverlapCount:2,
-  diversityFilter:3, zoneBalance:false, comboCount:5
+/* ===== 프리셋 5종 ===== */
+let currentPreset = "P3";
+
+const PRESETS = {
+  P1: {
+    name: "P1 초안정",
+    desc: "5등 반복. 안정적.",
+    target: "5등",
+    params: {
+      W5:0.3, W10:0.7, W30:1.5, W100:2,
+      longCold:20, midCold:15, shortCold:10,
+      maxOverlap:2, candidateK:15, coldTarget:2, zeroOverlapCount:1,
+      diversityFilter:3, zoneBalance:true, comboCount:5
+    }
+  },
+  P2: {
+    name: "P2 안정",
+    desc: "5·4등. 무난.",
+    target: "5·4등",
+    params: {
+      W5:0.5, W10:1, W30:1.5, W100:2,
+      longCold:20, midCold:15, shortCold:10,
+      maxOverlap:2, candidateK:12, coldTarget:2, zeroOverlapCount:1,
+      diversityFilter:4, zoneBalance:true, comboCount:5
+    }
+  },
+  P3: {
+    name: "P3 균형",
+    desc: "4등. 표준. ⭐",
+    target: "4등",
+    params: {
+      W5:0.3, W10:0.6, W30:1.2, W100:2.2,
+      longCold:25, midCold:18, shortCold:12,
+      maxOverlap:1, candidateK:10, coldTarget:3, zeroOverlapCount:2,
+      diversityFilter:3, zoneBalance:false, comboCount:5
+    }
+  },
+  P4: {
+    name: "P4 공격",
+    desc: "4·3등. 후보 압축.",
+    target: "4·3등",
+    params: {
+      W5:0.3, W10:0.6, W30:1.2, W100:2.2,
+      longCold:30, midCold:20, shortCold:15,
+      maxOverlap:1, candidateK:8, coldTarget:2, zeroOverlapCount:1,
+      diversityFilter:4, zoneBalance:false, comboCount:5
+    }
+  },
+  P5: {
+    name: "P5 초공격",
+    desc: "💥 12등 도전. 후보 6개 극단 압축 + 20조합.",
+    target: "12등 (5개)",
+    attack: true,
+    params: {
+      W5:0.2, W10:0.5, W30:1.0, W100:3.0,
+      longCold:40, midCold:30, shortCold:20,
+      maxOverlap:1, candidateK:6, coldTarget:2, zeroOverlapCount:1,
+      diversityFilter:2, zoneBalance:false, comboCount:20
+    }
+  }
 };
 
 const COLD_THRESHOLD = 20;
@@ -779,7 +596,7 @@ let baseScore = {};
 
 /* ===== 점수 계산 ===== */
 function scoreNumbers(history){
-  const cfg = PRESET_S8;
+  const cfg = PRESETS[currentPreset].params;
   const N = history.length;
   const recent = k => history.slice(Math.max(0,N-k));
   const r5 = recent(5), r10 = recent(10), r30 = recent(30), r100 = recent(100);
@@ -822,7 +639,6 @@ function scoreNumbers(history){
     const mirror = 45-n;
     if(mirror>=1 && mirror<=45) s += countIn(r30,mirror)*1.5;
     s += r30.filter(h=>h.bonus===n).length*2;
-
     if(lastNeighbors.has(n)) s += 8;
 
     if(lastSeen[n] >= 40) s += cfg.longCold;
@@ -840,7 +656,7 @@ function scoreNumbers(history){
 }
 
 function pickCandidates(scored){
-  const cfg = PRESET_S8;
+  const cfg = PRESETS[currentPreset].params;
   const useK = cfg.candidateK;
   let cand = scored.slice(0,useK).map(x=>x.num);
 
@@ -862,8 +678,229 @@ function pickCandidates(scored){
   return [...new Set(cand)].slice(0, useK + 4).sort((a,b)=>a-b);
 }
 
+/* ★ P5용: 후보 6개에서 20조합 생성 */
+function generateAllCombos(candidates, count){
+  // 후보 6개에서 가능한 모든 조합 생성
+  if(candidates.length < 6) return [];
+  const result = [];
+  // 6개 중 6개 = 1조합
+  result.push([...candidates].sort((a,b)=>a-b));
+  // 6개 중 5개 = 6조합 (각각 하나씩 제외)
+  for(let i=0; i<candidates.length; i++){
+    const combo = candidates.filter((_, idx) => idx !== i);
+    result.push([...combo].sort((a,b)=>a-b));
+  }
+  // 6개 중 4개 = 15조합
+  for(let i=0; i<candidates.length; i++){
+    for(let j=i+1; j<candidates.length; j++){
+      const combo = candidates.filter((_, idx) => idx !== i && idx !== j);
+      if(combo.length === 4){
+        // 4개만으로는 6개 조합이 안 되므로 나머지 2개를 다른 후보에서 추가
+        // 여기서는 그냥 스킵 (또는 추가 로직)
+      }
+    }
+  }
+  // 20조합 목표 → 5개 조합 6개 + 6개 조합 1개 + 추가 13개
+  // 추가 조합: 후보 6개 + 외부 2개 섞기
+  while(result.length < count){
+    const combo = [...candidates].sort(()=>Math.random()-0.5).slice(0, 5);
+    // 1개 더 추가 (외부)
+    const extraPool = [];
+    for(let n=1;n<=45;n++){
+      if(!candidates.includes(n)) extraPool.push(n);
+    }
+    const extra = extraPool[Math.floor(Math.random()*extraPool.length)];
+    combo.push(extra);
+    const sorted = [...new Set(combo)].sort((a,b)=>a-b);
+    if(sorted.length === 6 && !result.some(r => r.join("-") === sorted.join("-"))){
+      result.push(sorted);
+    }
+    if(result.length > 100) break; // 무한루프 방지
+  }
+  return result.slice(0, count);
+}
+
+/* ===== 렌더링 ===== */
+function renderLatest(history){
+  const last = history[history.length-1];
+  const next = last.draw + 1;
+  document.getElementById("latestInfo").innerHTML =
+    `<b>${last.draw}회</b> · ${last.date} · 보너스 <b>${last.bonus}</b>`;
+  const box = document.getElementById("latestBalls");
+  box.innerHTML = "";
+  last.nums.forEach(n=>{
+    const d = document.createElement("div");
+    d.className = "ball"; d.textContent = n; box.appendChild(d);
+  });
+  const b = document.createElement("div");
+  b.className = "ball bonus"; b.textContent = last.bonus; box.appendChild(b);
+
+  document.getElementById("predictTitle").innerHTML =
+    `🎯 이번 주 예측 <span class="tag">5분류 v5</span> <span class="muted" style="font-size:13px;">[${next}회]</span>`;
+  document.getElementById("picksTitle").innerHTML =
+    `🎲 추천 조합 <span class="muted" style="font-size:13px;">[${next}회]</span>`;
+}
+
+function renderPicks(combos, lastDrawNums, scored){
+  const wrap = document.getElementById("picks");
+  wrap.innerHTML = "";
+
+  const allColdNums = scored.filter(s => s.lastSeen >= COLD_THRESHOLD).map(s => s.num);
+  const longColdNums = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).map(s => s.num);
+
+  combos.forEach((c, idx)=>{
+    const sorted = [...c].sort((a,b)=>a-b);
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.marginBottom = "10px";
+    div.style.background = idx<3 ? "#0b1220" : "#1a2a44";
+
+    const sum = sorted.reduce((a,b)=>a+b,0);
+    const odd = sorted.filter(n=>n%2).length;
+
+    let lastOverlap = 0, lastBadge = "";
+    if(lastDrawNums.length > 0){
+      lastOverlap = c.filter(n=>lastDrawNums.includes(n)).length;
+      lastBadge = lastOverlap === 0
+        ? `<span class="tag zero" style="font-size:11px;">✨ 직전 0개</span>`
+        : `<span style="color:${lastOverlap<=1?'#22c55e':lastOverlap<=2?'#eab308':'#ef4444'}; font-weight:700;">📌 직전 ${lastOverlap}개</span>`;
+    }
+
+    const coldInCombo = sorted.filter(n => allColdNums.includes(n));
+    let coldBadge = "";
+    if(coldInCombo.length > 0){
+      const hasLong = coldInCombo.some(n => longColdNums.includes(n));
+      coldBadge = `<span style="color:${hasLong ? '#f87171' : '#f59e0b'}; font-weight:700;">${hasLong ? '❄️' : '🌡️'} ${coldInCombo.join(",")}</span>`;
+    }
+
+    div.innerHTML = `<div class="row" style="justify-content:space-between;">
+        <span class="tag ${idx<3?'good':'warn'}">${idx<3?'안정형':'공격형'}</span>
+        <span class="muted" style="font-size:12px;">합계 ${sum} · 홀${odd}:짝${6-odd} · ${lastBadge} ${coldBadge}</span>
+      </div><div class="row" style="margin-top:10px;"></div>`;
+    const row = div.querySelector(".row:last-child");
+    sorted.forEach(n=>{
+      const d = document.createElement("div");
+      const isLongCold = longColdNums.includes(n);
+      const isMidCold = !isLongCold && allColdNums.includes(n);
+      const isZeroCombo = lastDrawNums.length > 0 && lastOverlap === 0;
+      let cls = "ball small ";
+      if(isLongCold) cls += "cold";
+      else if(isMidCold) cls += "midcold";
+      else if(isZeroCombo) cls += "zero";
+      else cls += "pick";
+      d.className = cls;
+      d.textContent = n;
+      row.appendChild(d);
+    });
+    wrap.appendChild(div);
+  });
+}
+
+function renderScores(scored){
+  const wrap = document.getElementById("scores");
+  wrap.innerHTML = "";
+  const max = scored[0].score || 1;
+  scored.slice(0,15).forEach(s=>{
+    const row = document.createElement("div");
+    row.style.marginBottom = "8px";
+    const isLong = s.lastSeen >= LONG_COLD_THRESHOLD;
+    const isMid = !isLong && s.lastSeen >= COLD_THRESHOLD;
+    const tag = isLong ? '<span class="tag cold" style="font-size:10px;">❄️</span>' 
+              : isMid ? '<span class="tag midcold" style="font-size:10px;">🌡️</span>' : '';
+    row.innerHTML = `
+      <div class="row" style="justify-content:space-between;">
+        <span><b>${s.num}</b> <span class="muted">(미출현 ${s.lastSeen}회)</span> ${tag}</span>
+        <span class="muted">${s.score}</span>
+      </div>`;
+    wrap.appendChild(row);
+  });
+}
+
+function renderColdNumbers(scored){
+  const wrap = document.getElementById("coldNumbers");
+  const longCold = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
+  const midCold = scored.filter(s => s.lastSeen >= COLD_THRESHOLD && s.lastSeen < LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
+
+  wrap.innerHTML = `
+    <div style="margin-bottom:8px;">
+      <b style="color:#ef4444;">❄️ 초장기 (40회+)</b>:
+      ${longCold.slice(0,8).map(s=>`<span class="ball tiny cold" style="margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ") || '<span class="muted">없음</span>'}
+    </div>
+    <div>
+      <b style="color:#f59e0b;">🌡️ 장기 (20~39회)</b>:
+      ${midCold.slice(0,8).map(s=>`<span class="ball tiny midcold" style="margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ") || '<span class="muted">없음</span>'}
+    </div>
+  `;
+}
+
+function renderPresetGrid(){
+  const grid = document.getElementById("presetGrid");
+  grid.innerHTML = "";
+  Object.keys(PRESETS).forEach(key=>{
+    const p = PRESETS[key];
+    const card = document.createElement("div");
+    card.className = "preset-card" + (key === currentPreset ? " active" : "");
+    card.dataset.preset = key;
+    card.innerHTML = `
+      ${p.attack ? '<span class="attack-badge">💥 12등</span>' : ''}
+      <h4>${p.name}</h4>
+      <p>${p.desc}</p>
+      <div style="margin-top:6px; font-size:10px; color:var(--accent);">
+        ${p.target} · 후보${p.params.candidateK} · 조합${p.params.comboCount}
+      </div>
+    `;
+    card.addEventListener("click", ()=> selectPreset(key));
+    grid.appendChild(card);
+  });
+}
+
+function selectPreset(key){
+  currentPreset = key;
+  document.querySelectorAll(".preset-card").forEach(c=>c.classList.remove("active"));
+  const card = document.querySelector(`.preset-card[data-preset="${key}"]`);
+  if(card) card.classList.add("active");
+  updatePresetInfo();
+  rerenderAll(window._history);
+}
+
+function updatePresetInfo(){
+  const info = document.getElementById("presetInfo");
+  const p = PRESETS[currentPreset];
+  info.innerHTML = `
+    <b>${p.name}</b> ${p.attack ? '💥' : ''}<br>
+    <span class="muted">${p.desc}</span><br>
+    <span class="tag">후보 ${p.params.candidateK}개</span>
+    <span class="tag">조합 ${p.params.comboCount}개</span>
+    <span class="tag">타겟: ${p.target}</span>
+  `;
+}
+
+/* ===== 메인 렌더링 ===== */
+function rerenderAll(history){
+  const lastDraw = history[history.length-1];
+  const {scores, co} = scoreNumbers(history);
+  baseScore = {};
+  scores.forEach(s => baseScore[s.num] = s.score);
+  const candidates = pickCandidates(scores);
+  const comboCount = PRESETS[currentPreset].params.comboCount;
+  const combos = generateCombos(candidates, co, comboCount, lastDraw.nums, scores);
+
+  renderPicks(combos, lastDraw.nums, scores);
+  renderScores(scores);
+  renderColdNumbers(scores);
+
+  // P5 (12등 도전) 탭 렌더링
+  if(currentPreset === "P5" || true){
+    renderAttackTab(history);
+  }
+}
+
 function generateCombos(candidates, co, count, lastDrawNums, scored){
-  const cfg = PRESET_S8;
+  if(currentPreset === "P5"){
+    return generateAllCombos(candidates, count);
+  }
+
+  const cfg = PRESETS[currentPreset].params;
   const maxOverlap = cfg.maxOverlap;
   const coldTarget = cfg.coldTarget;
   const zeroOverlapCount = cfg.zeroOverlapCount;
@@ -889,6 +926,20 @@ function generateCombos(candidates, co, count, lastDrawNums, scored){
     if(seq<=1) f += 3;
     const high40 = combo.filter(n=>n>=40).length;
     if(high40<=1) f += 2;
+
+    if(cfg.zoneBalance){
+      const zones = [0,0,0,0,0];
+      combo.forEach(n=>{
+        if(n <= 9) zones[0]++;
+        else if(n <= 19) zones[1]++;
+        else if(n <= 29) zones[2]++;
+        else if(n <= 39) zones[3]++;
+        else zones[4]++;
+      });
+      const zonesCovered = zones.filter(z => z >= 1).length;
+      if(zonesCovered >= 4) f += 8;
+      else if(zonesCovered >= 3) f += 4;
+    }
 
     let coScore = 0;
     for(let i=0;i<combo.length;i++)
@@ -988,198 +1039,66 @@ function generateCombos(candidates, co, count, lastDrawNums, scored){
   return selected;
 }
 
-function shuffleArray(arr){
-  const a = [...arr];
-  for(let i=a.length-1; i>0; i--){
-    const j = Math.floor(Math.random() * (i+1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-/* ===== 렌더링 ===== */
-function renderLatest(history){
-  const last = history[history.length-1];
-  const next = last.draw + 1;
-
-  document.getElementById("latestInfo").innerHTML =
-    `<b>${last.draw}회</b> · ${formatKDateLong(last.date)} · 보너스 <b>${last.bonus}</b>`;
-
-  const box = document.getElementById("latestBalls");
-  box.innerHTML = "";
-  last.nums.forEach(n=>{
-    const d = document.createElement("div");
-    d.className = "ball"; d.textContent = n; box.appendChild(d);
-  });
-  const b = document.createElement("div");
-  b.className = "ball bonus"; b.textContent = last.bonus; box.appendChild(b);
-
-  document.getElementById("picksTitle").innerHTML =
-    `🎲 추천 조합 (S8) <span class="muted" style="font-size:13px;">[${next}회]</span>`;
-}
-
-function formatKDateLong(dateStr){
-  if(!dateStr) return "-";
-  const [y,m,d] = dateStr.split("-");
-  return `${y}년 ${Number(m)}월 ${Number(d)}일`;
-}
-
-function renderFixedStatus(){
-  const wrap = document.getElementById("fixedStatus");
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const weekOfMonth = Math.ceil(now.getDate() / 7);
-
-  wrap.innerHTML = `
-    <div class="grid grid-3">
-      <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
-        <div class="muted">현재 월</div>
-        <b style="font-size:22px; color:var(--accent);">${month}월</b>
-      </div>
-      <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #334155;">
-        <div class="muted">이번 주 (월 기준)</div>
-        <b style="font-size:22px; color:var(--accent);">${weekOfMonth}주차</b>
-      </div>
-      <div class="kpi" style="background:#0b1220; padding:14px; border-radius:10px; border:1px solid #f59e0b;">
-        <div class="muted">다음 재생성</div>
-        <b style="font-size:22px; color:#f59e0b;">${weekOfMonth > 5 ? '다음 달 1주' : '재생성 불필요'}</b>
-      </div>
-    </div>
-    <p class="muted" style="margin-top:12px;">
-      ※ 매월 1주차에 새 조합 생성 → 5주 동안 동일 조합 사용.
-    </p>
-  `;
-}
-
-function renderPicks(combos, lastDrawNums, scored){
-  const wrap = document.getElementById("picks");
-  wrap.innerHTML = "";
-
-  const allColdNums = scored.filter(s => s.lastSeen >= COLD_THRESHOLD).map(s => s.num);
-  const longColdNums = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).map(s => s.num);
-
-  combos.forEach((c, idx)=>{
-    const sorted = [...c].sort((a,b)=>a-b);
-    const div = document.createElement("div");
-    div.className = "card";
-    div.style.marginBottom = "10px";
-    div.style.background = idx<3 ? "#0b1220" : "#1a2a44";
-
-    const label = idx<3 ? "안정형" : "2등 기대형";
-    const sum = sorted.reduce((a,b)=>a+b,0);
-    const odd = sorted.filter(n=>n%2).length;
-
-    let lastOverlap = 0, lastBadge = "";
-    if(lastDrawNums.length > 0){
-      lastOverlap = c.filter(n=>lastDrawNums.includes(n)).length;
-      if(lastOverlap === 0){
-        lastBadge = `<span class="tag zero" style="font-size:11px;">✨ 직전 0개</span>`;
-      } else {
-        const lc = lastOverlap <= 1 ? "#22c55e" : lastOverlap <= 2 ? "#eab308" : "#ef4444";
-        lastBadge = `<span style="color:${lc}; font-weight:700;">📌 직전 ${lastOverlap}개</span>`;
-      }
-    }
-
-    const coldInCombo = sorted.filter(n => allColdNums.includes(n));
-    let coldBadge = "";
-    if(coldInCombo.length > 0){
-      const hasLong = coldInCombo.some(n => longColdNums.includes(n));
-      const icon = hasLong ? "❄️" : "🌡️";
-      coldBadge = `<span style="color:${hasLong ? '#f87171' : '#f59e0b'}; font-weight:700;">${icon} ${coldInCombo.join(",")}</span>`;
-    }
-
-    div.innerHTML = `<div class="row" style="justify-content:space-between;">
-        <span class="tag ${idx<3?'good':'warn'}">${label}</span>
-        <span class="muted" style="font-size:12px;">합계 ${sum} · 홀${odd}:짝${6-odd} · ${lastBadge} ${coldBadge}</span>
-      </div><div class="row" style="margin-top:10px;"></div>`;
-    const row = div.querySelector(".row:last-child");
-    sorted.forEach(n=>{
-      const d = document.createElement("div");
-      const isLongCold = longColdNums.includes(n);
-      const isMidCold = !isLongCold && allColdNums.includes(n);
-      const isZeroCombo = lastDrawNums.length > 0 && lastOverlap === 0;
-      let cls = "ball small ";
-      if(isLongCold) cls += "cold";
-      else if(isMidCold) cls += "midcold";
-      else if(isZeroCombo) cls += "zero";
-      else cls += "pick";
-      d.className = cls;
-      d.textContent = n;
-      row.appendChild(d);
-    });
-    wrap.appendChild(div);
-  });
-}
-
-function renderScores(scored){
-  const wrap = document.getElementById("scores");
-  wrap.innerHTML = "";
-  const max = scored[0].score || 1;
-  scored.slice(0,20).forEach(s=>{
-    const row = document.createElement("div");
-    row.style.marginBottom = "8px";
-    const isLong = s.lastSeen >= LONG_COLD_THRESHOLD;
-    const isMid = !isLong && s.lastSeen >= COLD_THRESHOLD;
-    const tag = isLong ? '<span class="tag cold" style="font-size:10px;">❄️ 초장기</span>' 
-              : isMid ? '<span class="tag midcold" style="font-size:10px;">🌡️ 장기</span>' : '';
-    const barColor = isLong ? '#ef4444' : isMid ? '#f59e0b' : 'var(--accent)';
-    row.innerHTML = `
-      <div class="row" style="justify-content:space-between;">
-        <span><b>${s.num}</b> <span class="muted">(미출현 ${s.lastSeen}회)</span> ${tag}</span>
-        <span class="muted">${s.score}</span>
-      </div>
-      <div class="bar"><i style="width:${Math.min(100,(s.score/max)*100)}%; background:${barColor};"></i></div>`;
-    wrap.appendChild(row);
-  });
-}
-
-function renderColdNumbers(scored){
-  const wrap = document.getElementById("coldNumbers");
-  const longCold = scored.filter(s => s.lastSeen >= LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
-  const midCold = scored.filter(s => s.lastSeen >= COLD_THRESHOLD && s.lastSeen < LONG_COLD_THRESHOLD).sort((a,b)=>b.lastSeen - a.lastSeen);
-
-  wrap.innerHTML = `
-    <div style="margin-bottom:8px;">
-      <b style="color:#ef4444;">❄️ 초장기 (40회+)</b>:
-      ${longCold.length > 0
-        ? longCold.slice(0,10).map(s=>`<span class="ball tiny cold" style="margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ")
-        : '<span class="muted">없음</span>'}
-    </div>
-    <div>
-      <b style="color:#f59e0b;">🌡️ 장기 (20~39회)</b>:
-      ${midCold.length > 0
-        ? midCold.slice(0,10).map(s=>`<span class="ball tiny midcold" style="margin:2px;">${s.num}</span><span class="muted" style="font-size:11px;">(${s.lastSeen}회)</span>`).join(" ")
-        : '<span class="muted">없음</span>'}
-    </div>
-    <p class="muted" style="margin-top:10px; font-size:12px;">
-      ※ <b>정직한 안내</b>: 장기 미출현 번호의 출현 확률은 다른 번호와 동일(13.3%)합니다.<br>
-      다만 당첨 시 <b>분배금이 높을 가능성</b>이 있어 전략적으로 선택합니다.
-    </p>
-  `;
-}
-
-/* ===== 메인 ===== */
-(async function main(){
-  const history = await loadData();
+/* ===== P5 탭 렌더링 ===== */
+function renderAttackTab(history){
   const lastDraw = history[history.length-1];
-
-  renderLatest(history);
-  renderFixedStatus();
-
   const {scores, co} = scoreNumbers(history);
   baseScore = {};
   scores.forEach(s => baseScore[s.num] = s.score);
-  const candidates = pickCandidates(scores);
-  const combos = generateCombos(candidates, co, 5, lastDraw.nums, scores);
 
-  renderPicks(combos, lastDraw.nums, scores);
-  renderScores(scores);
-  renderColdNumbers(scores);
+  // P5 파라미터로 후보 6개 추출
+  const savedPreset = currentPreset;
+  currentPreset = "P5";
+  const p5Candidates = pickCandidates(scores).slice(0, 6);
+  currentPreset = savedPreset;
 
+  const candWrap = document.getElementById("attackCandidates");
+  if(candWrap){
+    candWrap.innerHTML = `
+      <p class="muted">P5 후보 6개 (최고 점수):</p>
+      <div class="row" style="margin-top:8px;">
+        ${p5Candidates.map(n=>`<div class="ball">${n}</div>`).join("")}
+      </div>
+    `;
+  }
+
+  // P5 20조합 생성
+  const p5Combos = generateAllCombos(p5Candidates, 20);
+  const picksWrap = document.getElementById("attackPicks");
+  if(picksWrap){
+    picksWrap.innerHTML = `<p class="muted" style="margin-top:16px;">20조합:</p>`;
+    p5Combos.forEach((c, idx)=>{
+      const sorted = [...c].sort((a,b)=>a-b);
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.marginBottom = "8px";
+      div.style.background = "#0b1220";
+      div.innerHTML = `<div class="row" style="justify-content:space-between;">
+        <span class="muted">#${idx+1}</span>
+        <span class="muted">합계 ${sorted.reduce((a,b)=>a+b,0)}</span>
+      </div>
+      <div class="row" style="margin-top:8px;"></div>`;
+      const row = div.querySelector(".row:last-child");
+      sorted.forEach(n=>{
+        const d = document.createElement("div");
+        d.className = "ball small pick"; d.textContent = n; row.appendChild(d);
+      });
+      picksWrap.appendChild(div);
+    });
+  }
+}
+
+/* ===== 초기화 ===== */
+(async function main(){
+  const history = await loadData();
+  window._history = history;
+  renderLatest(history);
+  renderPresetGrid();
+  updatePresetInfo();
+  rerenderAll(history);
   setupCollapsibles();
   setTimeout(setupCollapsibles, 500);
-
-  console.log("v4 Final 로드 완료 · S8 + 5주 고정");
+  console.log("v5 로드 완료 · 5분류 + 12등 도전");
 })();
 </script>
 </body>
