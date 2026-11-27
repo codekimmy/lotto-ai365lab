@@ -74,5 +74,5 @@ v1.0을 1152~1251회(100회, 500장)에 거꾸로 적용한 결과 (`data/backte
 
 - `public/latest_picks.json`: 릴스·카드 생성기용 (스키마 `ai365lab.picks/1`)
 - `public/scorecard.json`: 전체 성적표
-- `blogger/page_weekly.html`, `blogger/gadget.html`: 블로그에 붙여넣는 코드. `raw.githubusercontent.com`의 위 JSON을 읽어 화면을 그립니다(GitHub Pages 불필요). 적용 방법은 `blogger/BLOGGER_SETUP.md`
+- `blogger/page_ai-picks.html`, `blogger/gadget.html`: 블로그에 붙여넣는 코드. `raw.githubusercontent.com`의 위 JSON을 읽어 화면을 그립니다(GitHub Pages 불필요). 적용 방법은 `blogger/BLOGGER_SETUP.md`
 - `data/picks/<회차>.json`: 회차별 공개 번호와 채점 결과 (커밋 이력 = 공개 시각)
