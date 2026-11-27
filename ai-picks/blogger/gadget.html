@@ -1,0 +1,42 @@
+<!-- Ai365Lab AI 실험 번호 · 가젯(HTML/JavaScript)에 통째로 붙여넣기. 데이터: GitHub ai-picks/public/*.json (자동 갱신) -->
+<div class="a3" id="a3-gadget">불러오는 중…</div>
+<script>
+var AI365=(function(){
+  var BASE=(window.AI365_BASE||"https://raw.githubusercontent.com/codekimmy/lotto-ai365lab/main/ai-picks/public/");
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function col(n){return ["#f2b705","#3b82f6","#ef4444","#6b7280","#22a06b"][Math.min(Math.floor((n-1)/10),4)]}
+  function ball(n,o){o=o||{};var dim=o.win&&o.win.indexOf(n)<0;var sz=o.small?24:30;
+    return '<b class="a3-ball'+(dim?' a3-dim':'')+'" style="width:'+sz+'px;height:'+sz+'px;font-size:'+(o.small?11:13)+'px;background:'+col(n)+'">'+n+'</b>'}
+  function balls(a,o){return a.map(function(n){return ball(n,o)}).join("")}
+  function get(f){return fetch(BASE+f+"?t="+Math.floor(Date.now()/300000)).then(function(r){if(!r.ok)throw r.status;return r.json()})}
+  var CSS='.a3{font-family:Pretendard,"Malgun Gothic",sans-serif;color:#241a3d;line-height:1.5}.a3 *{box-sizing:border-box}'+
+  '.a3-card{background:#fff;border:1px solid #e7e0fa;border-radius:14px;padding:14px 16px;margin:12px 0}'+
+  '.a3-hero{background:linear-gradient(135deg,#3b1e7a,#7b4fd6);color:#fff;border:0}.a3-hero h2{color:#fff}'+
+  '.a3 h2{font-size:18px;margin:0 0 8px}.a3 h3{font-size:15px;margin:0 0 6px}'+
+  '.a3-badge{display:inline-block;font-size:11px;font-weight:700;background:#efe8ff;color:#5b34b8;border-radius:99px;padding:2px 9px}'+
+  '.a3-hero .a3-badge{background:#ffffff26;color:#fff}'+
+  '.a3-ball{display:inline-flex;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-weight:700;margin:1px}'+
+  '.a3-dim{opacity:.28}.a3-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:6px 0;border-top:1px solid #f0ecfa}'+
+  '.a3-hero .a3-row{border-color:#ffffff22}.a3-lab{width:22px;font-weight:800;color:#7b4fd6}.a3-hero .a3-lab{color:#e5d9ff}'+
+  '.a3-why{width:100%;font-size:12px;color:#6b5f86;padding-left:26px}.a3-hero .a3-why{color:#e5d9ff}'+
+  '.a3-meta{font-size:12px;color:#6b5f86}.a3-hero .a3-meta{color:#e5d9ff}'+
+  '.a3 table{width:100%;border-collapse:collapse;font-size:13px}.a3 td,.a3 th{padding:6px 4px;border-bottom:1px solid #f0ecfa;text-align:left;vertical-align:top}'+
+  '.a3-vs{display:flex;gap:8px;text-align:center}.a3-vs div{flex:1;background:#f6f3ff;border-radius:10px;padding:8px}.a3-vs b{display:block;font-size:22px}'+
+  '.a3-warn{font-size:12px;background:#fff6e8;border-radius:8px;padding:8px 10px}.a3-disc{font-size:12px;color:#6b5f86}';
+  function css(){if(!document.getElementById("a3css")){var s=document.createElement("style");s.id="a3css";s.textContent=CSS;document.head.appendChild(s)}}
+  return {esc:esc,ball:ball,balls:balls,get:get,css:css};
+})();
+(function(){
+  AI365.css();var el=document.getElementById("a3-gadget"),E=AI365.esc;
+  AI365.get("latest_picks.json").then(function(d){
+    var h='<div class="a3-card a3-hero"><span class="a3-badge">'+E(d.badge)+'</span>';
+    if(d.next){h+='<h2 style="margin-top:6px">'+d.next.draw+'회 AI 실험 번호</h2><div class="a3-meta">'+E(d.next.draw_date)+' 추첨 · 로직 '+E(d.next.version)+' · 추첨 전 공개</div>';
+      d.next.sets.forEach(function(s){h+='<div class="a3-row"><span class="a3-lab">'+E(s.label)+'</span>'+AI365.balls(s.nums)+'</div>'});}
+    if(d.last_result){var L=d.last_result;h+='<div class="a3-meta" style="margin-top:8px">지난 '+L.draw+'회: AI '+L.ai_total_matches+'개 · 무작위 '+L.random_total_matches+'개 · 기대값 4개 일치</div>';}
+    var t=d.track_record;h+='<div class="a3-meta">'+(t.draws?'누적 '+t.draws+'회 · 1장당 평균 '+t.ai_mean+'개 (무작위 '+t.random_mean+' / 기대값 0.8)':E(t.note))+'</div>';
+    h+='<div class="a3-meta" style="margin-top:8px"><a href="/p/weekly.html" style="color:#fff;font-weight:700">전체 성적표·로직 보기 →</a></div>';
+    h+='<div class="a3-meta" style="margin-top:6px;font-size:11px">'+E(d.disclaimer_short)+' · 19세 미만 구매 불가</div></div>';
+    el.innerHTML=h;
+  }).catch(function(){el.textContent="AI 실험 번호를 불러오지 못했습니다."});
+})();
+</script>

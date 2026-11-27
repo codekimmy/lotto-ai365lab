@@ -12,7 +12,6 @@ Ai365Lab AI 실험 번호 엔진 (표준 라이브러리만 사용)
 - 같은 회차·같은 버전이면 누가 돌려도 같은 번호가 나온다(시드 고정).
 """
 import hashlib
-import html
 import json
 import math
 import os
@@ -39,6 +38,8 @@ VERSIONS = {
     "v1.0": {
         "effective_from": 1252,
         "name": "4지표 앙상블 + 구조 필터",
+        "published": "2026-11-27",
+        "note": "최초 공개. 최근50회 빈도·쉰 기간·직전 회차 이웃·전체 빈도 가중합 + 홀짝·저고·합계·연속·번호대 필터, 5세트. 무작위 대조군 동시 공개.",
         "weights": {"recent50": 0.35, "all": 0.15, "gap": 0.30, "neighbor": 0.20},
         "temperature": 0.6,      # 점수 → 뽑힐 가중치 변환 강도
         "samples": 30000,        # 시드 고정 후보 조합 수
@@ -455,6 +456,9 @@ def build_outputs(hist):
         "backtest_summary": bt["summary"] if bt else None,
         "review": review,
         "review_rule": REVIEW_RULE,
+        "changelog": [{"version": v, "effective_from": c["effective_from"], "published": c.get("published"),
+                       "name": c["name"], "note": c.get("note", ""), "weights": c["weights"]}
+                      for v, c in sorted(VERSIONS.items(), key=lambda kv: kv[1]["effective_from"])],
         "rank_probability_per_ticket": {k: f"1/{round(1 / p):,}" for k, p in RANK_P.items()},
         "history": [{"draw": p["draw"], "version": p["version"], "sets": [s["nums"] for s in p["sets"]],
                      **({"result": p["score"]["result"], "ai_total": p["score"]["ai_total"],
@@ -490,80 +494,7 @@ def build_outputs(hist):
         "disclaimer": DISCLAIMER,
     }
     save_json(os.path.join(PUB, "latest_picks.json"), reel)
-    with open(os.path.join(PUB, "index.html"), "w", encoding="utf-8") as f:
-        f.write(render_html(scorecard, nxt, bt))
-    print("outputs: public/scorecard.json, public/latest_picks.json, public/index.html")
-
-
-def _balls(nums, hit=()):
-    return "".join(f'<b class="ball{" hit" if n in hit else ""} c{min((n - 1) // 10, 4)}">{n}</b>' for n in nums)
-
-
-def render_html(sc, nxt, bt):
-    e = html.escape
-    live = sc["live"]
-    parts = []
-    if nxt:
-        rows = "".join(f'<div class="set"><span class="lab">{s["label"]}</span>{_balls(s["nums"])}'
-                       f'<small>{e(s["reason"])}</small></div>' for s in nxt["sets"])
-        parts.append(f'<section><h2>{nxt["draw"]}회 AI 실험 번호 <em>{e(nxt["draw_date"])} 추첨</em></h2>'
-                     f'<p class="meta">로직 {e(nxt["version"])} · {e(nxt["logic"])} · 공개 {e(nxt["generated_at"])}'
-                     f' · {nxt["data_through"]}회까지 데이터 사용</p>{rows}</section>')
-    if live:
-        parts.append(
-            f'<section><h2>실전 성적표 (공개 후 채점, {live["draws"]}회 · {live["tickets"]}장)</h2>'
-            f'<table><tr><th></th><th>AI 번호</th><th>무작위 대조군</th><th>수학적 기대값</th></tr>'
-            f'<tr><td>1장당 평균 일치</td><td>{live["ai_mean_matches"]}</td><td>{live["rival_mean_matches"]}</td><td>0.8</td></tr>'
-            f'<tr><td>3개 이상 적중(5등↑)</td><td>{live["ai_hits_3plus"]}장</td><td>{sum(live["rival_rank_counts"].values())}장</td><td>{live["expected_hits_3plus"]}장</td></tr>'
-            + "".join(f'<tr><td>{k}등</td><td>{live["ai_rank_counts"][k]}</td><td>{live["rival_rank_counts"][k]}</td><td>{live["expected_rank_counts"][k]}</td></tr>' for k in range(1, 6))
-            + "</table></section>")
-    else:
-        parts.append('<section><h2>실전 성적표</h2><p>1252회부터 기록을 시작합니다. 추첨 다음 날 자동 채점됩니다.</p></section>')
-    hist_rows = ""
-    for h in reversed(sc["history"]):
-        if "result" in h:
-            win = h["result"]["nums"]
-            cells = "".join(f'<div>{_balls(s, win)} <small>{len(set(s) & set(win))}개</small></div>' for s in h["sets"])
-            hist_rows += (f'<tr><td>{h["draw"]}회<br><small>{e(h["version"])}</small></td><td>{_balls(win)} +{h["result"]["bonus"]}</td>'
-                          f'<td>{cells}</td><td>AI {h["ai_total"]} / 무작위 {h["rival_total"]}</td></tr>')
-    if hist_rows:
-        parts.append(f'<section><h2>회차별 기록</h2><table class="hist"><tr><th>회차</th><th>당첨번호</th><th>AI 5세트</th><th>일치 합계</th></tr>{hist_rows}</table></section>')
-    if bt:
-        s = bt["summary"]
-        parts.append(f'<section><h2>참고: 사후 백테스트 {bt["range"][0]}~{bt["range"][1]}회</h2>'
-                     f'<p class="warn">{e(bt["note"])}</p>'
-                     f'<p>1장당 평균 일치 {s["ai_mean_matches"]}개 (기대값 0.8, 무작위 대조군 {s["rival_mean_matches"]}) · '
-                     f'3개 이상 적중 {s["ai_hits_3plus"]}장 (기대값 {s["expected_hits_3plus"]}장)</p></section>')
-    rv = sc["review"]
-    parts.append(f'<section><h2>로직 상태: {e(rv["state"])}</h2><p>{e(rv["detail"])}</p><ul>'
-                 + "".join(f"<li>{e(t)}</li>" for t in sc["review_rule"]["triggers"])
-                 + f'</ul><p class="meta">{e(sc["review_rule"]["note"])}</p></section>')
-    probs = " · ".join(f"{k}등 {v}" for k, v in sc["rank_probability_per_ticket"].items())
-    return f"""<!doctype html><html lang="ko"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ai365Lab AI 실험 번호 · 성적표</title>
-<style>
-body{{margin:0;font-family:Pretendard,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#f6f3ff;color:#241a3d}}
-header{{background:linear-gradient(135deg,#3b1e7a,#7b4fd6);color:#fff;padding:28px 20px}}
-header h1{{margin:0 0 6px;font-size:24px}} header p{{margin:0;opacity:.9;font-size:14px}}
-main{{max-width:860px;margin:0 auto;padding:16px}}
-section{{background:#fff;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 2px 10px #3b1e7a14}}
-h2{{font-size:18px;margin:0 0 10px}} h2 em{{font-style:normal;font-size:13px;color:#7b4fd6;margin-left:6px}}
-.meta{{color:#6b5f86;font-size:13px}} .warn{{background:#fff4e5;padding:8px 10px;border-radius:8px;font-size:13px}}
-.set{{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 0;border-top:1px solid #eee}}
-.set small{{color:#6b5f86;width:100%;padding-left:34px}}
-.lab{{width:26px;font-weight:800;color:#7b4fd6}}
-.ball{{display:inline-flex;width:32px;height:32px;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;margin:1px}}
-.c0{{background:#f2b705}}.c1{{background:#3b82f6}}.c2{{background:#ef4444}}.c3{{background:#6b7280}}.c4{{background:#22a06b}}
-.hist .ball{{opacity:.35;width:24px;height:24px;font-size:11px}} .hist .ball.hit{{opacity:1;outline:2px solid #241a3d}}
-table{{width:100%;border-collapse:collapse;font-size:14px}} td,th{{padding:6px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}}
-footer{{font-size:12px;color:#6b5f86;padding:10px 16px 40px;max-width:860px;margin:0 auto}}
-</style></head><body>
-<header><h1>Ai365Lab AI 실험 번호</h1><p>추첨 전에 공개하고, 추첨 후 무작위 번호와 나란히 채점합니다. 안 맞으면 기록에 그대로 남습니다.</p></header>
-<main>{''.join(parts)}</main>
-<footer><p><b>{e(sc["disclaimer"])}</b></p><p>1장 기준 등수별 확률: {probs} (어떤 번호든 동일)</p>
-<p>업데이트 {e(sc["updated_at"])} · 당첨번호 출처: 동행복권 공식 결과(공개 미러 smok95/lotto 경유, 공식 사이트에서 최종 확인 권장)</p></footer>
-</body></html>"""
+    print("outputs: public/scorecard.json, public/latest_picks.json")
 
 
 if __name__ == "__main__":

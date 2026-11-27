@@ -7,10 +7,6 @@ on:
     # 매주 월요일 오전 9시(KST) = 월요일 00:00 UTC
     - cron: '0 0 * * 1'
   workflow_dispatch:
-  workflow_run:
-    # AI 번호 자동 커밋은 GITHUB_TOKEN이라 push 트리거가 안 걸리므로 여기서 이어서 배포
-    workflows: ['AI Picks (fetch → score → next picks)']
-    types: [completed]
 
 permissions:
   contents: write

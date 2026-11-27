@@ -1,0 +1,72 @@
+<!-- Ai365Lab AI 실험 번호 · 페이지 /p/weekly.html (HTML 보기)에 통째로 붙여넣기. 데이터: GitHub ai-picks/public/*.json (자동 갱신) -->
+<div class="a3" id="a3-page">불러오는 중…</div>
+<script>
+var AI365=(function(){
+  var BASE=(window.AI365_BASE||"https://raw.githubusercontent.com/codekimmy/lotto-ai365lab/main/ai-picks/public/");
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function col(n){return ["#f2b705","#3b82f6","#ef4444","#6b7280","#22a06b"][Math.min(Math.floor((n-1)/10),4)]}
+  function ball(n,o){o=o||{};var dim=o.win&&o.win.indexOf(n)<0;var sz=o.small?24:30;
+    return '<b class="a3-ball'+(dim?' a3-dim':'')+'" style="width:'+sz+'px;height:'+sz+'px;font-size:'+(o.small?11:13)+'px;background:'+col(n)+'">'+n+'</b>'}
+  function balls(a,o){return a.map(function(n){return ball(n,o)}).join("")}
+  function get(f){return fetch(BASE+f+"?t="+Math.floor(Date.now()/300000)).then(function(r){if(!r.ok)throw r.status;return r.json()})}
+  var CSS='.a3{font-family:Pretendard,"Malgun Gothic",sans-serif;color:#241a3d;line-height:1.5}.a3 *{box-sizing:border-box}'+
+  '.a3-card{background:#fff;border:1px solid #e7e0fa;border-radius:14px;padding:14px 16px;margin:12px 0}'+
+  '.a3-hero{background:linear-gradient(135deg,#3b1e7a,#7b4fd6);color:#fff;border:0}.a3-hero h2{color:#fff}'+
+  '.a3 h2{font-size:18px;margin:0 0 8px}.a3 h3{font-size:15px;margin:0 0 6px}'+
+  '.a3-badge{display:inline-block;font-size:11px;font-weight:700;background:#efe8ff;color:#5b34b8;border-radius:99px;padding:2px 9px}'+
+  '.a3-hero .a3-badge{background:#ffffff26;color:#fff}'+
+  '.a3-ball{display:inline-flex;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-weight:700;margin:1px}'+
+  '.a3-dim{opacity:.28}.a3-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:6px 0;border-top:1px solid #f0ecfa}'+
+  '.a3-hero .a3-row{border-color:#ffffff22}.a3-lab{width:22px;font-weight:800;color:#7b4fd6}.a3-hero .a3-lab{color:#e5d9ff}'+
+  '.a3-why{width:100%;font-size:12px;color:#6b5f86;padding-left:26px}.a3-hero .a3-why{color:#e5d9ff}'+
+  '.a3-meta{font-size:12px;color:#6b5f86}.a3-hero .a3-meta{color:#e5d9ff}'+
+  '.a3 table{width:100%;border-collapse:collapse;font-size:13px}.a3 td,.a3 th{padding:6px 4px;border-bottom:1px solid #f0ecfa;text-align:left;vertical-align:top}'+
+  '.a3-vs{display:flex;gap:8px;text-align:center}.a3-vs div{flex:1;background:#f6f3ff;border-radius:10px;padding:8px}.a3-vs b{display:block;font-size:22px}'+
+  '.a3-warn{font-size:12px;background:#fff6e8;border-radius:8px;padding:8px 10px}.a3-disc{font-size:12px;color:#6b5f86}';
+  function css(){if(!document.getElementById("a3css")){var s=document.createElement("style");s.id="a3css";s.textContent=CSS;document.head.appendChild(s)}}
+  return {esc:esc,ball:ball,balls:balls,get:get,css:css};
+})();
+(function(){
+  AI365.css();var el=document.getElementById("a3-page"),E=AI365.esc,B=AI365.balls;
+  Promise.all([AI365.get("latest_picks.json"),AI365.get("scorecard.json")]).then(function(r){
+    var d=r[0],sc=r[1],h='';
+    // 1. 이번 주 번호
+    if(d.next){var n=d.next;h+='<div class="a3-card a3-hero"><span class="a3-badge">'+E(d.badge)+'</span><h2 style="margin-top:6px">'+n.draw+'회 AI 실험 번호</h2>'+
+      '<div class="a3-meta">'+E(n.draw_date)+' 추첨 · 로직 '+E(n.version)+' ('+E(n.logic)+') · 공개 '+E(n.generated_at)+'</div>';
+      n.sets.forEach(function(s){h+='<div class="a3-row"><span class="a3-lab">'+E(s.label)+'</span>'+B(s.nums)+'<span class="a3-why">'+E(s.reason)+'</span></div>'});
+      h+='<div class="a3-meta" style="margin-top:6px">공개 시각 증거: <a style="color:#fff" href="https://github.com/codekimmy/lotto-ai365lab/commits/main/ai-picks/data/picks" target="_blank" rel="noopener">GitHub 커밋 기록</a> · 공개 후에는 고치지 않습니다.</div></div>';}
+    // 2. 지난 회차 채점
+    var hist=sc.history.filter(function(x){return x.result});
+    if(hist.length){var L=hist[hist.length-1],w=L.result.nums;
+      h+='<div class="a3-card"><h2>'+L.draw+'회 채점</h2><div class="a3-row" style="border:0">당첨 '+B(w)+' <span class="a3-meta">+보너스 '+L.result.bonus+'</span></div>';
+      L.sets.forEach(function(s,i){var ss=L.set_scores[i];h+='<div class="a3-row"><span class="a3-lab">'+"ABCDE"[i]+'</span>'+B(s,{win:w})+' <b style="margin-left:4px">'+ss.matches+'개</b>'+(ss.rank?' <span class="a3-badge">'+ss.rank+'등</span>':'')+'</div>'});
+      h+='<div class="a3-vs" style="margin-top:8px"><div>AI 5세트<b>'+L.ai_total+'개</b></div><div>무작위 5세트<b>'+L.rival_total+'개</b></div><div>수학적 기대값<b>4개</b></div></div></div>';}
+    // 3. 누적 성적표
+    var lv=sc.live;
+    h+='<div class="a3-card"><h2>누적 성적표 · AI 대 무작위</h2>';
+    if(lv){h+='<div class="a3-meta">실전 '+lv.draws+'회 · '+lv.tickets+'장 (추첨 전 공개한 번호만 채점)</div><table><tr><th></th><th>AI</th><th>무작위</th><th>기대값</th></tr>'+
+      '<tr><td>1장당 평균 일치</td><td>'+lv.ai_mean_matches+'</td><td>'+lv.rival_mean_matches+'</td><td>0.8</td></tr>';
+      var rs=function(o){var t=0;for(var k in o)t+=o[k];return t};
+      h+='<tr><td>3개 이상(5등↑)</td><td>'+lv.ai_hits_3plus+'장</td><td>'+rs(lv.rival_rank_counts)+'장</td><td>'+lv.expected_hits_3plus+'장</td></tr>';
+      for(var k=1;k<=5;k++)h+='<tr><td>'+k+'등</td><td>'+lv.ai_rank_counts[k]+'</td><td>'+lv.rival_rank_counts[k]+'</td><td>'+lv.expected_rank_counts[k]+'</td></tr>';
+      h+='</table>';}else h+='<p>1252회부터 기록을 시작합니다. 추첨 다음 날 자동으로 채점돼요.</p>';
+    if(sc.backtest_summary){var b=sc.backtest_summary;h+='<p class="a3-warn">참고(실전 아님): v1.0을 지난 '+b.draws+'회에 거꾸로 적용하면 1장당 평균 '+b.ai_mean_matches+'개 일치(무작위 대조군 '+b.rival_mean_matches+', 기대값 0.8), 3개 이상 '+b.ai_hits_3plus+'장(기대값 '+b.expected_hits_3plus+'장). 무작위와 구별되지 않는 수준입니다.</p>';}
+    h+='</div>';
+    // 4. 회차별 기록
+    if(hist.length){h+='<div class="a3-card"><h2>회차별 기록</h2><table><tr><th>회차</th><th>AI 5세트 (맞은 번호 진하게)</th><th>AI / 무작위</th></tr>';
+      hist.slice().reverse().forEach(function(x){h+='<tr><td>'+x.draw+'회<br><span class="a3-meta">'+E(x.version)+'</span></td><td>'+x.sets.map(function(s){return '<div>'+B(s,{win:x.result.nums,small:1})+'</div>'}).join('')+'</td><td>'+x.ai_total+' / '+x.rival_total+'</td></tr>'});
+      h+='</table></div>';}
+    // 5. 로직 상태·규칙·이력
+    var rv=sc.review;h+='<div class="a3-card"><h2>로직 상태: '+E(rv.state)+'</h2><div class="a3-meta">'+E(rv.detail)+'</div><h3 style="margin-top:10px">재검토 규칙 (최근 '+sc.review_rule.window+'회 기준)</h3><ul style="margin:0;padding-left:18px;font-size:13px">';
+    sc.review_rule.triggers.forEach(function(t){h+='<li>'+E(t)+'</li>'});
+    h+='</ul><p class="a3-meta">로직은 최소 '+sc.review_rule.min_draws_between_changes+'회 간격으로만 바꾸고, 옛 버전 기록은 지우지 않습니다. '+E(sc.review_rule.note)+'</p>';
+    h+='<h3 style="margin-top:10px">로직 변경 이력</h3><table><tr><th>버전</th><th>적용</th><th>내용</th></tr>';
+    sc.changelog.slice().reverse().forEach(function(c){h+='<tr><td>'+E(c.version)+'</td><td>'+c.effective_from+'회~<br><span class="a3-meta">'+E(c.published||'')+'</span></td><td>'+E(c.note)+'</td></tr>'});
+    h+='</table></div>';
+    // 6. 면책
+    var p=sc.rank_probability_per_ticket;
+    h+='<div class="a3-card a3-disc"><b>'+E(sc.disclaimer)+'</b><br>1장 기준 확률(어떤 번호든 같음): 1등 '+p[1]+' · 2등 '+p[2]+' · 3등 '+p[3]+' · 4등 '+p[4]+' · 5등 '+p[5]+'<br>업데이트 '+E(sc.updated_at)+' · 당첨번호 원본은 동행복권 공식 사이트에서 확인하세요.</div>';
+    el.innerHTML=h;
+  }).catch(function(){el.textContent="성적표를 불러오지 못했습니다. 잠시 후 새로고침해 주세요."});
+})();
+</script>
