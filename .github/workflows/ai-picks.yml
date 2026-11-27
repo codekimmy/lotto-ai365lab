@@ -1,0 +1,36 @@
+name: AI Picks (fetch → score → next picks)
+
+on:
+  schedule:
+    # 토 22:30 KST, 일 09:00 KST, 일 15:00 KST, 월 09:00 KST (결과가 늦게 올라와도 다시 시도)
+    - cron: '30 13 * * 6'
+    - cron: '0 0 * * 0'
+    - cron: '0 6 * * 0'
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-picks
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch results, score, make next picks
+        run: python ai-picks/aipicks.py update
+      - name: Commit (커밋 시각 = 추첨 전 공개 증거)
+        run: |
+          git config user.name  "ai365lab-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ai-picks/data ai-picks/public
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "ai-picks: auto update $(date -u +%F)"
+          git push
