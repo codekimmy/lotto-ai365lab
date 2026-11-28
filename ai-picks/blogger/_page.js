@@ -12,7 +12,7 @@
       h+='<table><tr><th></th><th>AI</th><th>무작위</th><th>기대값</th></tr><tr><td>1장당 평균 일치</td><td><b>'+lv.ai_mean_matches+'</b></td><td>'+lv.rival_mean_matches+'</td><td>0.8</td></tr>'+
         '<tr><td>3개 이상(5등↑)</td><td><b>'+lv.ai_hits_3plus+'</b></td><td>'+rs(lv.rival_rank_counts)+'</td><td>'+lv.expected_hits_3plus+'</td></tr>';
       for(var k=1;k<=5;k++)h+='<tr><td>'+k+'등</td><td>'+lv.ai_rank_counts[k]+'</td><td>'+lv.rival_rank_counts[k]+'</td><td>'+lv.expected_rank_counts[k]+'</td></tr>';h+='</table>';}
-    if(sc.backtest_summary){var b=sc.backtest_summary;h+='<div class="a3-warn">참고(실전 아님): v1.0을 1152~1251회에 거꾸로 적용하면 1장당 평균 '+b.ai_mean_matches+'개(무작위 '+b.rival_mean_matches+', 기대 0.8), 3개 이상 '+b.ai_hits_3plus+'장(기대 '+b.expected_hits_3plus+'장). 무작위와 구별되지 않는 수준입니다.</div>';}
+    if(sc.backtest_summary){var b=sc.backtest_summary;h+='<div class="a3-warn">참고(실전 아님): '+E(sc.backtest_version||'')+'을 1152~1251회에 거꾸로 적용하면 1장당 평균 '+b.ai_mean_matches+'개(무작위 '+b.rival_mean_matches+', 기대 0.8), 3개 이상 '+b.ai_hits_3plus+'장(기대 '+b.expected_hits_3plus+'장). 무작위와 구별되지 않는 수준입니다.</div>';}
     h+='</div>';
     // 회차별 누적 기록
     h+='<div class="a3-box"><div class="a3-k"><span>회차별 기록 · 추천 번호 대 실제 당첨번호</span><span>검정 = 맞은 번호</span></div>';
