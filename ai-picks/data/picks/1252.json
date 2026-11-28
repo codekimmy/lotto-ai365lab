@@ -211,5 +211,86 @@
       41
     ]
   ],
-  "score": null
+  "score": {
+    "result": {
+      "nums": [
+        9,
+        19,
+        23,
+        28,
+        33,
+        44
+      ],
+      "bonus": 43,
+      "date": "2026-11-28"
+    },
+    "sets": [
+      {
+        "label": "A",
+        "matches": 1,
+        "rank": 0,
+        "hit": [
+          44
+        ]
+      },
+      {
+        "label": "B",
+        "matches": 1,
+        "rank": 0,
+        "hit": [
+          28
+        ]
+      },
+      {
+        "label": "C",
+        "matches": 1,
+        "rank": 0,
+        "hit": [
+          28
+        ]
+      },
+      {
+        "label": "D",
+        "matches": 1,
+        "rank": 0,
+        "hit": [
+          19
+        ]
+      },
+      {
+        "label": "E",
+        "matches": 2,
+        "rank": 0,
+        "hit": [
+          19,
+          44
+        ]
+      }
+    ],
+    "rival": [
+      {
+        "matches": 1,
+        "rank": 0
+      },
+      {
+        "matches": 0,
+        "rank": 0
+      },
+      {
+        "matches": 2,
+        "rank": 0
+      },
+      {
+        "matches": 0,
+        "rank": 0
+      },
+      {
+        "matches": 0,
+        "rank": 0
+      }
+    ],
+    "ai_total": 6,
+    "rival_total": 3,
+    "best_rank": 0
+  }
 }
