@@ -53,7 +53,7 @@ var AI365=(function(){
       h+='<table><tr><th></th><th>AI</th><th>무작위</th><th>기대값</th></tr><tr><td>1장당 평균 일치</td><td><b>'+lv.ai_mean_matches+'</b></td><td>'+lv.rival_mean_matches+'</td><td>0.8</td></tr>'+
         '<tr><td>3개 이상(5등↑)</td><td><b>'+lv.ai_hits_3plus+'</b></td><td>'+rs(lv.rival_rank_counts)+'</td><td>'+lv.expected_hits_3plus+'</td></tr>';
       for(var k=1;k<=5;k++)h+='<tr><td>'+k+'등</td><td>'+lv.ai_rank_counts[k]+'</td><td>'+lv.rival_rank_counts[k]+'</td><td>'+lv.expected_rank_counts[k]+'</td></tr>';h+='</table>';}
-    if(sc.backtest_summary){var b=sc.backtest_summary;h+='<div class="a3-warn">참고(실전 아님): v1.0을 1152~1251회에 거꾸로 적용하면 1장당 평균 '+b.ai_mean_matches+'개(무작위 '+b.rival_mean_matches+', 기대 0.8), 3개 이상 '+b.ai_hits_3plus+'장(기대 '+b.expected_hits_3plus+'장). 무작위와 구별되지 않는 수준입니다.</div>';}
+    if(sc.backtest_summary){var b=sc.backtest_summary;h+='<div class="a3-warn">참고(실전 아님): '+E(sc.backtest_version||'')+'을 1152~1251회에 거꾸로 적용하면 1장당 평균 '+b.ai_mean_matches+'개(무작위 '+b.rival_mean_matches+', 기대 0.8), 3개 이상 '+b.ai_hits_3plus+'장(기대 '+b.expected_hits_3plus+'장). 무작위와 구별되지 않는 수준입니다.</div>';}
     h+='</div>';
     // 회차별 누적 기록
     h+='<div class="a3-box"><div class="a3-k"><span>회차별 기록 · 추천 번호 대 실제 당첨번호</span><span>검정 = 맞은 번호</span></div>';
@@ -74,7 +74,10 @@ var AI365=(function(){
     h+='</ul><p class="a3-note">로직은 최소 '+sc.review_rule.min_draws_between_changes+'회 간격으로만 바꾸고, 옛 버전 기록은 지우지 않습니다. '+E(sc.review_rule.note)+'</p>'+
       '<div class="a3-k" style="margin-top:12px"><span>로직 변경 이력</span><span></span></div><table><tr><th>버전</th><th>적용</th><th>내용</th></tr>';
     sc.changelog.slice().reverse().forEach(function(c){h+='<tr><td>'+E(c.version)+'</td><td>'+c.effective_from+'회~</td><td style="font-family:inherit">'+E(c.note)+'</td></tr>'});
-    h+='</table></div>';
+    h+='</table>';
+    if(sc.backtest_repeat){var rp=sc.backtest_repeat;h+='<p class="a3-note">주간 반복(백테스트 '+rp.weeks+'주): 지난주 AI 번호가 이번 주에 다시 쓰인 비율 '+rp.reused_share+'% · 지난주 세트와 가장 많이 겹친 개수 평균 '+rp.avg_max_pair_overlap+'개(최대 '+rp.worst_pair_overlap+'개). 무작위로 뽑으면 약 52% · 2.5개입니다.</p>';}
+    (sc.withdrawn||[]).forEach(function(w){h+='<div class="a3-warn"><b>제'+w.draw+'회 '+E(w.version)+' 번호 폐기 기록</b> ('+E(w.at)+', 추첨 전)<br>'+E(w.reason)+'<div style="margin-top:6px">'+w.sets.map(function(s){return '<div>'+B(s,{sm:1})+'</div>'}).join('')+'</div></div>'});
+    h+='</div>';
     var p=sc.rank_probability_per_ticket;
     h+='<div class="a3-note"><b>'+E(sc.disclaimer)+'</b><br>1장 기준 확률(어떤 번호든 같음): 1등 '+p[1]+' · 2등 '+p[2]+' · 3등 '+p[3]+' · 4등 '+p[4]+' · 5등 '+p[5]+'<br>업데이트 '+E(sc.updated_at)+' · 당첨번호 원본은 동행복권 공식 사이트에서 확인하세요.</div>';
     el.innerHTML=h;

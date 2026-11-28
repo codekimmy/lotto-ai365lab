@@ -53,9 +53,36 @@ VERSIONS = {
         },
         "max_set_overlap": 2,          # 5세트끼리 겹치는 번호 상한
         "max_number_uses": 2,          # 한 번호가 5세트에 쓰이는 횟수 상한
-    }
+    },
+    "v1.1": {
+        "effective_from": 1253,
+        "name": "4지표 앙상블 + 구조 필터 + 주간 회전",
+        "published": "2026-11-28",
+        "note": ("v1.0은 점수 상위 조합만 골라 매주 같은 번호가 반복됐음(1252→1253회 18개 중 11개 재등장). "
+                 "성적 때문이 아니라 '같은 번호를 민다'로 보이는 구조 문제라 수정. "
+                 "① 점수 순 선택 대신 점수 가중 추첨 순서로 선택 ② 직전 회차 AI 번호에 감점 "
+                 "③ 새 세트는 직전 회차 AI 세트 어느 것과도 2개 이하, 직전 AI 번호 전체와 3개 이하만 겹침 "
+                 "④ 세트끼리 겹침 1개 이하 ⑤ 매주 바뀌는 지표(쉰 기간·직전 이웃) 비중을 높이고 느린 지표 비중을 낮춤."),
+        "weights": {"recent50": 0.20, "all": 0.05, "gap": 0.40, "neighbor": 0.35},
+        "temperature": 0.6,
+        "samples": 30000,
+        "filters": {
+            "sum_pct": (10, 90),
+            "odd": (2, 4),
+            "low": (2, 4),
+            "max_consec_pairs": 1,
+            "max_per_band": 3,
+            "max_prev_overlap": 2,
+        },
+        "max_set_overlap": 1,
+        "max_number_uses": 2,
+        "select": "sampled",           # 점수 순(top)이 아니라 가중 추첨 순서대로
+        "carry_penalty": 0.8,          # 직전 회차 AI 번호 감점(표준점수 단위)
+        "max_prev_set_overlap": 2,     # 직전 AI 세트 하나와 겹침 상한
+        "max_prev_pool_overlap": 3,    # 직전 AI 번호 전체와 겹침 상한
+    },
 }
-ACTIVE = "v1.0"
+ACTIVE = "v1.1"
 
 # 등수별 정확 확률(1장 기준). 분모 C(45,6)=8,145,060
 C45_6 = math.comb(45, 6)
@@ -215,10 +242,15 @@ def seed_for(version, draw):
     return int(hashlib.sha256(f"Ai365Lab-{version}-{draw}".encode()).hexdigest()[:16], 16)
 
 
-def make_picks(hist, draw, version=ACTIVE):
+def make_picks(hist, draw, version=ACTIVE, prev_sets=None):
+    """prev_sets: 직전 회차에 공개한 AI 5세트(v1.1부터 반복 방지에 사용)."""
     cfg = VERSIONS[version]
     assert hist[-1]["draw"] == draw - 1, "직전 회차까지의 데이터가 필요합니다"
     score, detail = number_scores(hist, cfg)
+    prev_sets = [set(x) for x in (prev_sets or [])]
+    prev_pool = set().union(*prev_sets) if prev_sets else set()
+    if cfg.get("carry_penalty") and prev_pool:
+        score = {n: v - (cfg["carry_penalty"] if n in prev_pool else 0) for n, v in score.items()}
     weight = {n: math.exp(cfg["temperature"] * s) for n, s in score.items()}
     rng = random.Random(seed_for(version, draw))
     band = _sum_band(hist, *cfg["filters"]["sum_pct"])
@@ -233,9 +265,17 @@ def make_picks(hist, draw, version=ACTIVE):
         if c in seen:
             continue
         seen.add(c)
-        if _passes(c, cfg["filters"], band, prev):
-            cands.append((sum(score[n] for n in c) / 6, c))
-    cands.sort(key=lambda t: (-t[0], t))
+        if not _passes(c, cfg["filters"], band, prev):
+            continue
+        if prev_sets and "max_prev_set_overlap" in cfg:
+            if any(len(set(c) & p) > cfg["max_prev_set_overlap"] for p in prev_sets):
+                continue
+            if len(set(c) & prev_pool) > cfg["max_prev_pool_overlap"]:
+                continue
+        cands.append((sum(score[n] for n in c) / 6, c))
+    if cfg.get("select", "top") == "top":
+        cands.sort(key=lambda t: (-t[0], t))
+    # "sampled": 점수 가중 추첨으로 나온 순서 그대로 사용(점수 높은 번호가 더 자주 나오지만 매주 고정되지 않음)
 
     chosen, uses = [], {n: 0 for n in pool}
     for sc, c in cands:
@@ -432,7 +472,8 @@ def cmd_update():
     path = os.path.join(PICKS_DIR, f"{nxt}.json")
     if not os.path.exists(path):
         ver = max((v for v, c in VERSIONS.items() if c["effective_from"] <= nxt), key=lambda v: VERSIONS[v]["effective_from"])
-        pk = make_picks(hist, nxt, ver)
+        prev_pk = load_json(os.path.join(PICKS_DIR, f"{nxt - 1}.json"))
+        pk = make_picks(hist, nxt, ver, [x["nums"] for x in prev_pk["sets"]] if prev_pk else None)
         pk["draw_date"] = next_draw_date(hist)
         pk["generated_at"] = datetime.now(KST).strftime("%Y-%m-%d %H:%M KST")
         pk["random_rival"] = random_rival(nxt)
@@ -443,25 +484,46 @@ def cmd_update():
     build_outputs(hist)
 
 
-def cmd_backtest(n=100, end=None):
-    """end를 주지 않으면 v1.0 공개 시점과 같은 1251회까지로 고정(공개 숫자가 바뀌지 않게)."""
+def cmd_backtest(n=100, end=None, version=ACTIVE):
+    """사후 백테스트 범위는 버전과 관계없이 1152~1251회로 고정(버전끼리 같은 구간에서 비교)."""
     hist = load_json(HIST)
     out = []
-    end = end or VERSIONS[ACTIVE]["effective_from"] - 1
+    end = end or 1251
+    prev_sets = None
     for d in range(end - n + 1, end + 1):
-        pk = make_picks(hist[:d - 1], d, ACTIVE)
+        pk = make_picks(hist[:d - 1], d, version, prev_sets)
+        prev_sets = [s["nums"] for s in pk["sets"]]
         pk["random_rival"] = random_rival(d)
         pk["score"] = score_draw(pk, hist[d - 1])
-        pk["score"]["diagnostics"] = diagnose(hist[:d - 1], hist[d - 1]["nums"], ACTIVE)
+        pk["score"]["diagnostics"] = diagnose(hist[:d - 1], hist[d - 1]["nums"], version)
         pk["backtest"] = True
-        out.append({"draw": d, "version": ACTIVE, "backtest": True, "score": pk["score"],
+        out.append({"draw": d, "version": version, "backtest": True, "score": pk["score"],
                     "sets": [s["nums"] for s in pk["sets"]]})
-    res = {"version": ACTIVE, "range": [end - n + 1, end],
-           "note": "로직 v1.0을 과거 회차에 거꾸로 적용한 결과입니다. 실전 성적이 아니며, 과거에 맞춘 로직은 미래에 같은 성과를 내지 않습니다.",
-           "summary": summarize(out), "diagnostics_avg": _diag_avg(out), "draws": out}
-    save_json(os.path.join(DATA, "backtest_v1.0.json"), res)
+    res = {"version": version, "range": [end - n + 1, end],
+           "note": f"로직 {version}을 과거 회차에 거꾸로 적용한 결과입니다. 실전 성적이 아니며, 과거에 맞춘 로직은 미래에 같은 성과를 내지 않습니다.",
+           "summary": summarize(out), "repeat": repeat_stats([e["sets"] for e in out]),
+           "diagnostics_avg": _diag_avg(out), "draws": out}
+    save_json(os.path.join(DATA, f"backtest_{version}.json"), res)
     print(json.dumps(res["summary"], ensure_ascii=False, indent=1))
     return res
+
+
+def repeat_stats(weeks):
+    """주간 반복 지표. weeks = 회차 순서대로 [[6개]*5, ...]"""
+    pool_ov, max_pair, carry_sets = [], [], []
+    for a, b in zip(weeks, weeks[1:]):
+        A = [set(x) for x in a]
+        B = [set(x) for x in b]
+        ua, ub = set().union(*A), set().union(*B)
+        pool_ov.append(len(ua & ub) / len(ub))
+        max_pair.append(max(len(x & y) for x in B for y in A))
+        carry_sets.append(sum(1 for x in B if len(x & ua) >= 4))
+    k = len(pool_ov) or 1
+    return {"weeks": len(pool_ov),
+            "reused_share": round(sum(pool_ov) / k * 100, 1),
+            "avg_max_pair_overlap": round(sum(max_pair) / k, 2),
+            "worst_pair_overlap": max(max_pair) if max_pair else 0,
+            "avg_sets_with_4plus_reused": round(sum(carry_sets) / k, 2)}
 
 
 def _diag_avg(entries):
@@ -489,7 +551,7 @@ def build_outputs(hist):
     scored = [p for p in picks if p.get("score")]
     upcoming = [p for p in picks if not p.get("score")]
     live = summarize(scored) if scored else None
-    bt = load_json(os.path.join(DATA, "backtest_v1.0.json"))
+    bt = load_json(os.path.join(DATA, f"backtest_{ACTIVE}.json")) or load_json(os.path.join(DATA, "backtest_v1.0.json"))
     review = review_status(scored, ACTIVE)
     nxt = upcoming[-1] if upcoming else None
     last = scored[-1] if scored else None
@@ -499,11 +561,19 @@ def build_outputs(hist):
         "active_version": ACTIVE,
         "live": live,
         "backtest_summary": bt["summary"] if bt else None,
+        "backtest_version": bt["version"] if bt else None,
+        "backtest_repeat": bt.get("repeat") if bt else None,
         "review": review,
         "review_rule": REVIEW_RULE,
         "changelog": [{"version": v, "effective_from": c["effective_from"], "published": c.get("published"),
                        "name": c["name"], "note": c.get("note", ""), "weights": c["weights"]}
                       for v, c in sorted(VERSIONS.items(), key=lambda kv: kv[1]["effective_from"])],
+        # 추첨 전에 폐기한 번호(투명성 기록). 채점 대상 아님
+        "withdrawn": [{"draw": w["draw"], "version": w["version"], "sets": [x["nums"] for x in w["sets"]],
+                       "generated_at": w.get("generated_at"), **w["withdrawn"]}
+                      for w in (load_json(os.path.join(DATA, "withdrawn", f)) for f in
+                                sorted(os.listdir(os.path.join(DATA, "withdrawn")))
+                                if f.endswith(".json"))] if os.path.isdir(os.path.join(DATA, "withdrawn")) else [],
         "rank_probability_per_ticket": {k: f"1/{round(1 / p):,}" for k, p in RANK_P.items()},
         # 회차별 누적 기록(최신순). 로직 재검토의 근거 데이터
         "history": [_hist_row(p) for p in reversed(scored)],
@@ -557,7 +627,8 @@ if __name__ == "__main__":
         cmd_update()
     elif c == "backtest":
         cmd_backtest(int(sys.argv[2]) if len(sys.argv) > 2 else 100,
-                     int(sys.argv[3]) if len(sys.argv) > 3 else None)
+                     int(sys.argv[3]) if len(sys.argv) > 3 else None,
+                     sys.argv[4] if len(sys.argv) > 4 else ACTIVE)
         build_outputs(load_json(HIST))
     elif c == "pick":
         h = load_json(HIST)

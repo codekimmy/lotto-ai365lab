@@ -1,142 +1,118 @@
 {
   "draw": 1253,
-  "version": "v1.0",
-  "logic": "4지표 앙상블 + 구조 필터",
-  "seed": "sha256('Ai365Lab-v1.0-1253')",
+  "version": "v1.1",
+  "logic": "4지표 앙상블 + 구조 필터 + 주간 회전",
+  "seed": "sha256('Ai365Lab-v1.1-1253')",
   "data_through": 1252,
   "sets": [
     {
       "label": "A",
       "nums": [
+        8,
+        12,
         13,
-        15,
-        18,
-        22,
-        27,
-        31
+        17,
+        23,
+        37
       ],
-      "sum": 126,
+      "sum": 110,
       "odd_even": "4:2",
       "low_high": "4:2",
-      "reason": "최근 50회 자주 나옴 13·18·27·31 / 15회 이상 쉼 15 / 직전 회차 번호·이웃 18·22·27"
+      "reason": "최근 50회 자주 나옴 13 / 15회 이상 쉼 12·17·37 / 직전 회차 번호·이웃 8·23"
     },
     {
       "label": "B",
       "nums": [
-        17,
-        18,
-        27,
+        3,
+        8,
         34,
-        38,
-        43
+        35,
+        41,
+        44
       ],
-      "sum": 177,
+      "sum": 165,
       "odd_even": "3:3",
       "low_high": "2:4",
-      "reason": "최근 50회 자주 나옴 18·27·38 / 15회 이상 쉼 17 / 직전 회차 번호·이웃 18·27·34·43"
+      "reason": "최근 50회 자주 나옴 44 / 15회 이상 쉼 3 / 직전 회차 번호·이웃 8·34·44"
     },
     {
       "label": "C",
       "nums": [
-        13,
-        15,
-        17,
-        20,
-        30,
-        34
+        9,
+        21,
+        26,
+        31,
+        34,
+        43
       ],
-      "sum": 129,
-      "odd_even": "3:3",
-      "low_high": "4:2",
-      "reason": "최근 50회 자주 나옴 13 / 15회 이상 쉼 15·17·30 / 직전 회차 번호·이웃 20·34"
+      "sum": 164,
+      "odd_even": "4:2",
+      "low_high": "2:4",
+      "reason": "최근 50회 자주 나옴 31 / 직전 회차 번호·이웃 9·34·43"
     },
     {
       "label": "D",
       "nums": [
-        3,
-        10,
-        20,
-        28,
-        31,
-        38
+        17,
+        18,
+        21,
+        24,
+        38,
+        40
       ],
-      "sum": 130,
+      "sum": 158,
       "odd_even": "2:4",
       "low_high": "3:3",
-      "reason": "최근 50회 자주 나옴 28·31·38 / 15회 이상 쉼 3 / 직전 회차 번호·이웃 10·20·28"
+      "reason": "최근 50회 자주 나옴 18·38 / 15회 이상 쉼 17 / 직전 회차 번호·이웃 18·24"
     },
     {
       "label": "E",
       "nums": [
-        3,
-        10,
-        16,
+        2,
         22,
         24,
-        45
+        32,
+        37,
+        43
       ],
-      "sum": 120,
+      "sum": 160,
       "odd_even": "2:4",
-      "low_high": "4:2",
-      "reason": "최근 50회 자주 나옴 16 / 15회 이상 쉼 3 / 직전 회차 번호·이웃 10·22·24·45"
+      "low_high": "2:4",
+      "reason": "15회 이상 쉼 37 / 직전 회차 번호·이웃 22·24·32·43"
     }
   ],
   "top10_numbers": [
     {
-      "n": 18,
-      "recent50": 12,
-      "all": 183,
-      "gap": 1,
-      "neighbor": true,
-      "score": 1.113
-    },
-    {
-      "n": 27,
-      "recent50": 11,
-      "all": 184,
-      "gap": 2,
-      "neighbor": true,
-      "score": 1.016
-    },
-    {
-      "n": 13,
-      "recent50": 10,
-      "all": 184,
-      "gap": 8,
-      "neighbor": false,
-      "score": 0.664
-    },
-    {
-      "n": 31,
-      "recent50": 10,
-      "all": 171,
-      "gap": 10,
-      "neighbor": false,
-      "score": 0.565
-    },
-    {
-      "n": 15,
-      "recent50": 8,
-      "all": 170,
-      "gap": 17,
-      "neighbor": false,
-      "score": 0.547
-    },
-    {
-      "n": 38,
-      "recent50": 11,
-      "all": 175,
-      "gap": 4,
-      "neighbor": false,
-      "score": 0.514
-    },
-    {
-      "n": 20,
+      "n": 10,
       "recent50": 6,
-      "all": 172,
-      "gap": 12,
+      "all": 163,
+      "gap": 10,
       "neighbor": true,
-      "score": 0.503
+      "score": 0.644
+    },
+    {
+      "n": 24,
+      "recent50": 7,
+      "all": 169,
+      "gap": 6,
+      "neighbor": true,
+      "score": 0.527
+    },
+    {
+      "n": 43,
+      "recent50": 5,
+      "all": 167,
+      "gap": 9,
+      "neighbor": true,
+      "score": 0.515
+    },
+    {
+      "n": 22,
+      "recent50": 8,
+      "all": 148,
+      "gap": 5,
+      "neighbor": true,
+      "score": 0.456
     },
     {
       "n": 34,
@@ -144,23 +120,47 @@
       "all": 188,
       "gap": 3,
       "neighbor": true,
-      "score": 0.493
+      "score": 0.442
     },
     {
-      "n": 17,
-      "recent50": 5,
-      "all": 171,
-      "gap": 26,
-      "neighbor": false,
-      "score": 0.491
-    },
-    {
-      "n": 28,
-      "recent50": 11,
-      "all": 161,
-      "gap": 0,
+      "n": 32,
+      "recent50": 6,
+      "all": 147,
+      "gap": 7,
       "neighbor": true,
-      "score": 0.366
+      "score": 0.391
+    },
+    {
+      "n": 8,
+      "recent50": 6,
+      "all": 159,
+      "gap": 5,
+      "neighbor": true,
+      "score": 0.331
+    },
+    {
+      "n": 45,
+      "recent50": 7,
+      "all": 177,
+      "gap": 1,
+      "neighbor": true,
+      "score": 0.271
+    },
+    {
+      "n": 6,
+      "recent50": 5,
+      "all": 166,
+      "gap": 17,
+      "neighbor": false,
+      "score": 0.176
+    },
+    {
+      "n": 29,
+      "recent50": 6,
+      "all": 157,
+      "gap": 1,
+      "neighbor": true,
+      "score": 0.086
     }
   ],
   "sum_band": [
@@ -168,7 +168,7 @@
     177
   ],
   "draw_date": "2026-12-05",
-  "generated_at": "2026-11-28 21:43 KST",
+  "generated_at": "2026-11-28 22:29 KST",
   "random_rival": [
     [
       2,
