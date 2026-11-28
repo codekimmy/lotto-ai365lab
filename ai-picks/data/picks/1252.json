@@ -291,6 +291,13 @@
     ],
     "ai_total": 6,
     "rival_total": 3,
-    "best_rank": 0
+    "best_rank": 0,
+    "diagnostics": {
+      "recent50": 45.8,
+      "gap": 57.4,
+      "neighbor": 41.5,
+      "all": 62.3,
+      "score": 51.9
+    }
   }
 }

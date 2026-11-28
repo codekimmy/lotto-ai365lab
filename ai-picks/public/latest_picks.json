@@ -1,6 +1,6 @@
 {
   "schema": "ai365lab.picks/1",
-  "updated_at": "2026-11-28 21:43 KST",
+  "updated_at": "2026-11-28 22:08 KST",
   "title": "이번 주 Ai365Lab AI 실험 번호",
   "badge": "AI 실험 · 재미용 참고 번호",
   "next": {
@@ -92,10 +92,102 @@
         44
       ]
     },
+    "sets": [
+      {
+        "label": "A",
+        "nums": [
+          13,
+          15,
+          18,
+          30,
+          38,
+          44
+        ],
+        "matches": 1,
+        "rank": 0,
+        "hit": [
+          44
+        ]
+      },
+      {
+        "label": "B",
+        "nums": [
+          13,
+          18,
+          20,
+          27,
+          28,
+          31
+        ],
+        "matches": 1,
+        "rank": 0,
+        "hit": [
+          28
+        ]
+      },
+      {
+        "label": "C",
+        "nums": [
+          3,
+          15,
+          17,
+          28,
+          30,
+          31
+        ],
+        "matches": 1,
+        "rank": 0,
+        "hit": [
+          28
+        ]
+      },
+      {
+        "label": "D",
+        "nums": [
+          3,
+          17,
+          19,
+          38,
+          39,
+          42
+        ],
+        "matches": 1,
+        "rank": 0,
+        "hit": [
+          19
+        ]
+      },
+      {
+        "label": "E",
+        "nums": [
+          12,
+          19,
+          20,
+          39,
+          41,
+          44
+        ],
+        "matches": 2,
+        "rank": 0,
+        "hit": [
+          19,
+          44
+        ]
+      }
+    ],
     "ai_total_matches": 6,
     "random_total_matches": 3,
     "expected_total_matches": 4.0
   },
+  "recent": [
+    {
+      "draw": 1252,
+      "ai_total": 6,
+      "rival_total": 3,
+      "best_matches": 2,
+      "best_rank": 0
+    }
+  ],
   "track_record": {
     "draws": 1,
     "ai_mean": 1.2,

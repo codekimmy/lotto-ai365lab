@@ -389,6 +389,26 @@ def next_draw_date(hist):
     return (last + timedelta(days=7)).strftime("%Y-%m-%d")
 
 
+FEATURES = [("recent50", "최근 50회 빈도"), ("gap", "쉰 기간"), ("neighbor", "직전 회차 이웃"),
+            ("all", "전체 빈도"), ("score", "종합 점수")]
+
+
+def diagnose(hist_before, win, version):
+    """로직 개선용 근거 데이터: 실제 당첨번호 6개가 각 지표에서 45개 중 몇 위였나(상위 %).
+    무작위라면 평균 약 50%. 50%보다 꾸준히 낮으면(=상위) 그 지표가 쓸모 있었다는 뜻, 높으면 반대."""
+    _, d = number_scores(hist_before, VERSIONS[version])
+    out = {}
+    for k, _lab in FEATURES:
+        val = {n: float(d[n][k]) for n in d}
+        pct = []
+        for w in win:
+            higher = sum(1 for n in val if val[n] > val[w])
+            ties = sum(1 for n in val if val[n] == val[w]) - 1
+            pct.append((higher + ties / 2) / 44 * 100)
+        out[k] = round(sum(pct) / len(pct), 1)
+    return out
+
+
 def cmd_update():
     hist, added = update_history()
     print(f"history: {len(hist)}회까지, 새로 추가 {added}")
@@ -400,8 +420,12 @@ def cmd_update():
         p = load_json(os.path.join(PICKS_DIR, fn))
         if p.get("score") is None and p["draw"] in byn:
             p["score"] = score_draw(p, byn[p["draw"]])
+            p["score"]["diagnostics"] = diagnose(hist[:p["draw"] - 1], byn[p["draw"]]["nums"], p["version"])
             save_json(os.path.join(PICKS_DIR, fn), p)
             print(f"채점 {p['draw']}회: AI {p['score']['ai_total']}개 / 무작위 {p['score']['rival_total']}개")
+        elif p.get("score") and "diagnostics" not in p["score"]:
+            p["score"]["diagnostics"] = diagnose(hist[:p["draw"] - 1], p["score"]["result"]["nums"], p["version"])
+            save_json(os.path.join(PICKS_DIR, fn), p)
 
     # 2) 다음 회차 번호 생성 (이미 있으면 절대 덮어쓰지 않음)
     nxt = hist[-1]["draw"] + 1
@@ -419,23 +443,44 @@ def cmd_update():
     build_outputs(hist)
 
 
-def cmd_backtest(n=100):
+def cmd_backtest(n=100, end=None):
+    """end를 주지 않으면 v1.0 공개 시점과 같은 1251회까지로 고정(공개 숫자가 바뀌지 않게)."""
     hist = load_json(HIST)
     out = []
-    end = hist[-1]["draw"]
+    end = end or VERSIONS[ACTIVE]["effective_from"] - 1
     for d in range(end - n + 1, end + 1):
         pk = make_picks(hist[:d - 1], d, ACTIVE)
         pk["random_rival"] = random_rival(d)
         pk["score"] = score_draw(pk, hist[d - 1])
+        pk["score"]["diagnostics"] = diagnose(hist[:d - 1], hist[d - 1]["nums"], ACTIVE)
         pk["backtest"] = True
         out.append({"draw": d, "version": ACTIVE, "backtest": True, "score": pk["score"],
                     "sets": [s["nums"] for s in pk["sets"]]})
     res = {"version": ACTIVE, "range": [end - n + 1, end],
            "note": "로직 v1.0을 과거 회차에 거꾸로 적용한 결과입니다. 실전 성적이 아니며, 과거에 맞춘 로직은 미래에 같은 성과를 내지 않습니다.",
-           "summary": summarize(out), "draws": out}
+           "summary": summarize(out), "diagnostics_avg": _diag_avg(out), "draws": out}
     save_json(os.path.join(DATA, "backtest_v1.0.json"), res)
     print(json.dumps(res["summary"], ensure_ascii=False, indent=1))
     return res
+
+
+def _diag_avg(entries):
+    ds = [e["score"]["diagnostics"] for e in entries if e["score"].get("diagnostics")]
+    if not ds:
+        return None
+    return {k: round(sum(d[k] for d in ds) / len(ds), 1) for k, _ in FEATURES}
+
+
+def _hist_row(p):
+    sc = p["score"]
+    win = sc["result"]["nums"]
+    return {"draw": p["draw"], "version": p["version"], "win": win, "bonus": sc["result"]["bonus"],
+            "sets": [{"label": s["label"], "nums": s["nums"], "matches": r["matches"], "rank": r["rank"],
+                      "hit": r["hit"]} for s, r in zip(p["sets"], sc["sets"])],
+            "rival": [{"nums": n, "matches": r["matches"]} for n, r in
+                      zip(p.get("random_rival") or random_rival(p["draw"]), sc["rival"])],
+            "ai_total": sc["ai_total"], "rival_total": sc["rival_total"], "expected_total": 4.0,
+            "best_rank": sc["best_rank"], "diagnostics": sc.get("diagnostics")}
 
 
 def build_outputs(hist):
@@ -460,10 +505,14 @@ def build_outputs(hist):
                        "name": c["name"], "note": c.get("note", ""), "weights": c["weights"]}
                       for v, c in sorted(VERSIONS.items(), key=lambda kv: kv[1]["effective_from"])],
         "rank_probability_per_ticket": {k: f"1/{round(1 / p):,}" for k, p in RANK_P.items()},
-        "history": [{"draw": p["draw"], "version": p["version"], "sets": [s["nums"] for s in p["sets"]],
-                     **({"result": p["score"]["result"], "ai_total": p["score"]["ai_total"],
-                         "rival_total": p["score"]["rival_total"], "best_rank": p["score"]["best_rank"],
-                         "set_scores": p["score"]["sets"]} if p.get("score") else {})} for p in picks],
+        # 회차별 누적 기록(최신순). 로직 재검토의 근거 데이터
+        "history": [_hist_row(p) for p in reversed(scored)],
+        "diagnostics": {
+            "features": [{"key": k, "label": lab} for k, lab in FEATURES],
+            "how_to_read": "실제 당첨번호 6개가 각 지표 순위에서 평균 상위 몇 %였는지. 무작위면 약 50%. 낮을수록 그 지표가 당첨번호 쪽을 가리켰다는 뜻",
+            "live_avg": _diag_avg(scored),
+            "backtest_avg": bt.get("diagnostics_avg") if bt else None,
+        },
         "disclaimer": DISCLAIMER,
     }
     save_json(os.path.join(PUB, "scorecard.json"), scorecard)
@@ -481,9 +530,14 @@ def build_outputs(hist):
         "last_result": ({"draw": last["draw"], "win": last["score"]["result"]["nums"],
                          "bonus": last["score"]["result"]["bonus"],
                          "best_set": max(last["score"]["sets"], key=lambda s: s["matches"]),
+                         "sets": _hist_row(last)["sets"],
                          "ai_total_matches": last["score"]["ai_total"],
                          "random_total_matches": last["score"]["rival_total"],
                          "expected_total_matches": 4.0} if last else None),
+        # 최근 회차 누적 요약(최신순, 최대 10회)
+        "recent": [{"draw": p["draw"], "ai_total": p["score"]["ai_total"], "rival_total": p["score"]["rival_total"],
+                    "best_matches": max(r["matches"] for r in p["score"]["sets"]),
+                    "best_rank": p["score"]["best_rank"]} for p in list(reversed(scored))[:10]],
         "track_record": ({"draws": live["draws"], "ai_mean": live["ai_mean_matches"],
                           "random_mean": live["rival_mean_matches"], "expected_mean": 0.8,
                           "hits_3plus": live["ai_hits_3plus"],
@@ -502,7 +556,8 @@ if __name__ == "__main__":
     if c == "update":
         cmd_update()
     elif c == "backtest":
-        cmd_backtest(int(sys.argv[2]) if len(sys.argv) > 2 else 100)
+        cmd_backtest(int(sys.argv[2]) if len(sys.argv) > 2 else 100,
+                     int(sys.argv[3]) if len(sys.argv) > 3 else None)
         build_outputs(load_json(HIST))
     elif c == "pick":
         h = load_json(HIST)
