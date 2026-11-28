@@ -37,6 +37,13 @@
     "expected_hits_3plus": 11.92,
     "ai_best_rank_ever": 4
   },
+  "repeat": {
+    "weeks": 99,
+    "reused_share": 70.6,
+    "avg_max_pair_overlap": 3.75,
+    "worst_pair_overlap": 5,
+    "avg_sets_with_4plus_reused": 4.04
+  },
   "diagnostics_avg": {
     "recent50": 51.8,
     "gap": 47.7,
