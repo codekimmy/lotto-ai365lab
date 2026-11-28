@@ -37,6 +37,13 @@
     "expected_hits_3plus": 11.92,
     "ai_best_rank_ever": 4
   },
+  "diagnostics_avg": {
+    "recent50": 51.8,
+    "gap": 47.7,
+    "neighbor": 51.2,
+    "all": 50.6,
+    "score": 50.9
+  },
   "draws": [
     {
       "draw": 1152,
@@ -115,7 +122,14 @@
         ],
         "ai_total": 2,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 45.1,
+          "gap": 55.5,
+          "neighbor": 58.5,
+          "all": 63.1,
+          "score": 59.5
+        }
       },
       "sets": [
         [
@@ -243,7 +257,14 @@
         ],
         "ai_total": 6,
         "rival_total": 3,
-        "best_rank": 5
+        "best_rank": 5,
+        "diagnostics": {
+          "recent50": 38.8,
+          "gap": 48.3,
+          "neighbor": 52.8,
+          "all": 55.1,
+          "score": 42.8
+        }
       },
       "sets": [
         [
@@ -365,7 +386,14 @@
         ],
         "ai_total": 2,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 66.3,
+          "gap": 44.3,
+          "neighbor": 58.5,
+          "all": 73.3,
+          "score": 71.8
+        }
       },
       "sets": [
         [
@@ -489,7 +517,14 @@
         ],
         "ai_total": 4,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 34.3,
+          "gap": 64.6,
+          "neighbor": 44.9,
+          "all": 38.4,
+          "score": 38.8
+        }
       },
       "sets": [
         [
@@ -613,7 +648,14 @@
         ],
         "ai_total": 3,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 48.7,
+          "gap": 41.1,
+          "neighbor": 59.7,
+          "all": 47.5,
+          "score": 53.4
+        }
       },
       "sets": [
         [
@@ -739,7 +781,14 @@
         ],
         "ai_total": 5,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 59.7,
+          "gap": 22.5,
+          "neighbor": 65.9,
+          "all": 49.4,
+          "score": 42.0
+        }
       },
       "sets": [
         [
@@ -864,7 +913,14 @@
         ],
         "ai_total": 4,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 46.6,
+          "gap": 62.7,
+          "neighbor": 41.5,
+          "all": 50.8,
+          "score": 49.2
+        }
       },
       "sets": [
         [
@@ -989,7 +1045,14 @@
         ],
         "ai_total": 4,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 43.9,
+          "gap": 56.4,
+          "neighbor": 33.0,
+          "all": 55.7,
+          "score": 44.1
+        }
       },
       "sets": [
         [
@@ -1111,7 +1174,14 @@
         ],
         "ai_total": 2,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 58.7,
+          "gap": 53.4,
+          "neighbor": 57.4,
+          "all": 29.5,
+          "score": 65.7
+        }
       },
       "sets": [
         [
@@ -1235,7 +1305,14 @@
         ],
         "ai_total": 3,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 59.7,
+          "gap": 37.1,
+          "neighbor": 60.8,
+          "all": 42.2,
+          "score": 48.9
+        }
       },
       "sets": [
         [
@@ -1358,7 +1435,14 @@
         ],
         "ai_total": 3,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 58.9,
+          "gap": 54.9,
+          "neighbor": 44.9,
+          "all": 68.6,
+          "score": 65.5
+        }
       },
       "sets": [
         [
@@ -1485,7 +1569,14 @@
         ],
         "ai_total": 5,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 37.9,
+          "gap": 36.2,
+          "neighbor": 63.6,
+          "all": 40.9,
+          "score": 41.3
+        }
       },
       "sets": [
         [
@@ -1610,7 +1701,14 @@
         ],
         "ai_total": 4,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 71.0,
+          "gap": 42.2,
+          "neighbor": 58.5,
+          "all": 50.8,
+          "score": 59.5
+        }
       },
       "sets": [
         [
@@ -1734,7 +1832,14 @@
         ],
         "ai_total": 4,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 39.8,
+          "gap": 52.1,
+          "neighbor": 56.2,
+          "all": 39.4,
+          "score": 43.6
+        }
       },
       "sets": [
         [
@@ -1856,7 +1961,14 @@
         ],
         "ai_total": 2,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 65.9,
+          "gap": 66.9,
+          "neighbor": 48.9,
+          "all": 62.1,
+          "score": 66.3
+        }
       },
       "sets": [
         [
@@ -1983,7 +2095,14 @@
         ],
         "ai_total": 5,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 68.4,
+          "gap": 35.2,
+          "neighbor": 58.5,
+          "all": 59.5,
+          "score": 54.9
+        }
       },
       "sets": [
         [
@@ -2113,7 +2232,14 @@
         ],
         "ai_total": 8,
         "rival_total": 5,
-        "best_rank": 4
+        "best_rank": 4,
+        "diagnostics": {
+          "recent50": 32.6,
+          "gap": 33.9,
+          "neighbor": 42.6,
+          "all": 51.7,
+          "score": 22.3
+        }
       },
       "sets": [
         [
@@ -2235,7 +2361,14 @@
         ],
         "ai_total": 2,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 62.5,
+          "gap": 50.9,
+          "neighbor": 61.9,
+          "all": 53.4,
+          "score": 65.9
+        }
       },
       "sets": [
         [
@@ -2368,7 +2501,14 @@
         ],
         "ai_total": 10,
         "rival_total": 3,
-        "best_rank": 5
+        "best_rank": 5,
+        "diagnostics": {
+          "recent50": 31.2,
+          "gap": 41.7,
+          "neighbor": 43.8,
+          "all": 40.2,
+          "score": 29.9
+        }
       },
       "sets": [
         [
@@ -2497,7 +2637,14 @@
         ],
         "ai_total": 6,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 42.6,
+          "gap": 48.9,
+          "neighbor": 53.4,
+          "all": 34.7,
+          "score": 40.9
+        }
       },
       "sets": [
         [
@@ -2619,7 +2766,14 @@
         ],
         "ai_total": 2,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 54.7,
+          "gap": 60.0,
+          "neighbor": 57.4,
+          "all": 57.8,
+          "score": 66.7
+        }
       },
       "sets": [
         [
@@ -2737,7 +2891,14 @@
         ],
         "ai_total": 0,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 67.6,
+          "gap": 35.4,
+          "neighbor": 67.0,
+          "all": 51.3,
+          "score": 68.2
+        }
       },
       "sets": [
         [
@@ -2857,7 +3018,14 @@
         ],
         "ai_total": 1,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 60.6,
+          "gap": 44.7,
+          "neighbor": 51.1,
+          "all": 44.7,
+          "score": 52.5
+        }
       },
       "sets": [
         [
@@ -2977,7 +3145,14 @@
         ],
         "ai_total": 1,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 59.7,
+          "gap": 47.3,
+          "neighbor": 61.9,
+          "all": 69.1,
+          "score": 62.5
+        }
       },
       "sets": [
         [
@@ -3103,7 +3278,14 @@
         ],
         "ai_total": 4,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 26.7,
+          "gap": 61.4,
+          "neighbor": 48.9,
+          "all": 58.1,
+          "score": 46.6
+        }
       },
       "sets": [
         [
@@ -3233,7 +3415,14 @@
         ],
         "ai_total": 7,
         "rival_total": 1,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 38.8,
+          "gap": 35.6,
+          "neighbor": 59.7,
+          "all": 43.8,
+          "score": 34.8
+        }
       },
       "sets": [
         [
@@ -3359,7 +3548,14 @@
         ],
         "ai_total": 4,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 51.5,
+          "gap": 59.1,
+          "neighbor": 42.6,
+          "all": 49.4,
+          "score": 58.3
+        }
       },
       "sets": [
         [
@@ -3479,7 +3675,14 @@
         ],
         "ai_total": 1,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 63.8,
+          "gap": 63.8,
+          "neighbor": 57.4,
+          "all": 38.6,
+          "score": 72.0
+        }
       },
       "sets": [
         [
@@ -3606,7 +3809,14 @@
         ],
         "ai_total": 5,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 52.8,
+          "gap": 55.1,
+          "neighbor": 43.8,
+          "all": 32.6,
+          "score": 48.7
+        }
       },
       "sets": [
         [
@@ -3732,7 +3942,14 @@
         ],
         "ai_total": 4,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 70.1,
+          "gap": 39.0,
+          "neighbor": 59.7,
+          "all": 49.6,
+          "score": 58.3
+        }
       },
       "sets": [
         [
@@ -3858,7 +4075,14 @@
         ],
         "ai_total": 5,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 58.5,
+          "gap": 22.9,
+          "neighbor": 52.3,
+          "all": 52.8,
+          "score": 44.3
+        }
       },
       "sets": [
         [
@@ -3980,7 +4204,14 @@
         ],
         "ai_total": 2,
         "rival_total": 0,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 64.6,
+          "gap": 27.8,
+          "neighbor": 60.8,
+          "all": 53.6,
+          "score": 61.0
+        }
       },
       "sets": [
         [
@@ -4102,7 +4333,14 @@
         ],
         "ai_total": 2,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 59.8,
+          "gap": 70.3,
+          "neighbor": 35.2,
+          "all": 54.0,
+          "score": 62.3
+        }
       },
       "sets": [
         [
@@ -4224,7 +4462,14 @@
         ],
         "ai_total": 2,
         "rival_total": 9,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 63.4,
+          "gap": 38.4,
+          "neighbor": 42.6,
+          "all": 73.7,
+          "score": 52.5
+        }
       },
       "sets": [
         [
@@ -4349,7 +4594,14 @@
         ],
         "ai_total": 4,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 52.5,
+          "gap": 61.6,
+          "neighbor": 42.6,
+          "all": 65.7,
+          "score": 51.5
+        }
       },
       "sets": [
         [
@@ -4475,7 +4727,14 @@
         ],
         "ai_total": 4,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 47.5,
+          "gap": 53.0,
+          "neighbor": 53.4,
+          "all": 45.3,
+          "score": 46.2
+        }
       },
       "sets": [
         [
@@ -4602,7 +4861,14 @@
         ],
         "ai_total": 6,
         "rival_total": 3,
-        "best_rank": 5
+        "best_rank": 5,
+        "diagnostics": {
+          "recent50": 48.3,
+          "gap": 44.5,
+          "neighbor": 44.9,
+          "all": 41.5,
+          "score": 45.1
+        }
       },
       "sets": [
         [
@@ -4727,7 +4993,14 @@
         ],
         "ai_total": 4,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 38.1,
+          "gap": 47.7,
+          "neighbor": 59.7,
+          "all": 57.4,
+          "score": 47.7
+        }
       },
       "sets": [
         [
@@ -4852,7 +5125,14 @@
         ],
         "ai_total": 4,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 47.7,
+          "gap": 55.5,
+          "neighbor": 50.0,
+          "all": 54.7,
+          "score": 54.2
+        }
       },
       "sets": [
         [
@@ -4978,7 +5258,14 @@
         ],
         "ai_total": 5,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 66.1,
+          "gap": 39.0,
+          "neighbor": 59.7,
+          "all": 46.0,
+          "score": 61.4
+        }
       },
       "sets": [
         [
@@ -5105,7 +5392,14 @@
         ],
         "ai_total": 5,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 50.4,
+          "gap": 38.3,
+          "neighbor": 50.0,
+          "all": 57.2,
+          "score": 44.7
+        }
       },
       "sets": [
         [
@@ -5231,7 +5525,14 @@
         ],
         "ai_total": 4,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 31.6,
+          "gap": 51.9,
+          "neighbor": 42.6,
+          "all": 63.1,
+          "score": 41.3
+        }
       },
       "sets": [
         [
@@ -5362,7 +5663,14 @@
         ],
         "ai_total": 8,
         "rival_total": 6,
-        "best_rank": 5
+        "best_rank": 5,
+        "diagnostics": {
+          "recent50": 34.8,
+          "gap": 43.0,
+          "neighbor": 53.4,
+          "all": 31.2,
+          "score": 31.8
+        }
       },
       "sets": [
         [
@@ -5489,7 +5797,14 @@
         ],
         "ai_total": 6,
         "rival_total": 2,
-        "best_rank": 5
+        "best_rank": 5,
+        "diagnostics": {
+          "recent50": 47.9,
+          "gap": 64.8,
+          "neighbor": 26.7,
+          "all": 27.7,
+          "score": 37.5
+        }
       },
       "sets": [
         [
@@ -5611,7 +5926,14 @@
         ],
         "ai_total": 2,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 42.2,
+          "gap": 53.0,
+          "neighbor": 58.5,
+          "all": 40.0,
+          "score": 60.0
+        }
       },
       "sets": [
         [
@@ -5733,7 +6055,14 @@
         ],
         "ai_total": 2,
         "rival_total": 1,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 63.4,
+          "gap": 36.0,
+          "neighbor": 52.3,
+          "all": 58.7,
+          "score": 60.6
+        }
       },
       "sets": [
         [
@@ -5860,7 +6189,14 @@
         ],
         "ai_total": 5,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 57.6,
+          "gap": 45.3,
+          "neighbor": 58.5,
+          "all": 53.4,
+          "score": 58.9
+        }
       },
       "sets": [
         [
@@ -5988,7 +6324,14 @@
         ],
         "ai_total": 6,
         "rival_total": 8,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 51.7,
+          "gap": 37.7,
+          "neighbor": 33.0,
+          "all": 71.0,
+          "score": 40.9
+        }
       },
       "sets": [
         [
@@ -6110,7 +6453,14 @@
         ],
         "ai_total": 2,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 63.8,
+          "gap": 53.0,
+          "neighbor": 46.6,
+          "all": 60.2,
+          "score": 69.7
+        }
       },
       "sets": [
         [
@@ -6233,7 +6583,14 @@
         ],
         "ai_total": 3,
         "rival_total": 7,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 28.8,
+          "gap": 44.7,
+          "neighbor": 65.9,
+          "all": 53.6,
+          "score": 45.3
+        }
       },
       "sets": [
         [
@@ -6358,7 +6715,14 @@
         ],
         "ai_total": 4,
         "rival_total": 7,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 47.2,
+          "gap": 38.8,
+          "neighbor": 58.5,
+          "all": 29.2,
+          "score": 46.2
+        }
       },
       "sets": [
         [
@@ -6488,7 +6852,14 @@
         ],
         "ai_total": 8,
         "rival_total": 5,
-        "best_rank": 5
+        "best_rank": 5,
+        "diagnostics": {
+          "recent50": 41.3,
+          "gap": 36.6,
+          "neighbor": 53.4,
+          "all": 47.5,
+          "score": 34.8
+        }
       },
       "sets": [
         [
@@ -6613,7 +6984,14 @@
         ],
         "ai_total": 4,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 51.9,
+          "gap": 34.8,
+          "neighbor": 53.4,
+          "all": 66.5,
+          "score": 48.9
+        }
       },
       "sets": [
         [
@@ -6737,7 +7115,14 @@
         ],
         "ai_total": 4,
         "rival_total": 1,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 53.0,
+          "gap": 53.2,
+          "neighbor": 50.0,
+          "all": 63.1,
+          "score": 58.9
+        }
       },
       "sets": [
         [
@@ -6869,7 +7254,14 @@
         ],
         "ai_total": 9,
         "rival_total": 1,
-        "best_rank": 4
+        "best_rank": 4,
+        "diagnostics": {
+          "recent50": 47.5,
+          "gap": 40.7,
+          "neighbor": 35.2,
+          "all": 38.6,
+          "score": 27.3
+        }
       },
       "sets": [
         [
@@ -6996,7 +7388,14 @@
         ],
         "ai_total": 6,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 58.0,
+          "gap": 30.1,
+          "neighbor": 57.4,
+          "all": 47.9,
+          "score": 47.3
+        }
       },
       "sets": [
         [
@@ -7120,7 +7519,14 @@
         ],
         "ai_total": 3,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 35.4,
+          "gap": 68.0,
+          "neighbor": 51.1,
+          "all": 52.1,
+          "score": 54.9
+        }
       },
       "sets": [
         [
@@ -7246,7 +7652,14 @@
         ],
         "ai_total": 5,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 54.2,
+          "gap": 40.5,
+          "neighbor": 43.8,
+          "all": 44.9,
+          "score": 47.3
+        }
       },
       "sets": [
         [
@@ -7371,7 +7784,14 @@
         ],
         "ai_total": 4,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 31.6,
+          "gap": 60.0,
+          "neighbor": 42.6,
+          "all": 37.7,
+          "score": 36.9
+        }
       },
       "sets": [
         [
@@ -7496,7 +7916,14 @@
         ],
         "ai_total": 4,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 28.8,
+          "gap": 66.5,
+          "neighbor": 42.6,
+          "all": 43.0,
+          "score": 42.2
+        }
       },
       "sets": [
         [
@@ -7616,7 +8043,14 @@
         ],
         "ai_total": 1,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 64.8,
+          "gap": 33.5,
+          "neighbor": 50.0,
+          "all": 76.5,
+          "score": 66.7
+        }
       },
       "sets": [
         [
@@ -7741,7 +8175,14 @@
         ],
         "ai_total": 4,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 43.2,
+          "gap": 67.2,
+          "neighbor": 53.4,
+          "all": 52.7,
+          "score": 53.8
+        }
       },
       "sets": [
         [
@@ -7870,7 +8311,14 @@
         ],
         "ai_total": 6,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 58.7,
+          "gap": 35.2,
+          "neighbor": 51.1,
+          "all": 42.8,
+          "score": 41.9
+        }
       },
       "sets": [
         [
@@ -7992,7 +8440,14 @@
         ],
         "ai_total": 2,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 75.0,
+          "gap": 51.1,
+          "neighbor": 53.4,
+          "all": 38.1,
+          "score": 69.7
+        }
       },
       "sets": [
         [
@@ -8121,7 +8576,14 @@
         ],
         "ai_total": 7,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 40.3,
+          "gap": 47.0,
+          "neighbor": 47.7,
+          "all": 52.5,
+          "score": 37.9
+        }
       },
       "sets": [
         [
@@ -8242,7 +8704,14 @@
         ],
         "ai_total": 2,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 54.9,
+          "gap": 56.4,
+          "neighbor": 48.9,
+          "all": 59.1,
+          "score": 61.0
+        }
       },
       "sets": [
         [
@@ -8368,7 +8837,14 @@
         ],
         "ai_total": 5,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 55.9,
+          "gap": 47.9,
+          "neighbor": 42.6,
+          "all": 57.2,
+          "score": 47.7
+        }
       },
       "sets": [
         [
@@ -8488,7 +8964,14 @@
         ],
         "ai_total": 1,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 49.2,
+          "gap": 56.6,
+          "neighbor": 41.5,
+          "all": 50.6,
+          "score": 56.6
+        }
       },
       "sets": [
         [
@@ -8611,7 +9094,14 @@
         ],
         "ai_total": 3,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 79.4,
+          "gap": 40.9,
+          "neighbor": 48.9,
+          "all": 68.8,
+          "score": 61.0
+        }
       },
       "sets": [
         [
@@ -8731,7 +9221,14 @@
         ],
         "ai_total": 1,
         "rival_total": 7,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 47.3,
+          "gap": 38.1,
+          "neighbor": 61.9,
+          "all": 49.1,
+          "score": 45.1
+        }
       },
       "sets": [
         [
@@ -8855,7 +9352,14 @@
         ],
         "ai_total": 3,
         "rival_total": 7,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 74.1,
+          "gap": 34.8,
+          "neighbor": 60.8,
+          "all": 72.5,
+          "score": 62.1
+        }
       },
       "sets": [
         [
@@ -8980,7 +9484,14 @@
         ],
         "ai_total": 4,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 57.4,
+          "gap": 50.9,
+          "neighbor": 36.4,
+          "all": 40.0,
+          "score": 48.9
+        }
       },
       "sets": [
         [
@@ -9102,7 +9613,14 @@
         ],
         "ai_total": 2,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 65.3,
+          "gap": 37.1,
+          "neighbor": 48.9,
+          "all": 40.0,
+          "score": 52.3
+        }
       },
       "sets": [
         [
@@ -9226,7 +9744,14 @@
         ],
         "ai_total": 3,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 50.2,
+          "gap": 49.6,
+          "neighbor": 41.5,
+          "all": 79.2,
+          "score": 64.8
+        }
       },
       "sets": [
         [
@@ -9350,7 +9875,14 @@
         ],
         "ai_total": 3,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 50.2,
+          "gap": 46.6,
+          "neighbor": 57.4,
+          "all": 48.1,
+          "score": 50.8
+        }
       },
       "sets": [
         [
@@ -9475,7 +10007,14 @@
         ],
         "ai_total": 4,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 50.2,
+          "gap": 49.2,
+          "neighbor": 51.1,
+          "all": 42.4,
+          "score": 52.3
+        }
       },
       "sets": [
         [
@@ -9600,7 +10139,14 @@
         ],
         "ai_total": 4,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 51.9,
+          "gap": 34.1,
+          "neighbor": 51.1,
+          "all": 65.3,
+          "score": 45.1
+        }
       },
       "sets": [
         [
@@ -9725,7 +10271,14 @@
         ],
         "ai_total": 4,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 65.5,
+          "gap": 50.8,
+          "neighbor": 48.9,
+          "all": 32.6,
+          "score": 45.1
+        }
       },
       "sets": [
         [
@@ -9851,7 +10404,14 @@
         ],
         "ai_total": 4,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 48.1,
+          "gap": 49.6,
+          "neighbor": 51.1,
+          "all": 75.4,
+          "score": 63.3
+        }
       },
       "sets": [
         [
@@ -9980,7 +10540,14 @@
         ],
         "ai_total": 6,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 49.2,
+          "gap": 51.1,
+          "neighbor": 59.7,
+          "all": 30.3,
+          "score": 48.3
+        }
       },
       "sets": [
         [
@@ -10108,7 +10675,14 @@
         ],
         "ai_total": 6,
         "rival_total": 7,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 46.0,
+          "gap": 46.6,
+          "neighbor": 42.6,
+          "all": 50.2,
+          "score": 44.1
+        }
       },
       "sets": [
         [
@@ -10239,7 +10813,14 @@
         ],
         "ai_total": 8,
         "rival_total": 1,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 73.5,
+          "gap": 21.6,
+          "neighbor": 43.8,
+          "all": 47.2,
+          "score": 27.3
+        }
       },
       "sets": [
         [
@@ -10366,7 +10947,14 @@
         ],
         "ai_total": 5,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 37.3,
+          "gap": 51.7,
+          "neighbor": 53.4,
+          "all": 46.8,
+          "score": 47.0
+        }
       },
       "sets": [
         [
@@ -10489,7 +11077,14 @@
         ],
         "ai_total": 3,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 69.1,
+          "gap": 52.1,
+          "neighbor": 52.3,
+          "all": 48.9,
+          "score": 65.9
+        }
       },
       "sets": [
         [
@@ -10614,7 +11209,14 @@
         ],
         "ai_total": 4,
         "rival_total": 8,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 66.7,
+          "gap": 41.1,
+          "neighbor": 51.1,
+          "all": 30.3,
+          "score": 58.3
+        }
       },
       "sets": [
         [
@@ -10738,7 +11340,14 @@
         ],
         "ai_total": 3,
         "rival_total": 7,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 69.7,
+          "gap": 46.4,
+          "neighbor": 44.9,
+          "all": 38.6,
+          "score": 49.6
+        }
       },
       "sets": [
         [
@@ -10860,7 +11469,14 @@
         ],
         "ai_total": 2,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 63.3,
+          "gap": 47.7,
+          "neighbor": 61.9,
+          "all": 50.6,
+          "score": 61.0
+        }
       },
       "sets": [
         [
@@ -10984,7 +11600,14 @@
         ],
         "ai_total": 3,
         "rival_total": 6,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 65.2,
+          "gap": 54.7,
+          "neighbor": 44.9,
+          "all": 54.9,
+          "score": 63.6
+        }
       },
       "sets": [
         [
@@ -11109,7 +11732,14 @@
         ],
         "ai_total": 4,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 42.2,
+          "gap": 60.2,
+          "neighbor": 41.5,
+          "all": 36.7,
+          "score": 46.6
+        }
       },
       "sets": [
         [
@@ -11235,7 +11865,14 @@
         ],
         "ai_total": 4,
         "rival_total": 1,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 53.2,
+          "gap": 48.9,
+          "neighbor": 50.0,
+          "all": 48.7,
+          "score": 53.0
+        }
       },
       "sets": [
         [
@@ -11359,7 +11996,14 @@
         ],
         "ai_total": 3,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 48.7,
+          "gap": 54.9,
+          "neighbor": 59.7,
+          "all": 65.7,
+          "score": 58.0
+        }
       },
       "sets": [
         [
@@ -11482,7 +12126,14 @@
         ],
         "ai_total": 3,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 40.0,
+          "gap": 60.2,
+          "neighbor": 60.8,
+          "all": 50.2,
+          "score": 51.1
+        }
       },
       "sets": [
         [
@@ -11610,7 +12261,14 @@
         ],
         "ai_total": 6,
         "rival_total": 2,
-        "best_rank": 5
+        "best_rank": 5,
+        "diagnostics": {
+          "recent50": 33.0,
+          "gap": 56.4,
+          "neighbor": 51.1,
+          "all": 22.5,
+          "score": 29.9
+        }
       },
       "sets": [
         [
@@ -11733,7 +12391,14 @@
         ],
         "ai_total": 3,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 50.4,
+          "gap": 33.0,
+          "neighbor": 60.8,
+          "all": 82.6,
+          "score": 54.0
+        }
       },
       "sets": [
         [
@@ -11860,7 +12525,14 @@
         ],
         "ai_total": 5,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 35.2,
+          "gap": 52.3,
+          "neighbor": 42.6,
+          "all": 60.4,
+          "score": 47.7
+        }
       },
       "sets": [
         [
@@ -11982,7 +12654,14 @@
         ],
         "ai_total": 2,
         "rival_total": 2,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 69.5,
+          "gap": 36.7,
+          "neighbor": 46.6,
+          "all": 56.6,
+          "score": 50.0
+        }
       },
       "sets": [
         [
@@ -12113,7 +12792,14 @@
         ],
         "ai_total": 8,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 17.2,
+          "gap": 67.4,
+          "neighbor": 58.5,
+          "all": 33.7,
+          "score": 28.8
+        }
       },
       "sets": [
         [
@@ -12239,7 +12925,14 @@
         ],
         "ai_total": 5,
         "rival_total": 4,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 44.3,
+          "gap": 48.5,
+          "neighbor": 51.1,
+          "all": 52.7,
+          "score": 50.8
+        }
       },
       "sets": [
         [
@@ -12367,7 +13060,14 @@
         ],
         "ai_total": 6,
         "rival_total": 3,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 33.3,
+          "gap": 64.8,
+          "neighbor": 59.7,
+          "all": 50.9,
+          "score": 48.5
+        }
       },
       "sets": [
         [
@@ -12494,7 +13194,14 @@
         ],
         "ai_total": 5,
         "rival_total": 5,
-        "best_rank": 0
+        "best_rank": 0,
+        "diagnostics": {
+          "recent50": 63.1,
+          "gap": 46.2,
+          "neighbor": 41.5,
+          "all": 30.5,
+          "score": 46.8
+        }
       },
       "sets": [
         [
